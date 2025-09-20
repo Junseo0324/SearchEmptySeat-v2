@@ -1,0 +1,173 @@
+package com.example.searchplacement.viewmodel
+
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.data.local.UserEntity
+import com.example.searchplacement.data.member.ApiResponse
+import com.example.searchplacement.data.member.LoginRequest
+import com.example.searchplacement.data.member.LoginResponse
+import com.example.searchplacement.data.member.MyInfoUpdateRequest
+import com.example.searchplacement.repository.AuthRepository
+import com.example.searchplacement.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.FileNotFoundException
+import javax.inject.Inject
+
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
+
+    private val _user = MutableStateFlow<UserEntity?>(null)
+    val user = _user.asStateFlow()
+
+    private val _loginResult = MutableStateFlow<ApiResponse<LoginResponse>?>(null)
+    val loginResult = _loginResult.asStateFlow()
+
+    private val _passwordUpdateResult = MutableStateFlow<ApiResponse<String>?>(null)
+    val passwordUpdateResult = _passwordUpdateResult.asStateFlow()
+
+    private val _userInfoUpdateResult = MutableStateFlow<ApiResponse<Map<String,Any>>?>(null)
+    val userInfoUpdateResult = _userInfoUpdateResult.asStateFlow()
+
+    init {
+        getUserData()
+    }
+
+    private fun getUserData() {
+        viewModelScope.launch {
+            _user.value = userRepository.getUser()
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            userRepository.clearUserData()
+            _user.value = null
+        }
+    }
+
+    fun authPassword(email: String, password: String) {
+        viewModelScope.launch {
+            val response = authRepository.login(LoginRequest(email, password))
+            if (response.isSuccessful && response.body() != null) {
+                _loginResult.value = response.body()
+            } else {
+                _loginResult.value = ApiResponse(
+                    status = "fail",
+                    message = "Auth failed",
+                    data = null
+                )
+            }
+        }
+    }
+
+
+    fun updatePassword(userId: Long, newPassword: String) {
+        viewModelScope.launch {
+            val currentUser = user.value
+            val token = currentUser?.token
+
+            if (token.isNullOrEmpty()) {
+                _passwordUpdateResult.value = ApiResponse(
+                    status = "fail",
+                    message = "인증 토큰이 없습니다. 다시 로그인해주세요.",
+                    data = null
+                )
+                return@launch
+            }
+
+            try {
+                val response = authRepository.updatePassword(userId, newPassword, token)
+                if (response.isSuccessful && response.body() != null) {
+                    _passwordUpdateResult.value = response.body()
+                } else {
+                    _passwordUpdateResult.value = ApiResponse(
+                        status = "fail",
+                        message = response.errorBody()?.string() ?: "비밀번호 변경 실패",
+                        data = null
+                    )
+                }
+            } catch (e: Exception) {
+                _passwordUpdateResult.value = ApiResponse(
+                    status = "fail",
+                    message = "네트워크 오류: ${e.message}",
+                    data = null
+                )
+            }
+        }
+    }
+
+    fun updateUserInfo(
+        userId: Long,
+        editedEmail: String?,
+        editedName: String?,
+        editedPassword: String?,
+        editedLocation: String?,
+        imageFile: MultipartBody.Part?
+    ) {
+        val request = MyInfoUpdateRequest(
+            email = editedEmail,
+            name = editedName,
+            password = editedPassword,
+            location = editedLocation
+        )
+
+        viewModelScope.launch {
+            val currentUser = user.value
+            val token = currentUser?.token
+
+            if (token.isNullOrEmpty()) {
+                _userInfoUpdateResult.value = ApiResponse(
+                    status = "fail",
+                    message = "인증 토큰이 없습니다. 다시 로그인해주세요.",
+                    data = null
+                )
+                return@launch
+            }
+
+            try {
+                val response = authRepository.updateUserInfo(userId, request, imageFile, token)
+                if (response.isSuccessful && response.body() != null) {
+                    _userInfoUpdateResult.value = response.body()
+                    getUserData()
+                } else {
+                    _userInfoUpdateResult.value = ApiResponse(
+                        status = "fail",
+                        message = response.errorBody()?.string() ?: "정보 수정 실패",
+                        data = null
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d("updateInfo", "updateUserInfo: ${e.message}")
+                _userInfoUpdateResult.value = ApiResponse(
+                    status = "fail",
+                    message = "네트워크 오류: ${e.message}",
+                    data = null
+                )
+            }
+        }
+    }
+
+    fun getImageFilePart(context: Context, uri: Uri): MultipartBody.Part {
+        val inputStream = context.contentResolver.openInputStream(uri)
+            ?: throw FileNotFoundException("파일을 찾을 수 없습니다.")
+        val requestFile = inputStream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("image", uri.lastPathSegment ?: "image", requestFile)
+    }
+
+
+
+
+}

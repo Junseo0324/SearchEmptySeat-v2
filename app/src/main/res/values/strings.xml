@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SearchPlacement</string>
+    <string name="client_id">6gwzmqunzh</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_find_password">FindPassword</string>
+    <string name="title_activity_owner_main">OwnerMainActivity</string>
+</resources>

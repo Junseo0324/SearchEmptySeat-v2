@@ -1,0 +1,123 @@
+package com.example.searchplacement.ui.user.search
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.searchplacement.ui.theme.AppButtonStyle
+import com.example.searchplacement.ui.theme.AppTextStyle
+import com.example.searchplacement.ui.theme.Black
+import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.user.category.StoreList
+import com.example.searchplacement.viewmodel.StoreViewModel
+
+@Composable
+fun SearchScreen(navController: NavHostController,storeViewModel: StoreViewModel) {
+    var searchQuery by remember { mutableStateOf("") }
+    val searchResults by storeViewModel.searchResults.collectAsState()
+    val token = storeViewModel.token
+    var isSearched by remember { mutableStateOf(false) }
+
+
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(Dimens.Small)
+    ) {
+        TextField(
+            value = searchQuery,
+            onValueChange = {searchQuery = it},
+            placeholder = { Text(text = "검색") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 30.dp)
+                .border(1.dp, Black, shape = AppButtonStyle.RoundedShape),
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        if (searchQuery.isNotEmpty()) {
+                            storeViewModel.searchStoresByName(searchQuery)
+                            isSearched = true
+                        }
+                    }
+                ) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "검색" )
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = White,
+                focusedContainerColor = White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = Black
+            )
+        )
+        Text(
+            text = "검색 결과",
+            style = AppTextStyle.BodyLarge,
+            modifier = Modifier.padding(Dimens.Small)
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        LazyColumn {
+            if (!isSearched) {
+                item {
+                    Text(
+                        text = "검색어를 입력해주세요.",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            } else {
+                val storeList = searchResults?.data
+                if (storeList != null && storeList.isNotEmpty()) {
+                    items(storeList) { store ->
+                        StoreList(
+                            storePk = store.storePK,
+                            storeName = store.storeName,
+                            storeAddress = store.location,
+                            review = String.format("%.1f", store.averageRating),
+                            favoriteCount = store.favoriteCount.toString(),
+                            imageUrls = store.image,
+                            navController = navController,
+                            token = token
+                        )
+                    }
+                } else {
+                    item {
+                        Text(
+                            text = "검색 결과가 없습니다.",
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+    }
+}
+
