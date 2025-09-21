@@ -12,6 +12,7 @@ import com.example.searchplacement.data.member.LoginResponse
 import com.example.searchplacement.data.member.MyInfoUpdateRequest
 import com.example.searchplacement.repository.AuthRepository
 import com.example.searchplacement.repository.UserRepository
+import com.example.searchplacement.util.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +55,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             userRepository.clearUserData()
             _user.value = null
+
+            TokenManager.clearToken()
         }
     }
 

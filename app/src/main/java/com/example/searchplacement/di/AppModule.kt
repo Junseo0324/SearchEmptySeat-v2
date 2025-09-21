@@ -2,20 +2,16 @@ package com.example.searchplacement.di
 
 import com.example.searchplacement.BuildConfig
 import com.example.searchplacement.data.api.APIService
+import com.example.searchplacement.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
-import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import javax.inject.Singleton
 
@@ -40,12 +36,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .addConverterFactory(nullOnEmptyConverterFactory)
-            .addCallAdapterFactory(CoroutineCallAdapterFactory)
+            .client(okHttpClient)
             .build()
     }
 
@@ -53,32 +58,5 @@ object AppModule {
     @Singleton
     fun provideAPIService(retrofit: Retrofit): APIService {
         return retrofit.create(APIService::class.java)
-    }
-}
-
-object CoroutineCallAdapterFactory : CallAdapter.Factory() {
-    override fun get(returnType: Type,
-                     annotations: Array<Annotation>,
-                     retrofit: Retrofit
-    ): CallAdapter<*, *>? {
-        if (getRawType(returnType) != Deferred::class.java) {
-            return null
-        }
-        if (returnType !is ParameterizedType) {
-            throw IllegalStateException("Deferred return type must be parameterized as Deferred<Foo> or Deferred<? extends Foo>")
-        }
-        val responseType = getParameterUpperBound(0, returnType)
-        return CoroutineCallAdapter<Any>(responseType)
-    }
-}
-
-class CoroutineCallAdapter<R>(private val responseType: Type) :
-    CallAdapter<R, Deferred<R>> {
-    override fun responseType(): Type = responseType
-
-    override fun adapt(call: retrofit2.Call<R>): Deferred<R> {
-        return CoroutineScope(Dispatchers.IO).async {
-            call.execute().body() ?: throw Exception("Response body is null")
-        }
     }
 }

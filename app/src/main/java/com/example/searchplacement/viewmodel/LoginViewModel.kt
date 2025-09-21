@@ -10,6 +10,7 @@ import com.example.searchplacement.data.member.LoginResponse
 import com.example.searchplacement.data.member.SignUpRequest
 import com.example.searchplacement.repository.AuthRepository
 import com.example.searchplacement.repository.UserRepository
+import com.example.searchplacement.util.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +60,8 @@ class LoginViewModel @Inject constructor(
 
                 if (userEntity != null) {
                     userRepository.saveUser(userEntity)
+
+                    TokenManager.setToken(userEntity.token)
                 }
 
                 _loginResult.value = response.body()
