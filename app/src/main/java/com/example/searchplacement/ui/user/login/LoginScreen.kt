@@ -3,32 +3,42 @@ package com.example.searchplacement.ui.user.login
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -53,6 +63,10 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
     val context = LocalContext.current
     val snackbarHostState = remember {SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    val passwordFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
@@ -61,6 +75,11 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
                 .padding(bottom = paddingValues.calculateBottomPadding(), top = Dimens.Small, start = Dimens.Small, end = Dimens.Small)
         ) {
             Spacer(modifier = Modifier.height(100.dp))
@@ -81,31 +100,40 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
                         focusedLabelColor = Color.Black,
                         cursorColor = Color.Black
                     ),
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(Dimens.Small)
+                        .padding(Dimens.Small),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { passwordFocusRequester.requestFocus() }
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(Dimens.Small))
 
-                // 비밀번호 입력
                 OutlinedTextField(
                     value = passwordState.value,
                     onValueChange = { passwordState.value = it },
                     label = { Text("Password") },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = if (showPassword.value) KeyboardType.Text else KeyboardType.Password),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { focusManager.clearFocus() }
+                    ),
                     visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        Box(
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            TextButton(onClick = { showPassword.value = !showPassword.value }) {
-                                Text(
-                                    if (showPassword.value) "Hide" else "Show",
-                                    color = Color.Black
-                                )
-                            }
+                        IconButton(onClick = { showPassword.value = !showPassword.value }) {
+                            Icon(
+                                imageVector = if (showPassword.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (showPassword.value) "Hide password" else "Show password"
+                            )
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
@@ -117,7 +145,8 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(Dimens.Small)
-                )
+                        .focusRequester(passwordFocusRequester),
+                    )
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
@@ -165,7 +194,6 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
                     Text("Log In",style= AppTextStyle.Button.copy(color = Color.White))
                 }
 
-                // 비밀번호 찾기 텍스트
                 Text(
                     text = "Forgot your password?",
                     style = AppTextStyle.mainPoint,

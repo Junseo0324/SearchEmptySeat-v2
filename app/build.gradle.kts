@@ -115,6 +115,9 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.22.0")
 
 
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+
 
 
 
