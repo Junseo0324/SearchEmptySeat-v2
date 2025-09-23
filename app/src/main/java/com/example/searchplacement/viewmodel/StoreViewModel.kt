@@ -33,7 +33,6 @@ class StoreViewModel @Inject constructor(
     private val _searchResults = MutableStateFlow<ApiResponse<List<StoreResponse>>?>(null)
     val searchResults: StateFlow<ApiResponse<List<StoreResponse>>?> = _searchResults.asStateFlow()
 
-    var token = ""
 
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
@@ -49,8 +48,7 @@ class StoreViewModel @Inject constructor(
     fun getAllStores(sortBy: String = "default") {
         viewModelScope.launch {
             try {
-                token = userRepository.getUser()?.token ?: ""
-                val response = storeRepository.getAllStores(token, sortBy)
+                val response = storeRepository.getAllStores(sortBy)
                 if (response.isSuccessful && response.body() != null) {
                     _allStores.value = response.body()
                 } else {
@@ -72,8 +70,7 @@ class StoreViewModel @Inject constructor(
 
     fun getStoreData(storeId: Long) {
         viewModelScope.launch {
-            token = userRepository.getUser()?.token ?: ""
-            val response = storeRepository.getStoreData(token,storeId)
+            val response = storeRepository.getStoreData(storeId)
             if (response.isSuccessful && response.body() !=null) {
                 _storeData.value = response.body()
             } else {
@@ -86,8 +83,7 @@ class StoreViewModel @Inject constructor(
     fun getStoresByCategory(category: String, sortBy: String = "default") {
         viewModelScope.launch {
             try {
-                val token = userRepository.getUser()?.token ?: ""
-                val response = storeRepository.getStoresByCategory(token, category, sortBy)
+                val response = storeRepository.getStoresByCategory(category, sortBy)
                 if (response.isSuccessful && response.body() != null) {
                     _categoryStores.value = response.body()
                 } else {
@@ -111,17 +107,14 @@ class StoreViewModel @Inject constructor(
     fun searchStoresByName(storeName: String) {
         viewModelScope.launch {
             try {
-                val token = userRepository.getUser()?.token ?: ""
 
                 // 서버에 요청
-                val response = storeRepository.searchStoresByName(token, storeName)
+                val response = storeRepository.searchStoresByName(storeName)
 
                 if (response.isSuccessful) {
                     // 응답이 성공적이라면 응답 본문을 사용
                     if (response.body() != null) {
                         _searchResults.value = response.body()
-                        Log.d("SearchScreen", "Success: ${response.body()}")
-                        Log.d("SearchScreen", "Success: $storeName")
                     } else {
                         _searchResults.value = ApiResponse(
                             status = "fail",
