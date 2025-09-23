@@ -31,7 +31,7 @@ import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 
 
 @Composable
-fun StoreHeader(token: String,storeData: StoreResponse) {
+fun StoreHeader(storeData: StoreResponse) {
     val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val images = storeData.image.map { IMAGE_URL + it }
@@ -60,7 +60,6 @@ fun StoreHeader(token: String,storeData: StoreResponse) {
                             .fillMaxWidth()
                             .aspectRatio(16f / 9f),
                         onError = {
-                            Log.e("Coil", "이미지 로딩 실패: ${images[page]},$token")
                         },
                     )
                 }
