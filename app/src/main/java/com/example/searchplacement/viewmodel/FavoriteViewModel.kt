@@ -21,13 +21,11 @@ class FavoriteViewModel @Inject constructor(
 
     private val _favoriteList = MutableStateFlow<ApiResponse<List<FavoriteResponse>>?>(null)
     val favoriteList: StateFlow<ApiResponse<List<FavoriteResponse>>?> = _favoriteList.asStateFlow()
-    var token = ""
     fun getFavoriteList() {
         viewModelScope.launch {
             try {
-                token = userRepository.getUser()?.token ?: ""
                 val userId = userRepository.getUser()?.userId ?: ""
-                val response = favoriteRepository.getFavoriteList(token, userId)
+                val response = favoriteRepository.getFavoriteList(userId)
 
                 if (response.isSuccessful && response.body() != null) {
                     _favoriteList.value = response.body()
@@ -52,8 +50,7 @@ class FavoriteViewModel @Inject constructor(
     fun addFavorite(storeId: Long) {
         viewModelScope.launch {
             try {
-                val token = userRepository.getUser()?.token ?: ""
-                favoriteRepository.addFavorite(token, storeId)
+                favoriteRepository.addFavorite(storeId)
             } catch (_: Exception) {}
         }
     }
@@ -61,8 +58,7 @@ class FavoriteViewModel @Inject constructor(
     fun removeFavorite(storeId: Long) {
         viewModelScope.launch {
             try {
-                val token = userRepository.getUser()?.token ?: ""
-                favoriteRepository.removeFavorite(token, storeId)
+                favoriteRepository.removeFavorite(storeId)
             } catch (_: Exception) {}
         }
     }
