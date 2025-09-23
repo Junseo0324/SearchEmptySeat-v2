@@ -17,13 +17,12 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
-interface MenuApiSerivce {
+interface MenuApiService {
     //메뉴 관련
     /** 메뉴 추가 */
     @Multipart
     @POST("/api/menu/add")
     suspend fun addMenu(
-        @Header("Authorization") token: String,
         @Part("data") menuData: RequestBody,
         @Part image: MultipartBody.Part? = null
     ): Response<ApiResponse<Map<String, Any>>>
@@ -33,7 +32,6 @@ interface MenuApiSerivce {
     @Multipart
     @PUT("/api/menu/update/{menuId}")
     suspend fun updateMenu(
-        @Header("Authorization") token: String,
         @Path("menuId") menuId: Long,
         @Part("data") data: RequestBody,
         @Part image: MultipartBody.Part?
@@ -42,21 +40,18 @@ interface MenuApiSerivce {
     /** 메뉴 삭제 */
     @DELETE("/api/menu/del/{menuId}")
     suspend fun deleteMenu(
-        @Header("Authorization") token: String,
         @Path("menuId") menuId: Long
     ): Response<ApiResponse<Map<String, Any>>>
 
     /** 전체 메뉴 조회 */
     @GET("/api/menu/store/{storePK}")
     suspend fun getMenus(
-        @Header("Authorization") token: String,
         @Path("storePK") storePK: Long
     ): Response<ApiResponse<List<MenuResponse>>>
 
     /** 품절 */
     @PATCH("/api/menu/outofstock")
     suspend fun updateMenusStock(
-        @Header("Authorization") token: String,
         @Body request: OutOfStockRequest
     ): Response<ApiResponse<List<Map<String, Any>>>>
 }

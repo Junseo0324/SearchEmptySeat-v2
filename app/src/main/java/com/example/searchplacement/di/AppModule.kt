@@ -5,6 +5,7 @@ import com.example.searchplacement.data.api.APIService
 import com.example.searchplacement.data.api.AuthApiService
 import com.example.searchplacement.data.api.FavoriteApiService
 import com.example.searchplacement.data.api.MapApiService
+import com.example.searchplacement.data.api.MenuApiService
 import com.example.searchplacement.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -80,4 +81,11 @@ object AppModule {
     fun provideMapApiService(retrofit: Retrofit): MapApiService {
         return retrofit.create(MapApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideMenuApiService(retrofit: Retrofit): MenuApiService {
+        return retrofit.create(MenuApiService::class.java)
+    }
+
 }

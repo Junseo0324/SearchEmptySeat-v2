@@ -1,11 +1,10 @@
 package com.example.searchplacement.repository
 
-import android.util.Log
+import com.example.searchplacement.data.api.MenuApiService
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.menu.MenuRequest
 import com.example.searchplacement.data.menu.MenuResponse
 import com.example.searchplacement.data.menu.OutOfStockRequest
-import com.example.searchplacement.data.api.APIService
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -17,15 +16,15 @@ import java.io.File
 import javax.inject.Inject
 
 class MenuRepository @Inject constructor(
-    private val apiService: APIService
+    private val apiService: MenuApiService
 ) {
     /** 가게의 전체 메뉴 조회 */
-    suspend fun getMenus(token: String, storePK: Long): Response<ApiResponse<List<MenuResponse>>> {
-        return apiService.getMenus("Bearer $token", storePK)
+    suspend fun getMenus(storePK: Long): Response<ApiResponse<List<MenuResponse>>> {
+        return apiService.getMenus(storePK)
     }
 
     /** 메뉴 추가 */
-    suspend fun addMenu(token: String,menuRequest: MenuRequest, imageFile: File?): Response<ApiResponse<Map<String, Any>>> {
+    suspend fun addMenu(menuRequest: MenuRequest, imageFile: File?): Response<ApiResponse<Map<String, Any>>> {
         val gson = Gson()
         val json = gson.toJson(menuRequest)
         val dataBody = json.toRequestBody("application/json; charset=UTF-8".toMediaType())
@@ -33,11 +32,11 @@ class MenuRepository @Inject constructor(
             val reqFile = it.asRequestBody("image/*".toMediaTypeOrNull())
             MultipartBody.Part.createFormData("image", it.name, reqFile)
         }
-        return apiService.addMenu("Bearer $token", dataBody, imagePart)
+        return apiService.addMenu(dataBody, imagePart)
     }
 
     /** 메뉴 수정 */
-    suspend fun updateMenu(token: String,menuId: Long, menuRequest: MenuRequest, imageFile: File?): Response<ApiResponse<Map<String, Any>>> {
+    suspend fun updateMenu(menuId: Long, menuRequest: MenuRequest, imageFile: File?): Response<ApiResponse<Map<String, Any>>> {
         val gson = Gson()
         val json = gson.toJson(menuRequest)
         val dataBody = json.toRequestBody("application/json; charset=UTF-8".toMediaType())
@@ -45,17 +44,16 @@ class MenuRepository @Inject constructor(
             val reqFile = it.asRequestBody("image/*".toMediaTypeOrNull())
             MultipartBody.Part.createFormData("image", it.name, reqFile)
         }
-        return apiService.updateMenu("Bearer $token", menuId, dataBody, imagePart)
+        return apiService.updateMenu(menuId, dataBody, imagePart)
     }
 
     /** 메뉴 삭제 */
-    suspend fun deleteMenu(token: String,menuId: Long): Response<ApiResponse<Map<String, Any>>> {
-        return apiService.deleteMenu("Bearer $token", menuId)
+    suspend fun deleteMenu(menuId: Long): Response<ApiResponse<Map<String, Any>>> {
+        return apiService.deleteMenu(menuId)
     }
 
     /** 품절 처리 (복수) */
-    suspend fun updateMenusStock(token: String,request: OutOfStockRequest): Response<ApiResponse<List<Map<String, Any>>>> {
-        Log.d("updateMenusStock", "Repository request: $request")
-        return apiService.updateMenusStock("Bearer $token", request)
+    suspend fun updateMenusStock(request: OutOfStockRequest): Response<ApiResponse<List<Map<String, Any>>>> {
+        return apiService.updateMenusStock(request)
     }
 }
