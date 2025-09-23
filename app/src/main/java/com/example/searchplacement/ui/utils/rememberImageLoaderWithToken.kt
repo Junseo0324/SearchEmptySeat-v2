@@ -9,7 +9,7 @@ import okhttp3.OkHttpClient
 
 
 @Composable
-fun rememberImageLoaderWithToken(token: String): ImageLoader {
+fun rememberImageLoaderWithToken(): ImageLoader {
     val context = LocalContext.current
     val token = TokenManager.getToken()
     return remember(token) {

@@ -71,7 +71,7 @@ fun EditMenuScreen(
     val storePk = store?.storePK ?: return
     val token = storeListViewModel.token
 
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     val menus by menuViewModel.menus.collectAsState()
     val sections by menuSectionViewModel.sections.collectAsState()
 

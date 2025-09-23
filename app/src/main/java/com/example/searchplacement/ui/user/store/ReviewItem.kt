@@ -75,7 +75,7 @@ fun ReviewItem(review: ReviewResponse,token: String) {
 @Composable
 fun ReviewImages(images: List<String>,token: String) {
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     LazyRow{
         items(images) { url ->
             SubcomposeAsyncImage(

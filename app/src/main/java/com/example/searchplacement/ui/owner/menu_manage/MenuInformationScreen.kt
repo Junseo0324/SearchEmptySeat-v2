@@ -91,7 +91,7 @@ fun MenuInformationScreen(
     var editMenu by remember { mutableStateOf<MenuResponse?>(null) }
 
     var token = storeListViewModel.token
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     Log.d("MenuInformationScreen", "MenuInformationScreen: $token")
 
 

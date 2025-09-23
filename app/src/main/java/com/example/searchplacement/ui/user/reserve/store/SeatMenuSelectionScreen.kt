@@ -391,7 +391,7 @@ fun MenuSelectionSection(
 ) {
     val menus = menuViewModel.menus.collectAsState().value
     val sections = sectionViewModel.sections.collectAsState().value
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     SectionedMenuList(
         menus = menus,
         sections = sections,

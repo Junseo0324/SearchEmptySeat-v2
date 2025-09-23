@@ -32,7 +32,7 @@ import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 
 @Composable
 fun StoreHeader(token: String,storeData: StoreResponse) {
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val images = storeData.image.map { IMAGE_URL + it }
     Log.d("StoreHeader: ","$images")
