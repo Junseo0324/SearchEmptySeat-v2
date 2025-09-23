@@ -1,7 +1,6 @@
 package com.example.searchplacement.di
 
 import com.example.searchplacement.BuildConfig
-import com.example.searchplacement.data.api.APIService
 import com.example.searchplacement.data.api.AuthApiService
 import com.example.searchplacement.data.api.FavoriteApiService
 import com.example.searchplacement.data.api.MapApiService
@@ -61,12 +60,6 @@ object AppModule {
             .addConverterFactory(nullOnEmptyConverterFactory)
             .client(okHttpClient)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAPIService(retrofit: Retrofit): APIService {
-        return retrofit.create(APIService::class.java)
     }
 
     @Provides
