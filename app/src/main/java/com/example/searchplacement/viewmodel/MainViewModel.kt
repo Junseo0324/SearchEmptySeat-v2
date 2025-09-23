@@ -78,20 +78,8 @@ class MainViewModel @Inject constructor(
 
     fun updatePassword(userId: Long, newPassword: String) {
         viewModelScope.launch {
-            val currentUser = user.value
-            val token = currentUser?.token
-
-            if (token.isNullOrEmpty()) {
-                _passwordUpdateResult.value = ApiResponse(
-                    status = "fail",
-                    message = "인증 토큰이 없습니다. 다시 로그인해주세요.",
-                    data = null
-                )
-                return@launch
-            }
-
             try {
-                val response = authRepository.updatePassword(userId, newPassword, token)
+                val response = authRepository.updatePassword(userId, newPassword)
                 if (response.isSuccessful && response.body() != null) {
                     _passwordUpdateResult.value = response.body()
                 } else {
@@ -127,20 +115,8 @@ class MainViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            val currentUser = user.value
-            val token = currentUser?.token
-
-            if (token.isNullOrEmpty()) {
-                _userInfoUpdateResult.value = ApiResponse(
-                    status = "fail",
-                    message = "인증 토큰이 없습니다. 다시 로그인해주세요.",
-                    data = null
-                )
-                return@launch
-            }
-
             try {
-                val response = authRepository.updateUserInfo(userId, request, imageFile, token)
+                val response = authRepository.updateUserInfo(userId, request, imageFile)
                 if (response.isSuccessful && response.body() != null) {
                     _userInfoUpdateResult.value = response.body()
                     getUserData()
