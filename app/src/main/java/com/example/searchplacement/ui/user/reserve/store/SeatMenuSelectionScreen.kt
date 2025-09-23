@@ -78,8 +78,6 @@ fun SeatMenuSelectionScreen(
     val initialized = remember { mutableStateOf(false) }
     val reservationViewModel: ReservationViewModel = hiltViewModel()
 
-    val token = placementViewModel.token
-
     val selectedMenus = remember { mutableStateMapOf<Long, Int>() }
 
     val layoutSize = placement?.data?.layoutSize ?: 1
@@ -215,8 +213,7 @@ fun SeatMenuSelectionScreen(
             MenuSelectionSection(
                 menuViewModel = menuViewModel,
                 sectionViewModel = sectionViewModel,
-                selectedMenus = selectedMenus,
-                token = token
+                selectedMenus = selectedMenus
             )
         }
 
@@ -387,7 +384,6 @@ fun MenuSelectionSection(
     menuViewModel: MenuViewModel,
     sectionViewModel: MenuSectionViewModel,
     selectedMenus: MutableMap<Long, Int>,
-    token: String
 ) {
     val menus = menuViewModel.menus.collectAsState().value
     val sections = sectionViewModel.sections.collectAsState().value
