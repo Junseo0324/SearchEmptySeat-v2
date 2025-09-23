@@ -3,6 +3,7 @@ package com.example.searchplacement.di
 import com.example.searchplacement.BuildConfig
 import com.example.searchplacement.data.api.APIService
 import com.example.searchplacement.data.api.AuthApiService
+import com.example.searchplacement.data.api.FavoriteApiService
 import com.example.searchplacement.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -65,5 +66,11 @@ object AppModule {
     @Singleton
     fun provideAuthAPIService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteAPIService(retrofit: Retrofit): FavoriteApiService {
+        return retrofit.create(FavoriteApiService::class.java)
     }
 }
