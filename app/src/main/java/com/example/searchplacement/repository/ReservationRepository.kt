@@ -1,24 +1,24 @@
 package com.example.searchplacement.repository
 
-import com.example.searchplacement.data.api.APIService
+import com.example.searchplacement.data.api.ReservationApiService
 import com.example.searchplacement.data.reserve.ReservationRequest
 import javax.inject.Inject
 
 class ReservationRepository @Inject constructor(
-    private val apiService: APIService
+    private val apiService: ReservationApiService
 ) {
-    suspend fun createReservation(token: String, request: ReservationRequest) =
-        apiService.createReservation("Bearer $token", request)
+    suspend fun createReservation(request: ReservationRequest) =
+        apiService.createReservation(request)
 
-    suspend fun cancelReservation(token: String, reservationId: Long) =
-        apiService.cancelReservation("Bearer $token", reservationId)
+    suspend fun cancelReservation(reservationId: Long) =
+        apiService.cancelReservation(reservationId)
 
-    suspend fun getOwnerReservations(token: String, storeId: Long) =
-        apiService.getOwnerReservations("Bearer $token", storeId)
+    suspend fun getOwnerReservations(storeId: Long) =
+        apiService.getOwnerReservations(storeId)
 
-    suspend fun getUserReservations(token: String) =
-        apiService.getUserReservations("Bearer $token")
+    suspend fun getUserReservations() =
+        apiService.getUserReservations()
 
-    suspend fun getReservationDetails(token: String, reservationId: Long) =
-        apiService.getReservationDetails("Bearer $token", reservationId)
+    suspend fun getReservationDetails(reservationId: Long) =
+        apiService.getReservationDetails(reservationId)
 }
