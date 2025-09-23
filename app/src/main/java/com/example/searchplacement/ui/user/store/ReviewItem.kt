@@ -36,7 +36,7 @@ import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 
 
 @Composable
-fun ReviewItem(review: ReviewResponse,token: String) {
+fun ReviewItem(review: ReviewResponse) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +58,7 @@ fun ReviewItem(review: ReviewResponse,token: String) {
             Text(
                 text = "사진", style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold), modifier = Modifier.padding(Dimens.Small)
             )
-            ReviewImages(images = review.image, token)
+            ReviewImages(images = review.image)
 
             Text(
                 text = "리뷰", style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold), modifier = Modifier.padding(Dimens.Small)
@@ -73,7 +73,7 @@ fun ReviewItem(review: ReviewResponse,token: String) {
 
 
 @Composable
-fun ReviewImages(images: List<String>,token: String) {
+fun ReviewImages(images: List<String>) {
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val imageLoader = rememberImageLoaderWithToken()
     LazyRow{
