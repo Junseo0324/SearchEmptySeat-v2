@@ -45,8 +45,7 @@ fun StoreList(
     review: String,
     favoriteCount: String,
     imageUrls: List<String>,
-    navController: NavHostController,
-    token: String
+    navController: NavHostController
 ) {
     val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
