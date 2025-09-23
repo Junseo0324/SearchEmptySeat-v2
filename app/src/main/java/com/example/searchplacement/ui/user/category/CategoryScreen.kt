@@ -115,7 +115,6 @@ fun CategoryScreen(
                         favoriteCount = store.favoriteCount.toString() ?: "0",
                         imageUrls = store.image,
                         navController = navController,
-                        token = user?.token ?: ""
                     )
                 }
             } ?: run {

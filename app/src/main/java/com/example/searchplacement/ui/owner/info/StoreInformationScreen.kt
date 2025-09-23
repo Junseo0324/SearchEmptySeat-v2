@@ -95,7 +95,7 @@ fun StoreInformationScreen(storeListViewModel: StoreListViewModel, mainViewModel
     var selectedCategories by remember { mutableStateOf(setOf<String>()) }
     var showCategoryDialog by remember { mutableStateOf(false) }
     val token = user?.token ?: ""
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
 
 
 

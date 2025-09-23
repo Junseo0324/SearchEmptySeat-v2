@@ -42,7 +42,7 @@ import com.example.searchplacement.viewmodel.MainViewModel
 fun SettingScreen(navController: NavHostController, mainViewModel: MainViewModel) {
     val user by mainViewModel.user.collectAsState()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
-    val imageLoader = rememberImageLoaderWithToken(user?.token ?: "no token")
+    val imageLoader = rememberImageLoaderWithToken()
     Column(
         modifier = Modifier
             .fillMaxSize()

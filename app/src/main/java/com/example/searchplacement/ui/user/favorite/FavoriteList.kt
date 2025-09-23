@@ -43,9 +43,8 @@ import com.example.searchplacement.viewmodel.FavoriteViewModel
 
 @Composable
 fun FavoriteList(store: Store, navController: NavHostController,favoriteViewModel: FavoriteViewModel) {
-    val token = favoriteViewModel.token
     val imageUrls = store.image
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val thumbnailUrl = IMAGE_URL + imageUrls.firstOrNull()
 

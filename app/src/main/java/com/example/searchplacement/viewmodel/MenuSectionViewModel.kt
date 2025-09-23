@@ -6,7 +6,6 @@ import com.example.searchplacement.data.section.MenuSectionBulkUpdateRequest
 import com.example.searchplacement.data.section.MenuSectionRequest
 import com.example.searchplacement.data.section.MenuSectionResponse
 import com.example.searchplacement.repository.MenuSectionRepository
-import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MenuSectionViewModel @Inject constructor(
-    private val menuSectionRepository: MenuSectionRepository,
-    private val userRepository: UserRepository
+    private val menuSectionRepository: MenuSectionRepository
 ) : ViewModel() {
 
     private val _sections = MutableStateFlow<List<MenuSectionResponse>>(emptyList())
@@ -29,8 +27,7 @@ class MenuSectionViewModel @Inject constructor(
     /** 메뉴 섹션 전체 조회 */
     fun fetchSections(storePK: Long) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = menuSectionRepository.getSections(token, storePK)
+            val res = menuSectionRepository.getSections(storePK)
             if (res.isSuccessful) {
                 _sections.value = res.body()?.data ?: emptyList()
             } else {
@@ -41,8 +38,7 @@ class MenuSectionViewModel @Inject constructor(
 
     fun addSection(storePK: Long, request: MenuSectionRequest, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = menuSectionRepository.addSection(token, storePK, request)
+            val res = menuSectionRepository.addSection(storePK, request)
             _updateResult.value = res.body()?.message ?: "섹션 추가 실패"
             onComplete(res.isSuccessful)
         }
@@ -51,8 +47,7 @@ class MenuSectionViewModel @Inject constructor(
     /** 메뉴 섹션 개별 업데이트 */
     fun updateSection(sectionPK: Long, request: MenuSectionRequest) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = menuSectionRepository.updateSection(token, sectionPK, request)
+            val res = menuSectionRepository.updateSection(sectionPK, request)
             _updateResult.value = res.body()?.message ?: "섹션 수정 실패"
         }
     }
@@ -60,8 +55,7 @@ class MenuSectionViewModel @Inject constructor(
     /** 메뉴 섹션 삭제 */
     fun deleteSection(sectionPK: Long, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = menuSectionRepository.deleteSection(token, sectionPK)
+            val res = menuSectionRepository.deleteSection(sectionPK)
             _updateResult.value = res.body()?.message ?: "섹션 삭제 실패"
             onComplete(res.isSuccessful)
         }
@@ -70,8 +64,7 @@ class MenuSectionViewModel @Inject constructor(
     /** 메뉴 섹션 일괄 업데이트 */
     fun bulkUpdateSections(storePK: Long, requests: List<MenuSectionBulkUpdateRequest>) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = menuSectionRepository.bulkUpdateSections(token, storePK, requests)
+            val res = menuSectionRepository.bulkUpdateSections(storePK, requests)
             _updateResult.value = res.body()?.message ?: "섹션 일괄 수정 실패"
         }
     }

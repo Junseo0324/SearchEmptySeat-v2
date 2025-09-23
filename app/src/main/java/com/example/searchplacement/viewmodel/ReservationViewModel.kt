@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.repository.ReservationRepository
-import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReservationViewModel @Inject constructor(
-    private val reservationRepository: ReservationRepository,
-    private val userRepository: UserRepository
+    private val reservationRepository: ReservationRepository
 ) : ViewModel() {
 
     private val _reservations = MutableStateFlow<List<ReservationResponse>>(emptyList())
@@ -32,8 +30,7 @@ class ReservationViewModel @Inject constructor(
 
     fun createReservation(request: ReservationRequest, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = reservationRepository.createReservation(token, request)
+            val res = reservationRepository.createReservation(request)
             _statusMessage.value = res.body()?.message ?: "예약 생성 실패"
             onComplete(res.isSuccessful)
         }
@@ -41,8 +38,7 @@ class ReservationViewModel @Inject constructor(
 
     fun cancelReservation(reservationId: Long, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = reservationRepository.cancelReservation(token, reservationId)
+            val res = reservationRepository.cancelReservation(reservationId)
             _statusMessage.value = res.body()?.message ?: "예약 취소 실패"
             onComplete(res.isSuccessful)
         }
@@ -51,8 +47,7 @@ class ReservationViewModel @Inject constructor(
 
     fun fetchOwnerReservations(storeId: Long) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = reservationRepository.getOwnerReservations(token, storeId)
+            val res = reservationRepository.getOwnerReservations(storeId)
             if (res.isSuccessful) {
                 _reservations.value = res.body()?.data ?: emptyList()
             } else {
@@ -70,8 +65,7 @@ class ReservationViewModel @Inject constructor(
 
     fun fetchUserReservations() {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = reservationRepository.getUserReservations(token)
+            val res = reservationRepository.getUserReservations()
             if (res.isSuccessful) {
                 _reservations.value = res.body()?.data ?: emptyList()
             } else {
@@ -82,8 +76,7 @@ class ReservationViewModel @Inject constructor(
 
     fun fetchReservationDetail(reservationId: Long) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val res = reservationRepository.getReservationDetails(token, reservationId)
+            val res = reservationRepository.getReservationDetails(reservationId)
             if (res.isSuccessful) {
                 _reservationDetail.value = res.body()?.data
             } else {

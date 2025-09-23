@@ -43,7 +43,7 @@ fun MenuDisplayScreen(
     menuSectionViewModel: MenuSectionViewModel,
     token: String
 ) {
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     val menus = menuViewModel.menus.collectAsState().value
     val sections = menuSectionViewModel.sections.collectAsState().value
 

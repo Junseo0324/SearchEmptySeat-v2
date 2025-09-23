@@ -1,23 +1,23 @@
 package com.example.searchplacement.repository
 
+import com.example.searchplacement.data.api.FavoriteApiService
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.store.FavoriteResponse
-import com.example.searchplacement.data.api.APIService
 import retrofit2.Response
 import javax.inject.Inject
 
 class FavoriteRepository @Inject constructor(
-    private val apiService: APIService
+    private val apiService: FavoriteApiService
 ) {
-    suspend fun addFavorite(token: String, storeId: Long): Response<ApiResponse<FavoriteResponse>> {
-        return apiService.addFavorite("Bearer $token", storeId)
+    suspend fun addFavorite(storeId: Long): Response<ApiResponse<FavoriteResponse>> {
+        return apiService.addFavorite(storeId)
     }
 
-    suspend fun removeFavorite(token: String, storeId: Long): Response<ApiResponse<String>> {
-        return apiService.removeFavorite("Bearer $token", storeId)
+    suspend fun removeFavorite(storeId: Long): Response<ApiResponse<String>> {
+        return apiService.removeFavorite(storeId)
     }
 
-    suspend fun getFavoriteList(token: String, userId: String): Response<ApiResponse<List<FavoriteResponse>>> {
-        return apiService.getFavoriteList("Bearer $token", userId)
+    suspend fun getFavoriteList(userId: String): Response<ApiResponse<List<FavoriteResponse>>> {
+        return apiService.getFavoriteList(userId)
     }
 }

@@ -38,7 +38,6 @@ import com.example.searchplacement.viewmodel.StoreViewModel
 fun SearchScreen(navController: NavHostController,storeViewModel: StoreViewModel) {
     var searchQuery by remember { mutableStateOf("") }
     val searchResults by storeViewModel.searchResults.collectAsState()
-    val token = storeViewModel.token
     var isSearched by remember { mutableStateOf(false) }
 
 
@@ -103,8 +102,7 @@ fun SearchScreen(navController: NavHostController,storeViewModel: StoreViewModel
                             review = String.format("%.1f", store.averageRating),
                             favoriteCount = store.favoriteCount.toString(),
                             imageUrls = store.image,
-                            navController = navController,
-                            token = token
+                            navController = navController
                         )
                     }
                 } else {

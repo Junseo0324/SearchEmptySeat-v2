@@ -37,7 +37,6 @@ class ReviewViewModel @Inject constructor(
     private val _reviewsError = MutableStateFlow<String?>(null)
     val reviewsError: StateFlow<String?> get() = _reviewsError
 
-    var token = ""
     fun submitReview(
         context: Context,
         storePK: Long,
@@ -49,17 +48,13 @@ class ReviewViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val token = userRepository.getUser()?.token ?: ""
-
-                // JSON 바디 생성
                 val requestJson = createReviewRequestBody(storePK, rating, content)
 
-                // 이미지 파일들 multipart 변환
                 var imageParts : MutableList<MultipartBody.Part> = emptyList<MultipartBody.Part>().toMutableList()
                 imageUris.forEach { it ->
                     imageParts.add(toMultipartPart(context,it))
                 }
-                val response = reviewRepository.registerReview(token, requestJson, imageParts)
+                val response = reviewRepository.registerReview(requestJson, imageParts)
 
                 if (response.isSuccessful) {
                     onSuccess()
@@ -76,8 +71,7 @@ class ReviewViewModel @Inject constructor(
     fun getReviewsByStore(storePK: Long) {
         viewModelScope.launch {
             try {
-                token = userRepository.getUser()?.token ?: ""
-                val response = reviewRepository.getReviewsByStore(token, storePK)
+                val response = reviewRepository.getReviewsByStore(storePK)
                 if (response.isSuccessful) {
                     _reviews.value = response.body()?.data ?: emptyList()
                     _reviewsError.value = null

@@ -26,7 +26,6 @@ fun ReviewWriteScreen(
 
     var storeData = storeViewModel.storeData.collectAsState().value?.data
 
-    val token = storeViewModel.token
 
     LaunchedEffect(storePK) {
         storeViewModel.getStoreData(storePK)
@@ -37,7 +36,6 @@ fun ReviewWriteScreen(
     ) {
         if (storeData != null) {
             StoreHeader(
-                token = token,
                 storeData = storeData,
             )
         }

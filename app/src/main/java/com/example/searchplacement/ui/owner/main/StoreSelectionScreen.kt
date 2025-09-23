@@ -41,8 +41,7 @@ fun StoreSelectScreen(
 ) {
     val stores = viewModel.myStores.collectAsState().value
     val selectedStore = viewModel.selectedStore.collectAsState().value
-    val token = viewModel.token
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
 
 
     LaunchedEffect(Unit) {

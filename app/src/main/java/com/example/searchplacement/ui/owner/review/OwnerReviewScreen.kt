@@ -33,7 +33,6 @@ fun OwnerReviewScreen(navController: NavHostController,storeListViewModel: Store
     val viewModel: ReviewViewModel = hiltViewModel()
     val reviews = viewModel.reviews.collectAsState().value
 
-    val token = viewModel.token
     LaunchedEffect(Unit) {
         val storeId = storeListViewModel.selectedStore.value?.storePK
         if (storeId != null) {
@@ -74,7 +73,7 @@ fun OwnerReviewScreen(navController: NavHostController,storeListViewModel: Store
             ) {
                 items(reviews.size) { index ->
                     val review = reviews[index]
-                    ReviewItem(review,token)
+                    ReviewItem(review)
 
                     if (index < reviews.lastIndex) {
                         HorizontalDivider()

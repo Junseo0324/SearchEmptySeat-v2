@@ -52,7 +52,7 @@ fun StoreReview(storeId: Long,token: String) {
         ) {
             items(reviews.size) { index ->
                 val review = reviews[index]
-                ReviewItem(review,token)
+                ReviewItem(review)
 
                 if (index < reviews.lastIndex) {
                     HorizontalDivider()

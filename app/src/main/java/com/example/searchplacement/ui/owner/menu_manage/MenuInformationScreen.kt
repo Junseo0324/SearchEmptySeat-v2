@@ -1,7 +1,6 @@
 package com.example.searchplacement.ui.owner.menu_manage
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -90,9 +89,7 @@ fun MenuInformationScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var editMenu by remember { mutableStateOf<MenuResponse?>(null) }
 
-    var token = storeListViewModel.token
-    val imageLoader = rememberImageLoaderWithToken(token)
-    Log.d("MenuInformationScreen", "MenuInformationScreen: $token")
+    val imageLoader = rememberImageLoaderWithToken()
 
 
     var showAddSectionDialog by remember { mutableStateOf(false) }
@@ -154,7 +151,6 @@ fun MenuInformationScreen(
                     items(menusInSection) { menu ->
                         MenuItem(
                             menu = menu,
-                            token = token,
                             imageLoader = imageLoader,
                             onEditClick = { editMenu = menu },
                             onDeleteClick = {
@@ -179,7 +175,6 @@ fun MenuInformationScreen(
                     items(noSectionMenus) { menu ->
                         MenuItem(
                             menu = menu,
-                            token = token,
                             imageLoader = imageLoader,
                             onEditClick = { editMenu = menu },
                             onDeleteClick = {
@@ -303,7 +298,6 @@ fun MenuInformationScreen(
 @Composable
 fun MenuItem(
     menu: MenuResponse,
-    token: String,
     imageLoader: ImageLoader,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit

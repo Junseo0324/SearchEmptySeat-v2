@@ -1,13 +1,11 @@
 package com.example.searchplacement.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.store.StoreRequest
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.repository.OwnerStoreRepository
-import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,11 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreListViewModel @Inject constructor(
-    private val ownerStoreRepository: OwnerStoreRepository,
-    private val userRepository: UserRepository
+    private val ownerStoreRepository: OwnerStoreRepository
 ) : ViewModel() {
 
-    var token = ""
     private val _myStores = MutableStateFlow<List<StoreResponse>>(emptyList())
     val myStores = _myStores.asStateFlow()
 
@@ -33,13 +29,9 @@ class StoreListViewModel @Inject constructor(
 
     fun fetchMyStores() {
         viewModelScope.launch {
-            token = userRepository.getUser()?.token ?: ""
-            val response = ownerStoreRepository.getMyStores(token)
-            Log.d("StoreListViewModel", "fetchMyStores: $response")
+            val response = ownerStoreRepository.getMyStores()
             if (response.isSuccessful) {
                 _myStores.value = response.body()?.data ?: emptyList()
-                Log.d("StoreListViewModel", "fetchMyStores: ${response.message()}")
-                Log.d("StoreListViewModel", "fetchMyStores: ${response.code()}")
 
                 _selectedStore.value = response.body()?.data?.firstOrNull()
             }
@@ -52,8 +44,7 @@ class StoreListViewModel @Inject constructor(
 
     fun updateStore(storeId: Long, request: StoreRequest, images: List<File>?) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
-            val response = ownerStoreRepository.updateStore(token, storeId, request, images)
+            val response = ownerStoreRepository.updateStore(storeId, request, images)
             _updateResult.value = response.body()
         }
     }

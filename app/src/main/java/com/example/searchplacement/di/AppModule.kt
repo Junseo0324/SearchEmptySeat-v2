@@ -1,7 +1,15 @@
 package com.example.searchplacement.di
 
 import com.example.searchplacement.BuildConfig
-import com.example.searchplacement.data.api.APIService
+import com.example.searchplacement.data.api.AuthApiService
+import com.example.searchplacement.data.api.FavoriteApiService
+import com.example.searchplacement.data.api.MapApiService
+import com.example.searchplacement.data.api.MenuApiService
+import com.example.searchplacement.data.api.MenuSectionApiService
+import com.example.searchplacement.data.api.PlacementApiService
+import com.example.searchplacement.data.api.ReservationApiService
+import com.example.searchplacement.data.api.ReviewApiService
+import com.example.searchplacement.data.api.StoreApiService
 import com.example.searchplacement.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -56,7 +64,59 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAPIService(retrofit: Retrofit): APIService {
-        return retrofit.create(APIService::class.java)
+    fun provideAuthAPIService(retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteAPIService(retrofit: Retrofit): FavoriteApiService {
+        return retrofit.create(FavoriteApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMapApiService(retrofit: Retrofit): MapApiService {
+        return retrofit.create(MapApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMenuApiService(retrofit: Retrofit): MenuApiService {
+        return retrofit.create(MenuApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMenuSectionApiService(retrofit: Retrofit): MenuSectionApiService {
+        return retrofit.create(MenuSectionApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlacementApiService(retrofit: Retrofit): PlacementApiService {
+        return retrofit.create(PlacementApiService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideReservationApiService(retrofit: Retrofit): ReservationApiService {
+        return retrofit.create(ReservationApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReviewApiService(retrofit: Retrofit): ReviewApiService {
+        return retrofit.create(ReviewApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreApiService(retrofit: Retrofit): StoreApiService {
+        return retrofit.create(StoreApiService::class.java)
+    }
+
+
+
 }

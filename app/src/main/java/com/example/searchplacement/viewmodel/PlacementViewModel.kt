@@ -8,7 +8,6 @@ import com.example.searchplacement.data.placement.PlacementRequest
 import com.example.searchplacement.data.placement.PlacementResponse
 import com.example.searchplacement.data.placement.PlacementUpdateRequest
 import com.example.searchplacement.repository.PlacementRepository
-import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlacementViewModel @Inject constructor(
-    private val placementRepository: PlacementRepository,
-    private val userRepository: UserRepository
+    private val placementRepository: PlacementRepository
 ) : ViewModel() {
     private val _placement = MutableStateFlow<ApiResponse<PlacementResponse>?>(null)
     val placement = _placement.asStateFlow()
@@ -30,14 +28,12 @@ class PlacementViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    var token = ""
 
     // 자리 배치 생성
     fun createPlacement(request: PlacementRequest) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
             try {
-                val response = placementRepository.createPlacement(token, request)
+                val response = placementRepository.createPlacement(request)
                 Log.d("PlacementViewModel", "response : ${response}")
                 if (response.isSuccessful && response.body() != null) {
                     _placement.value = response.body()
@@ -56,9 +52,8 @@ class PlacementViewModel @Inject constructor(
     // 매장별 자리배치 조회
     fun getPlacementByStore(storePK: Long) {
         viewModelScope.launch {
-            token = userRepository.getUser()?.token ?: ""
             try {
-                val response = placementRepository.getPlacementByStore(token, storePK)
+                val response = placementRepository.getPlacementByStore(storePK)
                 if (response.isSuccessful && response.body() != null) {
                     _placement.value = response.body()
 
@@ -77,9 +72,8 @@ class PlacementViewModel @Inject constructor(
     // 자리배치 상태/구조 업데이트
     fun updatePlacement(placementPK: Long, request: PlacementUpdateRequest) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
             try {
-                val response = placementRepository.updatePlacement(token, placementPK, request)
+                val response = placementRepository.updatePlacement(placementPK, request)
                 if (response.isSuccessful && response.body() != null) {
                     _placement.value = response.body()
                     Log.d("PlacementViewModel", "updatePlacement: 자리배치 성공 ${response.body()}")

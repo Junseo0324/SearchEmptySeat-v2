@@ -45,10 +45,9 @@ fun StoreList(
     review: String,
     favoriteCount: String,
     imageUrls: List<String>,
-    navController: NavHostController,
-    token: String
+    navController: NavHostController
 ) {
-    val imageLoader = rememberImageLoaderWithToken(token)
+    val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val thumbnailUrl = IMAGE_URL + imageUrls.firstOrNull()
     val remainingImages = if (imageUrls.size > 1) imageUrls.drop(1) else emptyList()
