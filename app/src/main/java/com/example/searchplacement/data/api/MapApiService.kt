@@ -5,19 +5,16 @@ import com.example.searchplacement.data.map.MapPinResponse
 import com.example.searchplacement.data.member.ApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Path
 
 interface MapApiService {
     //Pin 관련
     @GET("/api/map/pins")
     suspend fun getMapPins(
-        @Header("Authorization") token: String
     ): Response<ApiResponse<List<MapPinResponse>>>
 
     @GET("/api/map/pin/{storePK}")
     suspend fun getMapPinDetail(
-        @Header("Authorization") token: String,
         @Path("storePK") storePK: Long
     ): Response<ApiResponse<MapPinDetailResponse>>
 

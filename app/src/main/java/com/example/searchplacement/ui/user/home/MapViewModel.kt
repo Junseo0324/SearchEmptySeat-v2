@@ -1,14 +1,12 @@
 package com.example.searchplacement.ui.user.home
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.map.MapPinDetailResponse
 import com.example.searchplacement.data.map.MapPinResponse
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.repository.MapRepository
-import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val mapRepository: MapRepository,
-    private val userRepository: UserRepository
+    private val mapRepository: MapRepository
 ) : ViewModel() {
 
     private val _mapPins = MutableStateFlow<ApiResponse<List<MapPinResponse>>?>(null)
@@ -31,9 +28,8 @@ class MapViewModel @Inject constructor(
 
     fun loadMapPins() {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
             try {
-                val response: Response<ApiResponse<List<MapPinResponse>>> = mapRepository.getMapPins(token)
+                val response: Response<ApiResponse<List<MapPinResponse>>> = mapRepository.getMapPins()
                 if (response.isSuccessful && response.body() != null) {
                     _mapPins.value = response.body()
                 } else {
@@ -43,8 +39,6 @@ class MapViewModel @Inject constructor(
                         data = emptyList()
 
                     )
-                    println("지도 핀 불러오기 실패: ${response.errorBody()?.string()}")
-                    Log.d("loadMapPins: ", "실패 코드: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _mapPins.value = ApiResponse(
@@ -52,16 +46,14 @@ class MapViewModel @Inject constructor(
                     message = "네트워크 오류: ${e.message}",
                     data = emptyList()
                 )
-                println("네트워크 오류: ${e.message}")
             }
         }
     }
 
     fun loadMapPinDetail(storePK: Long) {
         viewModelScope.launch {
-            val token = userRepository.getUser()?.token ?: ""
             try {
-                val response = mapRepository.getMapPinDetail(token,storePK)
+                val response = mapRepository.getMapPinDetail(storePK)
                 if (response.isSuccessful && response.body() != null) {
                     _mapPinDetail.value = response.body()
                 } else {
