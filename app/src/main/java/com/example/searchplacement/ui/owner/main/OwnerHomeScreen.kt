@@ -1,13 +1,8 @@
 package com.example.searchplacement.ui.owner.main
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,24 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,8 +42,6 @@ fun OwnerHomeScreen(storeListViewModel: StoreListViewModel? = null){
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 예약 현황 (그래프)
-        ReservationGraphCard()
     }
 }
 
@@ -104,71 +87,6 @@ fun SummaryItem(title: String, value: String) {
     }
 }
 
-@Composable
-fun ReservationGraphCard() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(16.dp))
-            .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp))
-            .padding(20.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("요일별 예약 인원(평균)", fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.weight(1f))
-            RotatingRefreshIcon {
-                //서버와 통신해 새로고침하는 로직.
-            }
-
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // 여기에 나중에 그래프 추가(더미 영역)
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(Color(0xFFF8F8F8), RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("여기에 그래프 표시 예정", color = Color.Gray)
-        }
-    }
-}
-
-@Composable
-fun RotatingRefreshIcon(
-    onClick: () -> Unit = {}
-) {
-    var isRotating by remember { mutableStateOf(false) }
-    val rotation by animateFloatAsState(
-        targetValue = if (isRotating) 360f else 0f,
-        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-        label = "refresh"
-    )
-
-    Icon(
-        imageVector = Icons.Filled.Refresh,
-        contentDescription = "새로고침",
-        modifier = Modifier
-            .size(28.dp)
-            .rotate(rotation)
-            .clickable {
-                if (!isRotating) {
-                    isRotating = true
-                    onClick()
-                }
-            }
-    )
-
-    if (isRotating && rotation == 360f) {
-        LaunchedEffect(Unit) {
-            isRotating = false
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
