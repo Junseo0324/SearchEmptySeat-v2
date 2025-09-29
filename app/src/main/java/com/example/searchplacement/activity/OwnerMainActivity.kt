@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,7 +116,14 @@ fun OwnerBottomNavigation(
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color.Black,
+                    unselectedIconColor = Color.Black,
+                    selectedTextColor = Color.Black,
+                    unselectedTextColor = Color.Black,
+                    indicatorColor = Color.Transparent
+                )
 
             )
         }
