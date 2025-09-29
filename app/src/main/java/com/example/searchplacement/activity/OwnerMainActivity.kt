@@ -16,13 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.navigation.OwnerNavigation
+import com.example.searchplacement.ui.theme.Black
+import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.SearchPlacementTheme
 import com.example.searchplacement.viewmodel.MainViewModel
 import com.example.searchplacement.viewmodel.MenuSectionViewModel
@@ -104,7 +105,7 @@ fun OwnerBottomNavigation(
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(id = item.icon),
+                        imageVector = if (currentRoute == item.screenRoute) item.filledIcon else item.outlinedIcon,
                         contentDescription = item.title
                     )
                 },
@@ -118,10 +119,10 @@ fun OwnerBottomNavigation(
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Black,
-                    unselectedIconColor = Color.Black,
-                    selectedTextColor = Color.Black,
-                    unselectedTextColor = Color.Black,
+                    selectedIconColor = Black,
+                    unselectedIconColor = Gray,
+                    selectedTextColor = Black,
+                    unselectedTextColor = Gray,
                     indicatorColor = Color.Transparent
                 )
 
