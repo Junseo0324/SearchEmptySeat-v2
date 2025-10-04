@@ -234,10 +234,11 @@ fun SettingScreen(navController: NavHostController, mainViewModel: MainViewModel
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
+            containerColor = White,
             title = {
                 Text(
                     text = "로그아웃",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
             },
             text = {
@@ -266,10 +267,11 @@ fun SettingScreen(navController: NavHostController, mainViewModel: MainViewModel
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
+            containerColor = White,
             title = {
                 Text(
                     text = "회원탈퇴",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
             },
             text = {
