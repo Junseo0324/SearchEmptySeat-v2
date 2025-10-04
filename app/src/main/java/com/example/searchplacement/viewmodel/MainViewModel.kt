@@ -14,7 +14,9 @@ import com.example.searchplacement.repository.AuthRepository
 import com.example.searchplacement.repository.UserRepository
 import com.example.searchplacement.util.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -41,6 +43,9 @@ class MainViewModel @Inject constructor(
     private val _userInfoUpdateResult = MutableStateFlow<ApiResponse<Map<String,Any>>?>(null)
     val userInfoUpdateResult = _userInfoUpdateResult.asStateFlow()
 
+    private val _logoutEvent = MutableSharedFlow<Unit>()
+    val logoutEvent = _logoutEvent.asSharedFlow()
+
     init {
         getUserData()
     }
@@ -57,6 +62,7 @@ class MainViewModel @Inject constructor(
             _user.value = null
 
             TokenManager.clearToken()
+            _logoutEvent.emit(Unit)
         }
     }
 
