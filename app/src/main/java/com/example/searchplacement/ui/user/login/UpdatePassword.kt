@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,8 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -40,6 +45,7 @@ import androidx.navigation.NavHostController
 import com.example.searchplacement.navigation.MainBottomNavItem
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.ButtonMainColor
+import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -58,6 +64,10 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
     val context = LocalContext.current
 
     val passwordMismatch = showError.value && passwordState.value != checkPwState.value
+
+    val passwordFocusRequester = remember { FocusRequester() }
+    val checkFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -78,9 +88,13 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(10.dp)
+                .padding(Dimens.Default)
         ) {
-            Text(text = "새로운 비밀번호를 입력해주세요.", style = AppTextStyle.Body)
+            Text(
+                text = "새로운 비밀번호를 입력해주세요.",
+                style = AppTextStyle.Body,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.Small)
+            )
 
             OutlinedTextField(
                 value = passwordState.value,
@@ -90,10 +104,18 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
                 },
                 label = { Text("New") },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = if (showPassword.value) KeyboardType.Text else KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = if (showPassword.value) KeyboardType.Text else KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        checkFocusRequester.requestFocus()
+                    }
+                ),
                 visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    Box(modifier = Modifier.padding(end = 8.dp)) {
+                    Box(modifier = Modifier.padding(end = Dimens.Small)) {
                         TextButton(onClick = { showPassword.value = !showPassword.value }) {
                             Text(if (showPassword.value) "Hide" else "Show", color = Color.Black)
                         }
@@ -107,10 +129,15 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(Dimens.Small)
+                    .focusRequester(passwordFocusRequester)
             )
 
-            Text(text = "비밀번호를 다시 한번 입력해주세요.", style = AppTextStyle.Body)
+            Text(
+                text = "비밀번호를 다시 한번 입력해주세요.",
+                style = AppTextStyle.Body,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.Small)
+            )
 
             OutlinedTextField(
                 value = checkPwState.value,
@@ -120,10 +147,24 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
                 },
                 label = { Text("Check") },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = if (checkShowPassword.value) KeyboardType.Text else KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = if (checkShowPassword.value) KeyboardType.Text else KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                        if (passwordState.value == checkPwState.value && passwordState.value.isNotBlank()) {
+                            mainViewModel.updatePassword(user?.userId?.toLong() ?: 0L, passwordState.value)
+                            showError.value = false
+                        } else {
+                            showError.value = true
+                        }
+                    }
+                ),
                 visualTransformation = if (checkShowPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    Box(modifier = Modifier.padding(end = 8.dp)) {
+                    Box(modifier = Modifier.padding(end = Dimens.Small)) {
                         TextButton(onClick = {
                             checkShowPassword.value = !checkShowPassword.value
                         }) {
@@ -142,15 +183,15 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(Dimens.Small)
+                    .focusRequester(checkFocusRequester)
             )
 
-            // 에러 메시지 표시
             if (passwordMismatch) {
                 Text(
                     text = "비밀번호가 일치하지 않습니다.",
                     style = AppTextStyle.redPoint,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = Dimens.Medium, bottom = Dimens.Small)
                 )
             }
 
@@ -171,7 +212,7 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .padding(8.dp),
+                    .padding(Dimens.Small),
                 shape = MaterialTheme.shapes.large,
                 colors = ButtonColors(
                     containerColor = ButtonMainColor,
@@ -186,13 +227,25 @@ fun UpdatePassword(navController: NavHostController, mainViewModel: MainViewMode
     }
 
 
+    LaunchedEffect(Unit) {
+        passwordFocusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
     LaunchedEffect(updateResult) {
         updateResult?.let {
             if (it.status == "success") {
                 Toast.makeText(context, "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show()
-                navController.navigate(MainBottomNavItem.Setting.screenRoute)
+                navController.popBackStack(
+                    route = MainBottomNavItem.Setting.screenRoute,
+                    inclusive = false
+                )
             } else {
-                Toast.makeText(context, it.message ?: "오류 발생", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"오류가 발생했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                navController.popBackStack(
+                    route = MainBottomNavItem.Setting.screenRoute,
+                    inclusive = false
+                )
             }
         }
     }
