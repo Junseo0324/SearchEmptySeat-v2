@@ -21,6 +21,13 @@ object AppTextStyle {
         lineHeight = 32.sp
     )
 
+    val SubSection = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        lineHeight = 32.sp
+    )
+
 
 
     val Body = TextStyle(
