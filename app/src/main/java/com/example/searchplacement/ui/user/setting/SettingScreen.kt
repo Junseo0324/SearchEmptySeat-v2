@@ -118,6 +118,5 @@ fun SettingScreen(navController: NavHostController, mainViewModel: MainViewModel
 
         }
         SettingCard(navController,"비밀번호 변경","checkPassword")
-        SettingCard(navController,"내 리뷰 확인","review")
     }
 }
