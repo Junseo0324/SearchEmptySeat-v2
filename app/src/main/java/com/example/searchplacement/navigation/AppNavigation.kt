@@ -1,10 +1,13 @@
 package com.example.searchplacement.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.example.searchplacement.data.reserve.ReservationDraft
 import com.example.searchplacement.data.store.StoreResponse
@@ -57,56 +60,107 @@ fun MainNavigation(
     menuSectionViewModel: MenuSectionViewModel,
     placementViewModel: PlacementViewModel
 ) {
-    NavHost(navController = navController, startDestination = MainBottomNavItem.Home.screenRoute) {
-        composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
-        composable(MainBottomNavItem.Category.screenRoute) { CategoryScreen(navController,storeViewModel,mainViewModel) }
-        composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
-        composable(MainBottomNavItem.Favorite.screenRoute) { FavoriteScreen(navController,favoriteViewModel) }
-        composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController,mainViewModel) }
-        composable("search") { SearchScreen(navController,storeViewModel) }
-        composable("information") { InformationScreen(navController,mainViewModel)}
-        composable("review") {
-            val storePK = navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<Long>("storePK") ?: return@composable
 
-            ReviewWriteScreen(
-                navController = navController,
-                storePK = storePK,
-                storeViewModel = storeViewModel
-            )
-        }
+    NavHost(navController = navController, startDestination = "main") {
+        navigation(
+            startDestination = MainBottomNavItem.Home.screenRoute, // 처음 진입할 화면
+            route = "main" // 이 NavGraph의 이름
+        ) {
+            composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
+            composable(MainBottomNavItem.Category.screenRoute) {
+                CategoryScreen(
+                    navController,
+                    storeViewModel,
+                    mainViewModel
+                )
+            }
+            composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
+            composable(MainBottomNavItem.Favorite.screenRoute) {
+                FavoriteScreen(
+                    navController,
+                    favoriteViewModel
+                )
+            }
+//            composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController) }
+//            composable("information") { InformationScreen(navController) }
+            composable(MainBottomNavItem.Setting.screenRoute) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry("main")
+                }
+                val sharedMainViewModel: MainViewModel = hiltViewModel(parentEntry)
+                SettingScreen(navController, sharedMainViewModel)
+            }
+            composable("information") { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry("main")
+                }
+                val sharedMainViewModel: MainViewModel = hiltViewModel(parentEntry)
+                InformationScreen(navController, sharedMainViewModel)
+            }
+            composable("search") { SearchScreen(navController, storeViewModel) }
 
-        composable(
-            route = "store/{storeId}",
-            arguments = listOf(navArgument("storeId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
-            StoreScreen(navController, storeId,storeViewModel,mainViewModel,favoriteViewModel,menuViewModel,menuSectionViewModel, placementViewModel)
-        }
+            composable("review") {
+                val storePK = navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<Long>("storePK") ?: return@composable
 
-        composable("map_with_store") {
-            val store = navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<StoreResponse>("store") ?: return@composable
+                ReviewWriteScreen(
+                    navController = navController,
+                    storePK = storePK,
+                    storeViewModel = storeViewModel
+                )
+            }
 
-            StoreMapScreen(navController, store)
-        }
-        composable("reserveStore") { StoreReservationScreen(navController, storeViewModel)}
-        composable("checkPassword") { CheckPassword(navController = navController, mainViewModel = mainViewModel)}
-        composable("updatePassword") { UpdatePassword(navController = navController, mainViewModel = mainViewModel)}
-        composable("seatMenuSelection") {
-            val reservationDraft = navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<ReservationDraft>("reservationDraft") ?: return@composable
+            composable(
+                route = "store/{storeId}",
+                arguments = listOf(navArgument("storeId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
+                StoreScreen(
+                    navController,
+                    storeId,
+                    storeViewModel,
+                    mainViewModel,
+                    favoriteViewModel,
+                    menuViewModel,
+                    menuSectionViewModel,
+                    placementViewModel
+                )
+            }
 
-            SeatMenuSelectionScreen(
-                navController = navController,
-                placementViewModel = placementViewModel,
-                reservationDraft = reservationDraft,
-                menuViewModel = menuViewModel,
-                sectionViewModel = menuSectionViewModel
-            )
+            composable("map_with_store") {
+                val store = navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<StoreResponse>("store") ?: return@composable
+
+                StoreMapScreen(navController, store)
+            }
+            composable("reserveStore") { StoreReservationScreen(navController, storeViewModel) }
+            composable("checkPassword") {
+                CheckPassword(
+                    navController = navController,
+                    mainViewModel = mainViewModel
+                )
+            }
+            composable("updatePassword") {
+                UpdatePassword(
+                    navController = navController,
+                    mainViewModel = mainViewModel
+                )
+            }
+            composable("seatMenuSelection") {
+                val reservationDraft = navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<ReservationDraft>("reservationDraft") ?: return@composable
+
+                SeatMenuSelectionScreen(
+                    navController = navController,
+                    placementViewModel = placementViewModel,
+                    reservationDraft = reservationDraft,
+                    menuViewModel = menuViewModel,
+                    sectionViewModel = menuSectionViewModel
+                )
+            }
         }
 
 

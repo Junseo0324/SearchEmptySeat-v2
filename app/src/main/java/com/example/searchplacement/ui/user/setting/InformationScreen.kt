@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,6 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.di.AppModule
-import com.example.searchplacement.navigation.MainBottomNavItem
 import com.example.searchplacement.ui.theme.AppButtonStyle
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
@@ -65,10 +65,15 @@ fun InformationScreen(navController: NavHostController,mainViewModel: MainViewMo
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val nameState = remember { mutableStateOf(user?.name ?: "") }
-    val locationState = remember { mutableStateOf(user?.location ?: "") }
+    val nameState = remember { mutableStateOf("")}
+    val locationState = remember { mutableStateOf("") }
     val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     val showWebViewDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(user) {
+        nameState.value = user?.name ?: ""
+        locationState.value = user?.location ?: ""
+    }
 
     Scaffold(
         topBar = {
@@ -225,7 +230,7 @@ fun InformationScreen(navController: NavHostController,mainViewModel: MainViewMo
                         editedLocation = locationState.value,
                         imageFile = imagePart
                     )
-                    navController.navigate(MainBottomNavItem.Setting.screenRoute)
+                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth().padding(Dimens.Small),

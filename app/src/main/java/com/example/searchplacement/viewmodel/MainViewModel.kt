@@ -124,7 +124,21 @@ class MainViewModel @Inject constructor(
             try {
                 val response = authRepository.updateUserInfo(userId, request, imageFile)
                 if (response.isSuccessful && response.body() != null) {
-                    _userInfoUpdateResult.value = response.body()
+                    val apiResponse = response.body()!!
+                    _userInfoUpdateResult.value = apiResponse
+
+                    val updatedEntity = UserEntity(
+                        userId = userId.toString(),
+                        name = editedName ?: _user.value?.name.orEmpty(),
+                        email = editedEmail ?: _user.value?.email.orEmpty(),
+                        phone = _user.value?.phone.orEmpty(),
+                        userType = _user.value?.userType.orEmpty(),
+                        location = editedLocation ?: _user.value?.location.orEmpty(),
+                        token = _user.value?.token.orEmpty(),
+                        image = apiResponse.data?.get("image") as? String ?: _user.value?.image.orEmpty()
+                    )
+                    userRepository.saveUser(updatedEntity)
+
                     getUserData()
                 } else {
                     _userInfoUpdateResult.value = ApiResponse(

@@ -59,7 +59,7 @@ import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 import com.example.searchplacement.viewmodel.MainViewModel
 
 @Composable
-fun SettingScreen(navController: NavHostController, mainViewModel: MainViewModel) {
+fun SettingScreen(navController: NavHostController,mainViewModel: MainViewModel) {
     val user by mainViewModel.user.collectAsState()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val imageLoader = rememberImageLoaderWithToken()
