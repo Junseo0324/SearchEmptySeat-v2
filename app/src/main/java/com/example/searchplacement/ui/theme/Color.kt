@@ -18,6 +18,10 @@ val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 val Gray = Color(0xFF808089)
 
+val FavoriteGreen = Color(0xFF27AE60)
+val ViewCountColor = Color(0xFFBDC3C7)
+val CategoryBgColor = Color(0xFFF5F6FA)
+val CategoryTextColor = Color(0xFF7F8C8D)
 // 버튼 전용 색상
 val ButtonMainColor = Color(0xFF424242)   // 버튼 배경색
 
