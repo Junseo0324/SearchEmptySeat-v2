@@ -79,6 +79,23 @@ object AppTextStyle {
         color = UserPrimaryColor
     )
 
+    // 강조 포인트 텍스트 (색상 포함)
+    val BodyGray = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        lineHeight = 22.sp,
+        color = Gray
+    )
+
+    val BodyText = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        lineHeight = 22.sp,
+        color = Black
+    )
+
     // 설명/캡션
     val Caption = TextStyle(
         fontFamily = Pretendard,

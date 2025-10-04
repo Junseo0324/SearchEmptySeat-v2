@@ -85,11 +85,6 @@ fun MainNavigation(
             StoreScreen(navController, storeId,storeViewModel,mainViewModel,favoriteViewModel,menuViewModel,menuSectionViewModel, placementViewModel)
         }
 
-//        composable("map/{address}", arguments = listOf(navArgument("address") { type = NavType.StringType })) { backStackEntry ->
-//            val address = (backStackEntry.arguments)?.getString("address") ?: "서울시 서대문구 가좌로 134"
-//            StoreMapScreen(navController, address)
-//        }
-
         composable("map_with_store") {
             val store = navController.previousBackStackEntry
                 ?.savedStateHandle
