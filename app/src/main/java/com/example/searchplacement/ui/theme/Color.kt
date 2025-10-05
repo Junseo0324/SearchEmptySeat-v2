@@ -18,7 +18,6 @@ val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 val Gray = Color(0xFF808089)
 
-val FavoriteGreen = Color(0xFF27AE60)
 val ViewCountColor = Color(0xFFBDC3C7)
 val CategoryBgColor = Color(0xFFF5F6FA)
 val CategoryTextColor = Color(0xFF7F8C8D)
@@ -28,6 +27,8 @@ val IconColor = Color(0xFF7F8C8D)
 val CardInnerColor = Color(0xFFF0F0F0)
 val RatingColor = Color(0xFFFFC107)
 val RedPoint = Color(0xFFE74C3C)
+
+val ChipBorderColor = Color(0xFFE0E0E0)
 
 
 //카드 테두리 색상
