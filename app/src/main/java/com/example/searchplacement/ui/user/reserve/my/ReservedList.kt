@@ -1,6 +1,5 @@
 package com.example.searchplacement.ui.user.reserve.my
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,7 +19,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -48,7 +48,12 @@ import com.example.searchplacement.R
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.ui.theme.AppTextStyle
+import com.example.searchplacement.ui.theme.Black
+import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.Gray
+import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.utils.parseReservationDateTime
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
@@ -60,9 +65,6 @@ fun ReservedList(
     reservation: ReservationResponse,
     store: StoreResponse?
 ) {
-    Log.d("ReservedList", "reservation: $reservation")
-    Log.d("ReservedList", "store: $store")
-
 
     val (statusText, statusBgColor, statusTextColor) = when (reservation.status) {
         "pending" -> Triple("예약 중", Color(0xFFE3F2FD), Color(0xFF1565C0))
@@ -100,7 +102,7 @@ fun ReservedList(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -121,9 +123,7 @@ fun ReservedList(
                 ) {
                     Text(
                         text = store?.storeName ?: "가게 정보 불러올 수 없음",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2C3E50),
+                        style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = Black),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -134,13 +134,12 @@ fun ReservedList(
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = Color(0xFF7F8C8D)
+                            modifier = Modifier.size(Dimens.Default),
+                            tint = IconColor
                         )
                         Text(
                             text = store?.location ?: "주소 정보 없음",
-                            fontSize = 13.sp,
-                            color = Color(0xFF7F8C8D),
+                            style = AppTextStyle.Body.copy(fontSize = 13.sp, color = IconColor),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -154,24 +153,24 @@ fun ReservedList(
                             shape = RoundedCornerShape(Dimens.Small)
                         )
                         .padding(horizontal = Dimens.Default, vertical = Dimens.Tiny)
+                        .align(Alignment.Top)
                 ) {
                     Text(
                         text = statusText,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = statusTextColor
+                        style = AppTextStyle.BodySmall.copy(fontWeight = FontWeight.Bold, color = statusTextColor)
                     )
                 }
             }
-            HorizontalDivider(color = Color(0xFFF0F0F0))
+
+            HorizontalDivider(color = Gray)
 
             // 예약 정보
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(32.dp)
+                horizontalArrangement = Arrangement.spacedBy(Dimens.XLarge)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Small)
                 ) {
                     InfoRow(icon = Icons.Default.DateRange, text = dateText)
                     InfoRow(icon = Icons.Default.Schedule, text = timeText)
@@ -180,63 +179,60 @@ fun ReservedList(
 
                 // 오른쪽 정보
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Small)
                 ) {
                     InfoItem(label = "예약번호", value = reservation.reservationPK.toString())
                     InfoItem(label = "테이블", value = reservation.tableNumber.toString())
                     InfoItem(label = "결제방식", value = reservation.paymentMethod)
                 }
             }
-            // 주문 메뉴
+
+            Spacer(modifier = Modifier.height(Dimens.Tiny))
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Receipt,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color(0xFF7F8C8D)
+                    modifier = Modifier.size(Dimens.Medium),
+                    tint = IconColor
                 )
                 Text(
                     text = "주문 메뉴",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF7F8C8D)
+                    style = AppTextStyle.Body.copy(fontSize = 13.sp, color = IconColor),
                 )
             }
             Text(
                 text = menuText,
-                fontSize = 13.sp,
-                color = Color(0xFF2C3E50)
+                style = AppTextStyle.Body.copy(fontSize = 14.sp, color = Black),
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
             ) {
                 if (reservation.status == "pending") {
-                    // 예약 중 버튼들
                     OutlinedButton(
                         onClick = { },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(Dimens.Small),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF2C3E50)
+                            contentColor = ButtonMainColor
                         )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Phone,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(Dimens.Medium)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(Dimens.Tiny))
                         Text("매장 문의", fontSize = 14.sp)
                     }
                     Button(
                         onClick = { },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(Dimens.Small),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFE74C3C)
                         )
@@ -256,11 +252,11 @@ fun ReservedList(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(Dimens.Default),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF2C3E50)
+                            contentColor = ButtonMainColor
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Outlined.Star,
                             contentDescription = null,
                             modifier = Modifier.size(Dimens.Medium)
                         )
@@ -274,7 +270,7 @@ fun ReservedList(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2C3E50)
+                            containerColor = ButtonMainColor
                         )
                     ) {
                         Text("예약하기", fontSize = 14.sp)

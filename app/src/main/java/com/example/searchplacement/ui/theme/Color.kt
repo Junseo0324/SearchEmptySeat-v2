@@ -24,6 +24,8 @@ val CategoryBgColor = Color(0xFFF5F6FA)
 val CategoryTextColor = Color(0xFF7F8C8D)
 // 버튼 전용 색상
 val ButtonMainColor = Color(0xFF424242)   // 버튼 배경색
+val IconColor = Color(0xFF7F8C8D)
+
 
 //카드 테두리 색상
 val CardBorderTransparentColor = Color(0xFFF5F5F5)
