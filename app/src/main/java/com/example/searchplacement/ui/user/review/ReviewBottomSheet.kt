@@ -411,7 +411,6 @@ fun ReviewBottomSheet(
 
             Spacer(modifier = Modifier.height(Dimens.Large))
 
-            // 저장 버튼
             Button(
                 onClick = {
                     if (rating > 0 && reviewText.length >= 10) {
