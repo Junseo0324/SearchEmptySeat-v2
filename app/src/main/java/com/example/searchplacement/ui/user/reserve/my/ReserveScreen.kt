@@ -30,12 +30,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.searchplacement.ui.theme.AppTextStyle
+import com.example.searchplacement.ui.theme.ButtonMainColor
+import com.example.searchplacement.ui.theme.CategoryBgColor
+import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.Gray
+import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.viewmodel.ReservationViewModel
 
 @Composable
@@ -57,7 +62,6 @@ fun ReserveScreen(navController: NavHostController) {
         reservationViewModel.fetchUserReservations()
     }
 
-    // 탭 제목
     val tabs = listOf(
         "예약 중 (${upcomingReservations.size})",
         "방문 완료 (${completedReservations.size})"
@@ -66,24 +70,24 @@ fun ReserveScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(CategoryBgColor)
     ) {
 
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
-            shadowElevation = 2.dp
+            color = White,
+            shadowElevation = Dimens.Nano
         ) {
             Column {
                 TabRow(
                     selectedTabIndex = selectedTab,
-                    containerColor = Color.White,
-                    contentColor = Color(0xFF2C3E50),
+                    containerColor = White,
+                    contentColor = ButtonMainColor,
                     indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
+                        TabRowDefaults.SecondaryIndicator(
                             modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                            color = Color(0xFF2C3E50),
-                            height = 3.dp
+                            height = 3.dp,
+                            color = ButtonMainColor
                         )
                     }
                 ) {
@@ -103,7 +107,7 @@ fun ReserveScreen(navController: NavHostController) {
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                     tint = if (selectedTab == index)
-                                        Color(0xFF2C3E50) else Color(0xFFB0B0B0)
+                                        ButtonMainColor else Gray
                                 )
                                 Text(
                                     text = title,
@@ -111,7 +115,7 @@ fun ReserveScreen(navController: NavHostController) {
                                     fontWeight = if (selectedTab == index)
                                         FontWeight.Bold else FontWeight.Normal,
                                     color = if (selectedTab == index)
-                                        Color(0xFF2C3E50) else Color(0xFF7F8C8D)
+                                        ButtonMainColor else Gray
                                 )
                             }
                         }
@@ -128,19 +132,17 @@ fun ReserveScreen(navController: NavHostController) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (selectedTab == 0) "현재 예약 중인 가게가 없습니다."
-                    else "방문 완료한 예약이 없습니다.",
-                    fontSize = 16.sp,
-                    color = Color(0xFF7F8C8D)
+                    text = if (selectedTab == 0) "현재 예약 중인 가게가 없습니다." else "방문 완료한 예약이 없습니다.",
+                    style = AppTextStyle.Body.copy(color = Gray),
                 )
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF8F9FA)),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .background(White),
+                contentPadding = PaddingValues(Dimens.Medium),
+                verticalArrangement = Arrangement.spacedBy(Dimens.Medium)
             ) {
                 items(currentList.size) { index ->
                     val item = currentList[index]
