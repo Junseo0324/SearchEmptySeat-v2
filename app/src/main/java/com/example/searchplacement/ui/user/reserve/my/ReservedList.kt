@@ -64,7 +64,8 @@ import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 fun ReservedList(
     navController: NavHostController,
     reservation: ReservationResponse,
-    store: StoreResponse?
+    store: StoreResponse?,
+    onReviewClick: (ReservationResponse, StoreResponse?) -> Unit
 ) {
 
     val (statusText, statusBgColor, statusTextColor) = when (reservation.status) {
@@ -245,15 +246,8 @@ fun ReservedList(
                         Text("예약 취소", fontSize = 14.sp)
                     }
                 } else {
-                    // 방문 완료 버튼들
                     OutlinedButton(
-                        onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                "storePK",
-                                reservation.storePK
-                            )
-                            navController.navigate("review")
-                        },
+                        onClick = { onReviewClick(reservation, store) },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(Dimens.Default),
                         colors = ButtonDefaults.outlinedButtonColors(

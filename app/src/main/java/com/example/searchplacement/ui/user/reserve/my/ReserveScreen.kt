@@ -35,12 +35,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.searchplacement.data.reserve.ReservationResponse
+import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.ui.theme.CategoryBgColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.user.review.ReviewBottomSheet
 import com.example.searchplacement.viewmodel.ReservationViewModel
 
 @Composable
@@ -57,6 +60,9 @@ fun ReserveScreen(navController: NavHostController) {
     }
     var selectedTab by remember { mutableStateOf(0) }
 
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedReservation by remember { mutableStateOf<ReservationResponse?>(null) }
+    var selectedStore by remember { mutableStateOf<StoreResponse?>(null) }
 
     LaunchedEffect(Unit) {
         reservationViewModel.fetchUserReservations()
@@ -149,11 +155,28 @@ fun ReserveScreen(navController: NavHostController) {
                     ReservedList(
                         navController = navController,
                         reservation = item.reservation,
-                        store = item.store
+                        store = item.store,
+                        onReviewClick = { reservation, store ->
+                            selectedReservation = reservation
+                            selectedStore = store
+                            showBottomSheet = true
+                        }
                     )
                 }
             }
         }
+    }
+
+    if (showBottomSheet && selectedReservation != null) {
+        ReviewBottomSheet(
+            reservation = selectedReservation!!,
+            store = selectedStore,
+            onDismiss = { showBottomSheet = false },
+            onSubmit = { rating, reviewText, images ->
+                // TODO: ReviewViewModel 연결 & 서버 저장 처리
+                showBottomSheet = false
+            }
+        )
     }
 }
 
