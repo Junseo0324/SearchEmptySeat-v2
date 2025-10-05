@@ -51,6 +51,7 @@ import com.example.searchplacement.di.AppModule
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.ButtonMainColor
+import com.example.searchplacement.ui.theme.CardInnerColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.IconColor
@@ -188,25 +189,29 @@ fun ReservedList(
             }
 
             Spacer(modifier = Modifier.height(Dimens.Tiny))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.fillMaxWidth().background(CardInnerColor).padding(Dimens.Small),
             ) {
-                Icon(
-                    imageVector = Icons.Default.Receipt,
-                    contentDescription = null,
-                    modifier = Modifier.size(Dimens.Medium),
-                    tint = IconColor
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Receipt,
+                        contentDescription = null,
+                        modifier = Modifier.size(Dimens.Medium),
+                        tint = IconColor
+                    )
+                    Text(
+                        text = "주문 메뉴",
+                        style = AppTextStyle.Body.copy(fontSize = 13.sp, color = IconColor),
+                    )
+                }
                 Text(
-                    text = "주문 메뉴",
-                    style = AppTextStyle.Body.copy(fontSize = 13.sp, color = IconColor),
+                    text = menuText,
+                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = Black),
                 )
             }
-            Text(
-                text = menuText,
-                style = AppTextStyle.Body.copy(fontSize = 14.sp, color = Black),
-            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
