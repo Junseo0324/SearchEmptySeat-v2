@@ -1,5 +1,6 @@
 package com.example.searchplacement.ui.user.reserve.my
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,11 +47,15 @@ import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.user.review.ReviewBottomSheet
 import com.example.searchplacement.viewmodel.ReservationViewModel
+import com.example.searchplacement.viewmodel.ReviewViewModel
 
 @Composable
 fun ReserveScreen(navController: NavHostController) {
 
     val reservationViewModel: ReservationViewModel = hiltViewModel()
+    val reviewViewModel: ReviewViewModel = hiltViewModel()
+
+    val context = LocalContext.current
     val reservationsWithStore by reservationViewModel.reservationsWithStore.collectAsState()
 
     val upcomingReservations = remember(reservationsWithStore) {
@@ -173,7 +179,23 @@ fun ReserveScreen(navController: NavHostController) {
             store = selectedStore,
             onDismiss = { showBottomSheet = false },
             onSubmit = { rating, reviewText, images ->
-                // TODO: ReviewViewModel 연결 & 서버 저장 처리
+                reviewViewModel.submitReview(
+                    context = context,
+                    storePK = selectedStore?.storePK ?: 0,
+                    rating = rating.toFloat(),
+                    content = reviewText,
+                    imageUris = images,
+                    onSuccess = {
+                        showBottomSheet = false
+                        reviewViewModel.clearReviewSubmitResult()
+                        reservationViewModel.fetchUserReservations()
+                        Toast.makeText(context,"리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    },
+                    onError = { errorMessage ->
+                        showBottomSheet = false
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                )
                 showBottomSheet = false
             }
         )

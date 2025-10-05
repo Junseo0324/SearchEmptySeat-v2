@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.review.ReviewResponse
 import com.example.searchplacement.repository.ReviewRepository
-import com.example.searchplacement.repository.UserRepository
 import com.example.searchplacement.ui.utils.toMultipartPart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
-    private val reviewRepository: ReviewRepository,
-    private val userRepository: UserRepository
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _reviewSubmitSuccess = MutableStateFlow<Boolean?>(null)
