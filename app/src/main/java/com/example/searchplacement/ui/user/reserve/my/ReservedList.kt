@@ -1,103 +1,290 @@
 package com.example.searchplacement.ui.user.reserve.my
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.searchplacement.R
 import com.example.searchplacement.data.reserve.ReservationResponse
-import com.example.searchplacement.ui.theme.AppButtonStyle
-import com.example.searchplacement.ui.theme.AppTextStyle
-import com.example.searchplacement.ui.theme.Black
+import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.di.AppModule
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.White
-import com.example.searchplacement.ui.utils.formatTime
+import com.example.searchplacement.ui.utils.parseReservationDateTime
+import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 
-
-//todo : 디자인 전체적 변경 필요
 
 @Composable
-fun ReservedList(navController: NavHostController, reservation: ReservationResponse) {
+fun ReservedList(
+    navController: NavHostController,
+    reservation: ReservationResponse,
+    store: StoreResponse?
+) {
+    Log.d("ReservedList", "reservation: $reservation")
+    Log.d("ReservedList", "store: $store")
+
+
+    val (statusText, statusBgColor, statusTextColor) = when (reservation.status) {
+        "pending" -> Triple("예약 중", Color(0xFFE3F2FD), Color(0xFF1565C0))
+        "completed" -> Triple("방문 완료", Color(0xFFD5EDDA), Color(0xFF27AE60))
+        else -> Triple("알 수 없음", Color.LightGray, Color.DarkGray)
+    }
+
+    val (dateText, timeText) = remember(reservation.reservationTime) {
+        parseReservationDateTime(reservation.reservationTime)
+    }
+
+    val menus = reservation.menu.values.mapNotNull { it as? Map<*, *> }
+    val firstMenu = menus.firstOrNull()?.get("name") ?: "메뉴명"
+    val remainingCount = (menus.size - 1).coerceAtLeast(0)
+    val menuText =
+        if (remainingCount > 0) "$firstMenu 외 ${remainingCount}개" else firstMenu.toString()
+
+    val imageUrls = store?.image
+    val imageLoader = rememberImageLoaderWithToken()
+    val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
+    val thumbnailUrl = IMAGE_URL + imageUrls?.firstOrNull()
+
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = Dimens.Tiny, horizontal = Dimens.Small),
+            .fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(1.dp),
         colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(Dimens.Small)
+                .padding(Dimens.Medium),
+            verticalArrangement = Arrangement.spacedBy(Dimens.Default)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(Dimens.Small)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
+                verticalAlignment = Alignment.Top
             ) {
-                //todo 가게 정보 불러와서 이미지 가져올 수 있게 처리
-                Image(
-                    painter = painterResource(id = R.drawable.ic_store),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(thumbnailUrl)
+                        .crossfade(true)
+                        .build(),
+                    imageLoader = imageLoader,
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RectangleShape)
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.ic_setting),
+                    modifier = Modifier.size(60.dp).clip(RoundedCornerShape(Dimens.Default)),
                 )
+
+
                 Column(
-                    Modifier
-                        .padding(Dimens.Tiny)
-                        .weight(1f)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
                 ) {
-                    Text(text = "가게 ID: ${reservation.storePK}", style = AppTextStyle.Body)
-                    Text(text = "예약 시간: ${formatTime(reservation.reservationTime)} / ${reservation.partySize}명",style = AppTextStyle.Body)
+                    Text(
+                        text = store?.storeName ?: "가게 정보 불러올 수 없음",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2C3E50),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = Color(0xFF7F8C8D)
+                        )
+                        Text(
+                            text = store?.location ?: "주소 정보 없음",
+                            fontSize = 13.sp,
+                            color = Color(0xFF7F8C8D),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = statusBgColor,
+                            shape = RoundedCornerShape(Dimens.Small)
+                        )
+                        .padding(horizontal = Dimens.Default, vertical = Dimens.Tiny)
+                ) {
+                    Text(
+                        text = statusText,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = statusTextColor
+                    )
+                }
+            }
+            HorizontalDivider(color = Color(0xFFF0F0F0))
+
+            // 예약 정보
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    InfoRow(icon = Icons.Default.DateRange, text = dateText)
+                    InfoRow(icon = Icons.Default.Schedule, text = timeText)
+                    InfoRow(icon = Icons.Default.Person, text = "${reservation.partySize}명")
+                }
+
+                // 오른쪽 정보
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    InfoItem(label = "예약번호", value = reservation.reservationPK.toString())
+                    InfoItem(label = "테이블", value = reservation.tableNumber.toString())
+                    InfoItem(label = "결제방식", value = reservation.paymentMethod)
+                }
+            }
+            // 주문 메뉴
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Receipt,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Color(0xFF7F8C8D)
+                )
                 Text(
-                    text = "예약 완료",
-                    style = AppTextStyle.redPoint
+                    text = "주문 메뉴",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF7F8C8D)
                 )
             }
+            Text(
+                text = menuText,
+                fontSize = 13.sp,
+                color = Color(0xFF2C3E50)
+            )
 
-            Text("메뉴", modifier = Modifier.padding(Dimens.Small), style = AppTextStyle.BodyLarge)
-
-            reservation.menu.forEach { (_, menuInfo) ->
-                val menu = menuInfo as? Map<*, *> ?: return@forEach
-                val name = menu["name"] ?: "메뉴명"
-                Text("$name", modifier = Modifier.padding(start = Dimens.Medium).padding(Dimens.Tiny), style = AppTextStyle.Body)
-            }
-
-            Button(
-                onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("storePK", reservation.storePK)
-                    navController.navigate("review")
-                }, // 리뷰 작성 화면으로 이동
-                colors = ButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Black,
-                    disabledContainerColor = Color.Transparent,
-                    disabledContentColor = Black
-                ),
-                border = BorderStroke(1.dp, Black),
-                shape = AppButtonStyle.RoundedShape,
-                modifier = Modifier.align(Alignment.End).padding(Dimens.Small)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("리뷰 작성")
+                if (reservation.status == "pending") {
+                    // 예약 중 버튼들
+                    OutlinedButton(
+                        onClick = { },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF2C3E50)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("매장 문의", fontSize = 14.sp)
+                    }
+                    Button(
+                        onClick = { },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE74C3C)
+                        )
+                    ) {
+                        Text("예약 취소", fontSize = 14.sp)
+                    }
+                } else {
+                    // 방문 완료 버튼들
+                    OutlinedButton(
+                        onClick = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "storePK",
+                                reservation.storePK
+                            )
+                            navController.navigate("review")
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(Dimens.Default),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF2C3E50)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(Dimens.Medium)
+                        )
+                        Spacer(modifier = Modifier.width(Dimens.Tiny))
+                        Text("리뷰 작성", fontSize = 14.sp)
+                    }
+                    Button(
+                        onClick = {
+                            navController.navigate("store/${store?.storePK}")
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2C3E50)
+                        )
+                    ) {
+                        Text("예약하기", fontSize = 14.sp)
+                    }
+                }
             }
         }
     }
 }
+
+
+
+

@@ -81,8 +81,6 @@ fun MainNavigation(
                     favoriteViewModel
                 )
             }
-//            composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController) }
-//            composable("information") { InformationScreen(navController) }
             composable(MainBottomNavItem.Setting.screenRoute) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry("main")

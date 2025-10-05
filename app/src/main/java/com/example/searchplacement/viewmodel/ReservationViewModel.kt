@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
+import com.example.searchplacement.data.reserve.ReservationWithStore
 import com.example.searchplacement.repository.ReservationRepository
+import com.example.searchplacement.repository.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +16,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReservationViewModel @Inject constructor(
-    private val reservationRepository: ReservationRepository
+    private val reservationRepository: ReservationRepository,
+    private val storeRepository: StoreRepository
 ) : ViewModel() {
 
     private val _reservations = MutableStateFlow<List<ReservationResponse>>(emptyList())
     val reservations: StateFlow<List<ReservationResponse>> = _reservations
+
+    private val _reservationsWithStore = MutableStateFlow<List<ReservationWithStore>>(emptyList())
+    val reservationsWithStore: StateFlow<List<ReservationWithStore>> = _reservationsWithStore
+
 
     private val _reservationDetail = MutableStateFlow<ReservationResponse?>(null)
     val reservationDetail: StateFlow<ReservationResponse?> = _reservationDetail
@@ -56,18 +63,24 @@ class ReservationViewModel @Inject constructor(
         }
     }
 
-    fun getUserIdAndFetchReservations() {
-        viewModelScope.launch {
-            fetchUserReservations()
-        }
-    }
-
 
     fun fetchUserReservations() {
         viewModelScope.launch {
             val res = reservationRepository.getUserReservations()
             if (res.isSuccessful) {
-                _reservations.value = res.body()?.data ?: emptyList()
+                val reservations = res.body()?.data ?: emptyList()
+
+                val combinedList = reservations.map { reservation ->
+                    val storeRes = try {
+                        val response = storeRepository.getStoreData(reservation.storePK)
+                        if (response.isSuccessful) response.body()?.data else null
+                    } catch (e: Exception) {
+                        null
+                    }
+                    ReservationWithStore(reservation, storeRes)
+                }
+
+                _reservationsWithStore.value = combinedList
             } else {
                 _statusMessage.value = res.body()?.message ?: "예약 조회 실패"
             }
