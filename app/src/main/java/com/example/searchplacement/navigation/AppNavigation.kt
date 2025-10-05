@@ -92,7 +92,7 @@ fun MainNavigation(
                 val sharedMainViewModel: MainViewModel = hiltViewModel(parentEntry)
                 InformationScreen(navController, sharedMainViewModel)
             }
-            composable("search") { SearchScreen(navController, storeViewModel) }
+            composable("search") { SearchScreen(navController) }
 
             composable(
                 route = "store/{storeId}",
