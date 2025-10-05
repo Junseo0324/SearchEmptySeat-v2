@@ -30,9 +30,6 @@ class StoreViewModel @Inject constructor(
     private val _categoryStores = MutableStateFlow<ApiResponse<List<StoreResponse>>?>(null)
     val categoryStores: StateFlow<ApiResponse<List<StoreResponse>>?> = _categoryStores.asStateFlow()
 
-    private val _searchResults = MutableStateFlow<ApiResponse<List<StoreResponse>>?>(null)
-    val searchResults: StateFlow<ApiResponse<List<StoreResponse>>?> = _searchResults.asStateFlow()
-
 
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
@@ -99,47 +96,6 @@ class StoreViewModel @Inject constructor(
                     message = "네트워크 오류: ${e.message}",
                     data = emptyList()
                 )
-            }
-        }
-    }
-
-    //검색
-    fun searchStoresByName(storeName: String) {
-        viewModelScope.launch {
-            try {
-
-                // 서버에 요청
-                val response = storeRepository.searchStoresByName(storeName)
-
-                if (response.isSuccessful) {
-                    // 응답이 성공적이라면 응답 본문을 사용
-                    if (response.body() != null) {
-                        _searchResults.value = response.body()
-                    } else {
-                        _searchResults.value = ApiResponse(
-                            status = "fail",
-                            message = "빈 데이터 응답",
-                            data = emptyList()
-                        )
-                        Log.d("SearchScreen", "No content: Response body is empty.")
-                    }
-                } else {
-                    // 실패한 경우, errorBody()로 응답을 확인
-                    _searchResults.value = ApiResponse(
-                        status = "fail",
-                        message = response.errorBody()?.string() ?: "검색 실패",
-                        data = emptyList()
-                    )
-                    Log.d("SearchScreen", "fail: ${response.code()} ${response.errorBody()?.string()}")
-                }
-            } catch (e: Exception) {
-                // 예외 발생 시 처리
-                _searchResults.value = ApiResponse(
-                    status = "fail",
-                    message = "네트워크 오류: ${e.message}",
-                    data = emptyList()
-                )
-                Log.e("SearchScreen", "Error during API call", e)
             }
         }
     }
