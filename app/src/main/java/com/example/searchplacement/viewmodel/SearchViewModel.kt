@@ -19,12 +19,6 @@ class SearchViewModel @Inject constructor(
     private val _searchResults = MutableStateFlow<List<StoreResponse>?>(null)
     val searchResults: StateFlow<List<StoreResponse>?> = _searchResults.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
-
     fun searchStoresByName(query: String) {
         if (query.isBlank()) {
             _searchResults.value = emptyList()
@@ -32,8 +26,6 @@ class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
 
             try {
                 val response = storeRepository.searchStoresByName(query)
@@ -41,13 +33,10 @@ class SearchViewModel @Inject constructor(
                     _searchResults.value = response.body()?.data
                 } else {
                     _searchResults.value = emptyList()
-                    _errorMessage.value = "검색 결과가 없습니다."
                 }
             } catch (e: Exception) {
                 _searchResults.value = emptyList()
-                _errorMessage.value = "네트워크 오류: ${e.message}"
             } finally {
-                _isLoading.value = false
             }
         }
     }
