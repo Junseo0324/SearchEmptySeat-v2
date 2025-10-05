@@ -68,9 +68,7 @@ fun MainNavigation(
             composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
             composable(MainBottomNavItem.Category.screenRoute) {
                 CategoryScreen(
-                    navController,
-                    storeViewModel,
-                    mainViewModel
+                    navController
                 )
             }
             composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
