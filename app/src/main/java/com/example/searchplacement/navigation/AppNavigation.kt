@@ -22,7 +22,6 @@ import com.example.searchplacement.ui.user.login.UpdatePassword
 import com.example.searchplacement.ui.user.reserve.my.ReserveScreen
 import com.example.searchplacement.ui.user.reserve.store.SeatMenuSelectionScreen
 import com.example.searchplacement.ui.user.reserve.store.StoreReservationScreen
-import com.example.searchplacement.ui.user.review.ReviewWriteScreen
 import com.example.searchplacement.ui.user.search.SearchScreen
 import com.example.searchplacement.ui.user.setting.InformationScreen
 import com.example.searchplacement.ui.user.setting.SettingScreen
@@ -63,8 +62,8 @@ fun MainNavigation(
 
     NavHost(navController = navController, startDestination = "main") {
         navigation(
-            startDestination = MainBottomNavItem.Home.screenRoute, // 처음 진입할 화면
-            route = "main" // 이 NavGraph의 이름
+            startDestination = MainBottomNavItem.Home.screenRoute,
+            route = "main"
         ) {
             composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
             composable(MainBottomNavItem.Category.screenRoute) {
@@ -96,18 +95,6 @@ fun MainNavigation(
                 InformationScreen(navController, sharedMainViewModel)
             }
             composable("search") { SearchScreen(navController, storeViewModel) }
-
-            composable("review") {
-                val storePK = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Long>("storePK") ?: return@composable
-
-                ReviewWriteScreen(
-                    navController = navController,
-                    storePK = storePK,
-                    storeViewModel = storeViewModel
-                )
-            }
 
             composable(
                 route = "store/{storeId}",
