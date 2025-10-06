@@ -14,12 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppButtonStyle
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.White
 
 
@@ -30,18 +30,18 @@ fun SearchBar(navController: NavHostController) {
             .fillMaxWidth()
             .padding(Dimens.Small)
             .clickable { navController.navigate("search") }
-            .border(1.dp, Black, shape = RoundedCornerShape(12.dp)),
+            .border(1.dp, Black, shape = RoundedCornerShape(Dimens.Default)),
         shape = AppButtonStyle.RoundedShape,
         color = White
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = Dimens.Medium, vertical = Dimens.Default),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "검색",
-                color = Color.Gray,
+                color = Gray,
                 modifier = Modifier.weight(1f)
             )
             Icon(
