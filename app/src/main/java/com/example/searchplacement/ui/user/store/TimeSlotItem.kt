@@ -30,15 +30,15 @@ fun TimeSlotItem(time: String, status: String, seats: String, isAvailable: Boole
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = time,
-            style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = Black)
-        )
-
         Row(
             horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = time,
+                style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = Black)
+            )
+
             Box(
                 modifier = Modifier
                     .background(
@@ -52,11 +52,10 @@ fun TimeSlotItem(time: String, status: String, seats: String, isAvailable: Boole
                     style = AppTextStyle.Body.copy(color = White, fontSize = 12.sp)
                 )
             }
-
-            Text(
-                text = seats,
-                style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
-            )
         }
+        Text(
+            text = seats,
+            style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
+        )
     }
 }
