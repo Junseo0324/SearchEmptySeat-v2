@@ -60,7 +60,7 @@ fun StoreReservationScreen(navController: NavHostController, storeViewModel: Sto
     var partySize by remember { mutableStateOf(1) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
-    val businessHours = storeData?.data?.businessHours
+    val businessHours = storeData?.businessHours
     val selectedDayOfWeek = selectedDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)
     val timeSlots = remember(selectedDate, businessHours) {
         businessHours?.get(selectedDayOfWeek)?.let { getTimeSlots(it) } ?: emptyList()
@@ -156,13 +156,13 @@ fun StoreReservationScreen(navController: NavHostController, storeViewModel: Sto
         item {
             Button(
                 onClick = {
-                    if (userId?.isEmpty() == true || selectedTime == null || storeData?.data == null) {
-                        Log.e("예약", "값이 없음 → userId:$userId, time:$selectedTime, store:${storeData?.data}")
+                    if (userId?.isEmpty() == true || selectedTime == null || storeData == null) {
+                        Log.e("예약", "값이 없음 → userId:$userId, time:$selectedTime, store:${storeData}")
                         return@Button
                     }
 
                     val draft = ReservationDraft(
-                        storePK = storeData!!.data!!.storePK,
+                        storePK = storeData!!.storePK,
                         userId = userId?.toLong() ?: 0L,
                         partySize = partySize,
                         reservationTime = "${selectedDate}T$selectedTime"
