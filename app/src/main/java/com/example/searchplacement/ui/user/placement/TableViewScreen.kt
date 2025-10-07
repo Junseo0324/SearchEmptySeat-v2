@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.data.placement.TableData
 import com.example.searchplacement.ui.owner.placement.getTableDrawableRes
 import com.example.searchplacement.ui.owner.placement.getTableSize
@@ -42,8 +43,8 @@ import com.example.searchplacement.viewmodel.PlacementViewModel
 @Composable
 fun TableViewScreen(
     storeId: Long,
-    placementViewModel: PlacementViewModel
 ) {
+    val placementViewModel: PlacementViewModel = hiltViewModel()
     val placement = placementViewModel.placement.collectAsState().value
     val alreadyFetched = remember { mutableStateOf(false) }
     val tables = remember { mutableStateListOf<TableData>() }

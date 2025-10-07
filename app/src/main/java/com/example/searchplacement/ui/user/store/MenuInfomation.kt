@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.example.searchplacement.data.menu.MenuResponse
@@ -38,10 +39,11 @@ import com.example.searchplacement.viewmodel.MenuViewModel
 
 @Composable
 fun MenuDisplayScreen(
-    storePk: Long,
-    menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel
+    storePk: Long
 ) {
+    val menuViewModel: MenuViewModel = hiltViewModel()
+    val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
+
     val imageLoader = rememberImageLoaderWithToken()
     val menus = menuViewModel.menus.collectAsState().value
     val sections = menuSectionViewModel.sections.collectAsState().value

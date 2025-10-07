@@ -46,9 +46,6 @@ import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.user.placement.TableViewScreen
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
-import com.example.searchplacement.viewmodel.MenuViewModel
-import com.example.searchplacement.viewmodel.PlacementViewModel
 import com.example.searchplacement.viewmodel.StoreViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,10 +53,7 @@ import com.example.searchplacement.viewmodel.StoreViewModel
 fun StoreScreen(
     navController: NavHostController,
     storeId: Long,
-    storeViewModel: StoreViewModel,
-    menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel,
-    placementViewModel: PlacementViewModel
+    storeViewModel: StoreViewModel
 ) {
     val tabs = remember { listOf("예약현황", "리뷰", "자리현황", "메뉴") }
 
@@ -123,12 +117,8 @@ fun StoreScreen(
                 when (selectedTabIndex) {
                     0 -> ReservationStatusContent()
                     1 -> StoreReview(storeId)
-                    2 -> TableViewScreen(storeId, placementViewModel)
-                    3 -> MenuDisplayScreen(
-                        storePk = storeId,
-                        menuViewModel = menuViewModel,
-                        menuSectionViewModel = menuSectionViewModel
-                    )
+                    2 -> TableViewScreen(storeId)
+                    3 -> MenuDisplayScreen(storeId)
                 }
             } ?: run {
                 Box(

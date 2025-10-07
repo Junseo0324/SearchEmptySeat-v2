@@ -102,10 +102,7 @@ fun MainNavigation(
                 StoreScreen(
                     navController,
                     storeId,
-                    storeViewModel,
-                    menuViewModel,
-                    menuSectionViewModel,
-                    placementViewModel
+                    storeViewModel
                 )
             }
 
