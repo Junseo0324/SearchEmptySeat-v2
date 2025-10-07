@@ -29,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,8 +50,13 @@ import com.example.searchplacement.ui.theme.RatingColor
 import com.example.searchplacement.ui.theme.RedPoint
 import com.example.searchplacement.ui.theme.UserPrimaryColor
 import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.theme.isOpenColor
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 import com.google.accompanist.pager.ExperimentalPagerApi
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.TextStyle
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
@@ -61,6 +67,34 @@ fun CategoryList(
     val imageLoader = rememberImageLoaderWithToken()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val images = store.image.map { IMAGE_URL + it }
+
+    val today = remember { LocalDate.now() }
+    val todayDay = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)
+    val todayHours = store.businessHours[todayDay] ?: "영업시간 정보 없음"
+
+    val isHoliday = store.regularHolidays?.get(todayDay) == 1
+    val (_, statusText, badgeColor) = remember(todayHours,isHoliday) {
+        val now = LocalTime.now()
+        val parts = todayHours.split("-").map { it.trim() }
+
+        if (isHoliday) {
+            Triple(false, "휴무", IconColor)
+        } else if (parts.size == 2) {
+            try {
+                val openTime = LocalTime.parse(parts[0])
+                val closeTime = LocalTime.parse(parts[1])
+                if (now.isAfter(openTime) && now.isBefore(closeTime)) {
+                    Triple(true, "영업중", isOpenColor)
+                } else {
+                    Triple(false, "영업종료", IconColor)
+                }
+            } catch (e: Exception) {
+                Triple(false, "정보없음", IconColor)
+            }
+        } else {
+            Triple(false, "정보없음",IconColor)
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -97,26 +131,24 @@ fun CategoryList(
                         )
                     }
 
-                    // 영업중 배지
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(Dimens.Default)
                             .background(
-                                color = Color(0xFF27AE60),
+                                color = badgeColor,
                                 shape = RoundedCornerShape(Dimens.Small)
                             )
                             .padding(horizontal = Dimens.Small, vertical = Dimens.Tiny)
                     ) {
                         Text(
-                            text = "영업중",
-                            color = Color.White,
+                            text = statusText,
+                            color = White,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    // 페이지 인디케이터
                     if (store.image.size > 1) {
                         Row(
                             modifier = Modifier
@@ -142,7 +174,6 @@ fun CategoryList(
                 }
             }
 
-            // 정보 영역
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,7 +284,6 @@ fun CategoryList(
                     }
                 }
 
-                // 설명
                 if (store.description.isNotEmpty()) {
                     Text(
                         text = store.description,

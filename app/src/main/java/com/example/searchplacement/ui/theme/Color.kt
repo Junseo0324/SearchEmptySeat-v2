@@ -24,9 +24,12 @@ val CategoryTextColor = Color(0xFF7F8C8D)
 // 버튼 전용 색상
 val ButtonMainColor = Color(0xFF424242)   // 버튼 배경색
 val IconColor = Color(0xFF7F8C8D)
+val IconTextColor = Color(0xFF2C3E50)
 val CardInnerColor = Color(0xFFF0F0F0)
 val RatingColor = Color(0xFFFFC107)
 val RedPoint = Color(0xFFE74C3C)
+
+val isOpenColor = Color(0xFF27AE60)
 
 val ChipBorderColor = Color(0xFFE0E0E0)
 
