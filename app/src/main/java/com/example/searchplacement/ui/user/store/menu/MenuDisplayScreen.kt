@@ -1,3 +1,4 @@
+package com.example.searchplacement.ui.user.store.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -48,7 +49,6 @@ fun MenuDisplayScreen(
     val menus = menuViewModel.menus.collectAsState().value
     val sections = menuSectionViewModel.sections.collectAsState().value
 
-    // 데이터 불러오기
     LaunchedEffect(storePk) {
         menuSectionViewModel.fetchSections(storePk)
         menuViewModel.fetchMenus(storePk)
@@ -60,7 +60,10 @@ fun MenuDisplayScreen(
     }
     val noSectionMenus = menus.filter { it.section == null }
 
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(Dimens.Medium).heightIn(max = 400.dp)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .padding(Dimens.Medium)
+        .heightIn(max = 400.dp)) {
         sectionedMenus.forEach { (section, menusInSection) ->
             item {
                 Text(
@@ -79,7 +82,7 @@ fun MenuDisplayScreen(
                 Text(
                     text = "기타",
                     style = AppTextStyle.BodyLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = Dimens.Small)
                 )
             }
             items(noSectionMenus) { menu ->
@@ -124,7 +127,7 @@ fun MenuDisplayItem(menu: MenuResponse, imageLoader: ImageLoader) {
         Spacer(Modifier.width(Dimens.Medium))
 
         Column {
-            Text(menu.name, style = AppTextStyle.BodyLarge.copy(fontSize = 18.sp ))
+            Text(menu.name, style = AppTextStyle.BodyLarge.copy(fontSize = 18.sp))
             Text("${menu.price}원", style = AppTextStyle.Body.copy(color = Color.DarkGray))
             if (menu.description.isNotBlank()) {
                 Text(menu.description, style = AppTextStyle.Caption, maxLines = 2)

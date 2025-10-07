@@ -1,6 +1,5 @@
 package com.example.searchplacement.ui.user.store
 
-import MenuDisplayScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,9 +44,10 @@ import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.White
-import com.example.searchplacement.ui.user.placement.TableViewScreen
+import com.example.searchplacement.ui.user.store.menu.MenuDisplayScreen
 import com.example.searchplacement.ui.user.store.reservation.ReservationStatusContent
 import com.example.searchplacement.ui.user.store.review.StoreReview
+import com.example.searchplacement.ui.user.store.table.TableViewScreen
 import com.example.searchplacement.viewmodel.StoreViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
