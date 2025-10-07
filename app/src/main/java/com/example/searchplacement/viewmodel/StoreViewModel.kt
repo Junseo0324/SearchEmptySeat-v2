@@ -3,8 +3,8 @@ package com.example.searchplacement.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.repository.FavoriteRepository
 import com.example.searchplacement.repository.StoreRepository
 import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,19 +17,15 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val favoriteRepository: FavoriteRepository,
     private val storeRepository: StoreRepository
 ) : ViewModel() {
 
-    private val _allStores = MutableStateFlow<ApiResponse<List<StoreResponse>>?>(null)
-    val allStores: StateFlow<ApiResponse<List<StoreResponse>>?> = _allStores.asStateFlow()
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
 
-
-    private val _storeData = MutableStateFlow<ApiResponse<StoreResponse>?>(null)
-    val storeData: StateFlow<ApiResponse<StoreResponse>?> = _storeData.asStateFlow()
-
-    private val _categoryStores = MutableStateFlow<ApiResponse<List<StoreResponse>>?>(null)
-    val categoryStores: StateFlow<ApiResponse<List<StoreResponse>>?> = _categoryStores.asStateFlow()
-
+    private val _storeData = MutableStateFlow<StoreResponse?>(null)
+    val storeData: StateFlow<StoreResponse?> = _storeData.asStateFlow()
 
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
@@ -40,62 +36,42 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-
-    //모든 가게 정보
-    fun getAllStores(sortBy: String = "default") {
-        viewModelScope.launch {
-            try {
-                val response = storeRepository.getAllStores(sortBy)
-                if (response.isSuccessful && response.body() != null) {
-                    _allStores.value = response.body()
-                } else {
-                    _allStores.value = ApiResponse(
-                        status = "fail",
-                        message = response.errorBody()?.string() ?: "가게 목록 불러오기 실패",
-                        data = emptyList()
-                    )
-                }
-            } catch (e: Exception) {
-                _allStores.value = ApiResponse(
-                    status = "fail",
-                    message = "네트워크 오류: ${e.message}",
-                    data = emptyList()
-                )
-            }
-        }
-    }
-
     fun getStoreData(storeId: Long) {
         viewModelScope.launch {
             val response = storeRepository.getStoreData(storeId)
-            if (response.isSuccessful && response.body() !=null) {
-                _storeData.value = response.body()
-            } else {
+            if (response.isSuccessful && response.body()?.data != null) {
+                _storeData.value = response.body()?.data
+                checkFavorite(storeId)
+            }  else {
                 Log.d("TAG", "getStoreData: 실패")
             }
         }
     }
 
-    //카테고리 필터링
-    fun getStoresByCategory(category: String, sortBy: String = "default") {
+    fun checkFavorite(storeId: Long) {
         viewModelScope.launch {
             try {
-                val response = storeRepository.getStoresByCategory(category, sortBy)
-                if (response.isSuccessful && response.body() != null) {
-                    _categoryStores.value = response.body()
+                val userId = userRepository.getUser()?.userId ?: return@launch
+                val favorites = favoriteRepository.getFavoriteList(userId)
+                _isFavorite.value = favorites.body()?.data?.any { it.store.storePK == storeId } == true
+            } catch (_: Exception) {
+                _isFavorite.value = false
+            }
+        }
+    }
+
+    fun toggleFavorite(storeId: Long) {
+        viewModelScope.launch {
+            try {
+                if (_isFavorite.value) {
+                    favoriteRepository.removeFavorite(storeId)
+                    _isFavorite.value = false
                 } else {
-                    _categoryStores.value = ApiResponse(
-                        status = "fail",
-                        message = response.errorBody()?.string() ?: "카테고리 가게 목록 불러오기 실패",
-                        data = emptyList()
-                    )
+                    favoriteRepository.addFavorite(storeId)
+                    _isFavorite.value = true
                 }
-            } catch (e: Exception) {
-                _categoryStores.value = ApiResponse(
-                    status = "fail",
-                    message = "네트워크 오류: ${e.message}",
-                    data = emptyList()
-                )
+            } catch (_: Exception) {
+                Log.d("TAG", "toggleFavorite: ${_isFavorite.value}로 변경")
             }
         }
     }
