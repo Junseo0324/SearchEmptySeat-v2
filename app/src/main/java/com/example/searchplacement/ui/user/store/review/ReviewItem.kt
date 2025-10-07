@@ -1,4 +1,4 @@
-package com.example.searchplacement.ui.user.store
+package com.example.searchplacement.ui.user.store.review
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box

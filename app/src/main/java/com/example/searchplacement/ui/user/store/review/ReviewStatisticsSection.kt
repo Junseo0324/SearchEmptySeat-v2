@@ -25,7 +25,6 @@ import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.RatingColor
 import com.example.searchplacement.ui.theme.White
-import com.example.searchplacement.ui.user.store.ReviewStatistics
 
 
 @Composable

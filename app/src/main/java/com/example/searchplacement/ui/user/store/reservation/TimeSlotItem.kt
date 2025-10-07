@@ -1,4 +1,4 @@
-package com.example.searchplacement.ui.user.store
+package com.example.searchplacement.ui.user.store.reservation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

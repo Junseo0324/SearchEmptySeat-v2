@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
-import com.example.searchplacement.ui.user.store.ReviewItem
+import com.example.searchplacement.ui.user.store.review.ReviewItem
 import com.example.searchplacement.viewmodel.ReviewViewModel
 import com.example.searchplacement.viewmodel.StoreListViewModel
 

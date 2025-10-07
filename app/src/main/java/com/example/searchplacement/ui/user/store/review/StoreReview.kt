@@ -1,4 +1,4 @@
-package com.example.searchplacement.ui.user.store
+package com.example.searchplacement.ui.user.store.review
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.ui.theme.Dimens
-import com.example.searchplacement.ui.user.store.review.EmptyReviewSection
-import com.example.searchplacement.ui.user.store.review.ReviewCard
-import com.example.searchplacement.ui.user.store.review.ReviewStatisticsSection
 import com.example.searchplacement.viewmodel.ReviewViewModel
 
 //임시 데이터 클래스
