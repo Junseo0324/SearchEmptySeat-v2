@@ -28,7 +28,7 @@ val IconTextColor = Color(0xFF2C3E50)
 val CardInnerColor = Color(0xFFF0F0F0)
 val RatingColor = Color(0xFFFFC107)
 val RedPoint = Color(0xFFE74C3C)
-
+val StoreTabBackgroundColor = Color(0xFFF8F9FA)
 val isOpenColor = Color(0xFF27AE60)
 
 val ChipBorderColor = Color(0xFFE0E0E0)
