@@ -23,7 +23,7 @@ import com.example.searchplacement.viewmodel.ReviewViewModel
 
 
 @Composable
-fun StoreReview(storeId: Long,token: String) {
+fun StoreReview(storeId: Long) {
     val viewModel: ReviewViewModel = hiltViewModel()
     val reviews = viewModel.reviews.collectAsState().value
     LaunchedEffect(Unit) {

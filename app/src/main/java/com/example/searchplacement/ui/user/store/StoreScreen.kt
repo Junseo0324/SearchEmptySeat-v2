@@ -53,13 +53,8 @@ fun StoreScreen(
     menuSectionViewModel: MenuSectionViewModel,
     placementViewModel: PlacementViewModel
 ) {
-    var list = remember {
-        listOf(
-            "예약 현황", "리뷰", "자리 현황", "메뉴"
-        )
-    }
-    val user by mainViewModel.user.collectAsState()
-    val token = user?.token ?: ""
+    val tabs = remember { listOf("예약현황", "리뷰", "자리현황", "메뉴") }
+
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     val storeData = storeViewModel.storeData.collectAsState()
@@ -96,7 +91,7 @@ fun StoreScreen(
                 .padding(padding)
         ) {
             storeData.value?.data?.let { storeResponse ->
-                StoreInformation(navController, storeResponse, token, favoriteViewModel)
+                StoreInformation(navController, storeResponse, favoriteViewModel)
             }
 
             TabRow(
@@ -110,7 +105,7 @@ fun StoreScreen(
                 containerColor = White,
                 contentColor = Black
             ) {
-                list.forEachIndexed { index, title ->
+                tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
@@ -127,13 +122,12 @@ fun StoreScreen(
             }
             when (selectedTabIndex) {
                 0 -> ReservationScreen()
-                1 -> StoreReview(storeId,token)
+                1 -> StoreReview(storeId)
                 2 -> TableViewScreen(storeId, placementViewModel)
                 3 -> MenuDisplayScreen(
                     storePk = storeId,
                     menuViewModel = menuViewModel,
-                    menuSectionViewModel = menuSectionViewModel,
-                    token = token
+                    menuSectionViewModel = menuSectionViewModel
                 )
             }
 

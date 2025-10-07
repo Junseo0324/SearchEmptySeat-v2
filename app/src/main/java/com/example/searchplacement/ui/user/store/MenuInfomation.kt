@@ -40,8 +40,7 @@ import com.example.searchplacement.viewmodel.MenuViewModel
 fun MenuDisplayScreen(
     storePk: Long,
     menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel,
-    token: String
+    menuSectionViewModel: MenuSectionViewModel
 ) {
     val imageLoader = rememberImageLoaderWithToken()
     val menus = menuViewModel.menus.collectAsState().value
