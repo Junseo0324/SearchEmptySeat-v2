@@ -103,8 +103,6 @@ fun MainNavigation(
                     navController,
                     storeId,
                     storeViewModel,
-                    mainViewModel,
-                    favoriteViewModel,
                     menuViewModel,
                     menuSectionViewModel,
                     placementViewModel
