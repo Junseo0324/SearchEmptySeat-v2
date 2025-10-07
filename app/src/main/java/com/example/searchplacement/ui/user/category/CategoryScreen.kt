@@ -43,14 +43,14 @@ import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.White
-import com.example.searchplacement.viewmodel.StoreViewModel
+import com.example.searchplacement.viewmodel.CategoryViewModel
 
 
 @Composable
 fun CategoryScreen(
     navController: NavHostController
 ) {
-    val storeViewModel: StoreViewModel = hiltViewModel()
+    val categoryViewModel: CategoryViewModel = hiltViewModel()
     var showSortBottomSheet by remember { mutableStateOf(false) }
 
     val sortList = remember {
@@ -88,19 +88,19 @@ fun CategoryScreen(
 
 
     val storeResponse = if (selectedCategory.contains("전체")) {
-        storeViewModel.allStores.collectAsState()
+        categoryViewModel.allStores.collectAsState()
     } else {
-        storeViewModel.categoryStores.collectAsState()
+        categoryViewModel.categoryStores.collectAsState()
     }
 
 
 
     LaunchedEffect(selectedCategory, sortCategory) {
         if (selectedCategory.contains("전체")) {
-            storeViewModel.getAllStores(sortCategory)
+            categoryViewModel.getAllStores(sortCategory)
         } else {
             val categoryToEnum = categoryList.find { it.first == selectedCategory }?.second ?: "ALL"
-            storeViewModel.getStoresByCategory(categoryToEnum, sortCategory)
+            categoryViewModel.getStoresByCategory(categoryToEnum, sortCategory)
         }
     }
 
@@ -146,7 +146,7 @@ fun CategoryScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "총 ${storeResponse.value?.data?.size ?: 0}개 매장",
+                text = "총 ${storeResponse.value?.size ?: 0}개 매장",
                 style = AppTextStyle.Body.copy(fontSize = 14.sp)
             )
 
@@ -181,7 +181,7 @@ fun CategoryScreen(
             contentPadding = PaddingValues(horizontal = Dimens.Medium, vertical = Dimens.Small),
             verticalArrangement = Arrangement.spacedBy(Dimens.Medium)
         ) {
-            storeResponse.value?.data?.let { storeList ->
+            storeResponse.value?.let { storeList ->
                 items(storeList) { store ->
                     CategoryList(
                         store = store,
