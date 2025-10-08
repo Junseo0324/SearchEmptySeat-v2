@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.data.placement.TableData
 import com.example.searchplacement.ui.theme.AppTextStyle
@@ -62,16 +61,6 @@ fun TableViewScreen(
         return
     }
 
-    val layoutSize = placement.data.layoutSize
-    val boxHeight = when (layoutSize) {
-        1 -> 200.dp
-        2 -> 300.dp
-        else -> 500.dp
-    }
-
-    val groupedSeats = tables.groupBy { it.table }
-        .mapValues { it.value.size }
-
     Column(
         Modifier
             .fillMaxSize()
@@ -84,9 +73,7 @@ fun TableViewScreen(
             style = AppTextStyle.BodyLarge.copy(fontWeight = FontWeight.Bold)
         )
         Spacer(Modifier.height(Dimens.Large))
-        TableLayoutBox(tables,boxHeight)
-        Spacer(Modifier.height(Dimens.Large))
-        TableSummarySection(groupedSeats)
+        SeatLayoutWithStats(placement.data)
 
     }
 }

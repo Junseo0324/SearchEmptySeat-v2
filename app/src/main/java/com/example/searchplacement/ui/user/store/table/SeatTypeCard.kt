@@ -4,13 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,36 +24,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
-import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.theme.IconColor
 
 @Composable
-fun TableSummarySection(groupedSeats: Map<Int, Int>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(White, RoundedCornerShape(Dimens.Default))
-            .padding(Dimens.Medium),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Medium)
-    ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Dimens.Default)
-        ) {
-            groupedSeats.forEach { (type, count) ->
-                TableTypeCard(modifier = Modifier.weight(1f),type, count)
-            }
-        }
+fun SeatTypeCard(
+    capacity: Int,
+    totalSeats: Int,
+    modifier: Modifier = Modifier
+) {
+    val iconColor = when {
+        capacity <= 2 -> Color(0xFF3498DB)
+        capacity <= 4 -> Color(0xFF27AE60)
+        else -> Color(0xFF9B59B6)
     }
-}
 
-@Composable
-fun TableTypeCard(modifier: Modifier,type: Int, count: Int) {
+    val backgroundColor = when {
+        capacity <= 2 -> Color(0xFFE3F2FD)
+        capacity <= 4 -> Color(0xFFE8F5E9)
+        else -> Color(0xFFF3E5F5)
+    }
 
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(Dimens.Default),
-        colors = CardDefaults.cardColors(containerColor = White),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Nano)
     ) {
         Column(
@@ -67,30 +61,28 @@ fun TableTypeCard(modifier: Modifier,type: Int, count: Int) {
                 modifier = Modifier
                     .size(48.dp)
                     .background(
-                        color = Color(0xFFF5F5F5),
-                        shape = RoundedCornerShape(Dimens.Large)
+                        color = backgroundColor,
+                        shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Person,
+                    imageVector = Icons.Default.Person,
                     contentDescription = null,
-                    tint = Color(0xFF95A5A6),
+                    tint = iconColor,
                     modifier = Modifier.size(Dimens.Large)
                 )
             }
 
             Text(
-                text = "${type} 인석",
+                text = "${capacity}인석",
                 style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold)
             )
 
             Text(
-                text = "${count}석",
-                style = AppTextStyle.Body.copy(fontSize = 14.sp)
+                text = "${totalSeats}석",
+                style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
             )
         }
     }
 }
-
-
