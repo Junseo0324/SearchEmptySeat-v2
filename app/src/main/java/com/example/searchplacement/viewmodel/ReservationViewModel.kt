@@ -1,15 +1,18 @@
 package com.example.searchplacement.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.data.reserve.ReservationWithStore
+import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.repository.ReservationRepository
 import com.example.searchplacement.repository.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,12 +29,13 @@ class ReservationViewModel @Inject constructor(
     private val _reservationsWithStore = MutableStateFlow<List<ReservationWithStore>>(emptyList())
     val reservationsWithStore: StateFlow<List<ReservationWithStore>> = _reservationsWithStore
 
-
-    private val _reservationDetail = MutableStateFlow<ReservationResponse?>(null)
-    val reservationDetail: StateFlow<ReservationResponse?> = _reservationDetail
-
     private val _statusMessage = MutableStateFlow<String?>(null)
     val statusMessage: StateFlow<String?> = _statusMessage
+
+
+    private val _storeData = MutableStateFlow<StoreResponse?>(null)
+    val storeData: StateFlow<StoreResponse?> = _storeData.asStateFlow()
+
 
     val userId = MutableStateFlow<Long>(0L)
 
@@ -87,16 +91,17 @@ class ReservationViewModel @Inject constructor(
         }
     }
 
-    fun fetchReservationDetail(reservationId: Long) {
+    fun getStoreData(storeId: Long) {
         viewModelScope.launch {
-            val res = reservationRepository.getReservationDetails(reservationId)
-            if (res.isSuccessful) {
-                _reservationDetail.value = res.body()?.data
-            } else {
-                _statusMessage.value = res.body()?.message ?: "상세 조회 실패"
+            val response = storeRepository.getStoreData(storeId)
+            if (response.isSuccessful && response.body()?.data != null) {
+                _storeData.value = response.body()?.data
+            }  else {
+                Log.d("ReservationViewModel", "getStoreData: 실패")
             }
         }
     }
+
 
     fun clearStatusMessage() {
         _statusMessage.value = null
