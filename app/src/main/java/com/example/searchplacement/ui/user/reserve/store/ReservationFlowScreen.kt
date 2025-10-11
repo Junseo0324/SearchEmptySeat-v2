@@ -1,5 +1,6 @@
 package com.example.searchplacement.ui.user.reserve.store
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,8 +33,6 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.Money
@@ -44,8 +43,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -59,6 +58,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,13 +66,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.searchplacement.data.menu.MenuItemData
+import com.example.searchplacement.data.menu.MenuResponse
 import com.example.searchplacement.data.reserve.ReservationData
+import com.example.searchplacement.data.reserve.ReservationRequest
+import com.example.searchplacement.data.section.MenuSectionResponse
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.CardBorderTransparentColor
+import com.example.searchplacement.ui.theme.CategoryTextColor
 import com.example.searchplacement.ui.theme.ChipBorderColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.IconColor
@@ -86,6 +92,7 @@ import com.example.searchplacement.ui.theme.isOpenColor
 import com.example.searchplacement.ui.theme.reservationCountColor
 import com.example.searchplacement.viewmodel.ReservationViewModel
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,15 +103,18 @@ fun ReservationFlowScreen(
     storeName: String,
     businessHours: Map<String, String>,
 ) {
-    val context = LocalContext.current
     val reservationViewModel: ReservationViewModel = hiltViewModel()
+    val menus by reservationViewModel.menus.collectAsState()
+    val sections by reservationViewModel.sections.collectAsState()
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         reservationViewModel.getStoreData(storeId)
+        reservationViewModel.fetchMenusAndSections(storeId)
     }
     val store = reservationViewModel.storeData.collectAsState().value
 
     var currentStep by remember { mutableStateOf(ReservationStep.PEOPLE_COUNT) }
-//    val reservationData = remember { ReservationData() }
     val reservationData by reservationViewModel.reservationData
 
 
@@ -193,18 +203,48 @@ fun ReservationFlowScreen(
                             }
                         }
                     )
-                    ReservationStep.TIME_SELECT -> TimeSelectStep(reservationData, businessHours)
-                    ReservationStep.TABLE_SELECT -> TableSelectStep(reservationData, storeId)
-                    ReservationStep.MENU_SELECT -> MenuSelectStep(reservationData, storeId)
+                    ReservationStep.TIME_SELECT -> TimeSelectStep(
+                        reservationData = reservationData,
+                        businessHours = businessHours,
+                        onSelectedTime = { time ->
+                            reservationViewModel.updateReservation {
+                                it.copy(selectedTime = time)
+                            }
+                        }
+                    )
+                    ReservationStep.TABLE_SELECT -> TableSelectStep(
+                        reservationData = reservationData,
+                        storeId = storeId,
+                        onSelectTable = { tableId ->
+                            reservationViewModel.updateReservation {
+                                it.copy(selectedTable = tableId)
+                            }
+                        }
+                    )
+                    ReservationStep.MENU_SELECT -> MenuSelectStep(
+                        reservationData = reservationData,
+                        menus = menus,
+                        sections = sections,
+                        onUpdateMenus = { updatedMenus ->
+                            reservationViewModel.updateReservation {
+                                it.copy(
+                                    selectedMenus = updatedMenus,
+                                    totalPrice = updatedMenus.values.sumOf { item -> item.price * item.quantity }
+                                )
+                            }
+                        }
+                    )
                     ReservationStep.CONFIRMATION -> ConfirmationStep(
                         reservationData,
                         storeName,
-                        onConfirm = {
-                            /* 예약 완료 로직 */
-//                            reservationViewModel.submitReservation(storeId, reservationData)
-//                            navController.popBackStack()
+                        onPaymentSelected = { payment ->
+                            reservationViewModel.updateReservation {
+                                it.copy(
+                                    paymentMethod = payment
+                                )
+                            }
+                        },
 
-                        }
                     )
                 }
             }
@@ -212,9 +252,42 @@ fun ReservationFlowScreen(
             // 다음 단계 버튼
             Button(
                 onClick = {
-                    if (currentStep != ReservationStep.CONFIRMATION) {
-                        currentStep =
-                            ReservationStep.entries.toTypedArray()[currentStep.ordinal + 1]
+                    if (currentStep == ReservationStep.CONFIRMATION) {
+                        if (reservationData.selectedTable == null) {
+                            Toast.makeText(context, "좌석을 선택해주세요", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        val menuMap = reservationData.selectedMenus.mapValues { (_, menu) ->
+                            mapOf(
+                                "name" to menu.name,
+                                "price" to menu.price,
+                                "quantity" to menu.quantity
+                            )
+                        }
+                        val request = ReservationRequest(
+                            userId = reservationViewModel.userId.value?.toLong() ?: 0L,
+                            storePK = storeId,
+                            reservationTime = "${reservationData.selectedDate}T${reservationData.selectedTime}",
+                            tableNumber = reservationData.selectedTable?.removePrefix("table_")?.toIntOrNull() ?: 0,
+                            menu = menuMap,
+                            partySize = reservationData.numberOfPeople,
+                            paymentMethod = reservationData.paymentMethod,
+                            status = "pending"
+                        )
+                        reservationViewModel.createReservation(request) { success ->
+                            if (success) {
+                                Toast.makeText(context, "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                navController.navigate("store/$storeId") {
+                                    popUpTo("reservation_flow") { inclusive = true }
+                                }
+                            } else {
+                                Toast.makeText(context, "예약에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                    }else {
+                        currentStep = ReservationStep.entries.toTypedArray()[currentStep.ordinal + 1]
                     }
                 },
                 modifier = Modifier
@@ -244,7 +317,7 @@ fun isStepComplete(step: ReservationStep, data: ReservationData): Boolean {
         ReservationStep.DATE_SELECT -> data.selectedDate != null
         ReservationStep.TIME_SELECT -> data.selectedTime != null
         ReservationStep.TABLE_SELECT -> data.selectedTable != null
-        ReservationStep.MENU_SELECT -> true // 메뉴는 선택 안해도 됨
+        ReservationStep.MENU_SELECT -> true
         ReservationStep.CONFIRMATION -> true
     }
 }
@@ -469,14 +542,17 @@ fun DateSelectStep(
 
 // 3단계: 시간 선택
 @Composable
-fun TimeSelectStep(reservationData: ReservationData, businessHours: Map<String, String>) {
+fun TimeSelectStep(
+    reservationData: ReservationData,
+    businessHours: Map<String, String>,
+    onSelectedTime: (String) -> Unit
+) {
     val selectedDate = reservationData.selectedDate ?: LocalDate.now()
     val dayKey = getDayOfWeekKey(selectedDate)
     val hours = businessHours[dayKey] ?: "11:30 - 21:30"
 
-    // 영업시간 파싱
-    val (startHour, endHour) = parseBusinessHours(hours)
-    val timeSlots = generateTimeSlots(startHour, endHour)
+    val timeSlots = remember(hours) { generateTimeSlots(hours) }
+
 
     Column(
         modifier = Modifier
@@ -506,30 +582,24 @@ fun TimeSelectStep(reservationData: ReservationData, businessHours: Map<String, 
         }
 
         Text(
-            text = "${selectedDate.format(DateTimeFormatter.ofPattern("M월 d일"))} ${
-                getDayOfWeek(
-                    selectedDate
-                )
-            } 영업시간: $hours",
+            text = "${selectedDate.format(DateTimeFormatter.ofPattern("M월 d일"))} ${getDayOfWeek(selectedDate)} 영업시간: $hours",
             style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
         )
 
-        // 시간 선택 그리드
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
             verticalArrangement = Arrangement.spacedBy(Dimens.Default)
         ) {
-            items(timeSlots) { timeSlot ->
+            items(timeSlots) { time ->
+                val isSelected = reservationData.selectedTime == time
                 TimeSlotCard(
-                    time = timeSlot.time,
-                    availableSeats = timeSlot.availableSeats,
-                    isSelected = reservationData.selectedTime == timeSlot.time,
-                    isAvailable = timeSlot.isAvailable,
+                    time = time,
+                    availableSeats = 0,
+                    isSelected = isSelected,
+                    isAvailable = true,
                     onClick = {
-                        if (timeSlot.isAvailable) {
-                            reservationData.selectedTime = timeSlot.time
-                        }
+                        onSelectedTime(time)
                     }
                 )
             }
@@ -537,7 +607,6 @@ fun TimeSelectStep(reservationData: ReservationData, businessHours: Map<String, 
     }
 }
 
-// 시간대 카드
 @Composable
 fun TimeSlotCard(
     time: String,
@@ -548,14 +617,14 @@ fun TimeSlotCard(
 ) {
     val backgroundColor = when {
         !isAvailable -> CardBorderTransparentColor
-        isSelected -> Color(0xFFE3F2FD)
+        isSelected -> TableOptionColor
         else -> White
     }
 
     val textColor = when {
         !isAvailable -> ViewCountColor
         isSelected -> Color(0xFF1565C0)
-        else -> Color(0xFF2C3E50)
+        else -> IconTextColor
     }
 
     Card(
@@ -613,86 +682,30 @@ data class TimeSlotData(
     val isAvailable: Boolean
 )
 
-fun generateTimeSlots(startHour: Int, endHour: Int): List<TimeSlotData> {
-    val slots = mutableListOf<TimeSlotData>()
-    for (hour in startHour until endHour) {
-        slots.add(
-            TimeSlotData(
-                time = String.format("%02d:00", hour),
-                availableSeats = (5..12).random(),
-                isAvailable = hour < 14 || hour >= 15 // 예시: 14시는 예약 불가
-            )
-        )
+fun generateTimeSlots(hours: String): List<String> {
+    val parts = hours.split("-").map { it.trim() }
+    if (parts.size != 2) return emptyList()
+
+    val start = LocalTime.parse(parts[0], DateTimeFormatter.ofPattern("HH:mm"))
+    val end = LocalTime.parse(parts[1], DateTimeFormatter.ofPattern("HH:mm"))
+
+    val slots = mutableListOf<String>()
+    var time = start
+    while (time.isBefore(end)) {
+        slots.add(time.format(DateTimeFormatter.ofPattern("HH:mm")))
+        time = time.plusMinutes(60)
     }
     return slots
 }
 
-// 캘린더 뷰 (간단한 버전)
-@Composable
-fun CalendarView(
-    currentMonth: LocalDate,
-    selectedDate: LocalDate?,
-    onDateSelected: (LocalDate) -> Unit,
-    onMonthChanged: (LocalDate) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(Dimens.Medium),
-        colors = CardDefaults.cardColors(containerColor = White)
-    ) {
-        Column(
-            modifier = Modifier.padding(Dimens.Medium)
-        ) {
-            // 월 네비게이션
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { onMonthChanged(currentMonth.minusMonths(1)) }) {
-                    Icon(Icons.Default.ChevronLeft, null)
-                }
-                Text(
-                    text = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(onClick = { onMonthChanged(currentMonth.plusMonths(1)) }) {
-                    Icon(Icons.Default.ChevronRight, null)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(Dimens.Medium))
-
-            // 요일 헤더
-            Row(modifier = Modifier.fillMaxWidth()) {
-                listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa").forEach { day ->
-                    Text(
-                        text = day,
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                        color = IconColor
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(Dimens.Small))
-
-            // 날짜 그리드 (간단화)
-            Text(
-                text = "캘린더 UI는 실제 구현 시 더 상세하게 작성됩니다",
-                fontSize = 12.sp,
-                color = Color(0xFF7F8C8D),
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-    }
-}
 
 // 4단계: 좌석 선택
 @Composable
-fun TableSelectStep(reservationData: ReservationData, storeId: Long) {
+fun TableSelectStep(
+    reservationData: ReservationData,
+    storeId: Long,
+    onSelectTable: (String) -> Unit
+) {
     // 선택한 인원수에 맞는 테이블 필터링
     val availableTables = remember {
         listOf(
@@ -701,7 +714,9 @@ fun TableSelectStep(reservationData: ReservationData, storeId: Long) {
             TableOption("입구 4인석", "4인석 · 최대 4명", true, "table_3"),
             TableOption("창가 2인석", "2인석 · 최대 2명", false, "table_4")
         ).filter {
-            (it.capacity.replace("인석", "").toIntOrNull() ?: 0) >= reservationData.numberOfPeople
+            // capacity 값에서 숫자 추출 후 인원 수 이상 좌석만 표시
+            val cap = it.capacity.filter { c -> c.isDigit() }.toIntOrNull() ?: 0
+            cap >= reservationData.numberOfPeople
         }
     }
 
@@ -737,13 +752,13 @@ fun TableSelectStep(reservationData: ReservationData, storeId: Long) {
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(Dimens.Default)
         ) {
             items(availableTables) { table ->
                 TableOptionCard(
                     table = table,
                     isSelected = reservationData.selectedTable == table.id,
-                    onClick = { reservationData.selectedTable = table.id }
+                    onClick = { onSelectTable(table.id) }
                 )
             }
         }
@@ -831,38 +846,23 @@ fun TableOptionCard(
     }
 }
 
-data class MenuItemData(
-    val menuId: String,
-    val name: String,
-    val price: Int,
-    var quantity: Int = 0
-)
-
 // 5단계: 메뉴 선택
 @Composable
-fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
-    val menuCategories = remember {
-        mapOf(
-            "베이커리" to listOf(
-                MenuItemData("1", "크로와상", 3500),
-                MenuItemData("2", "버터 향이 가득한", 0)
-            ),
-            "브런치" to listOf(
-                MenuItemData("3", "샌드위치", 8500),
-                MenuItemData("4", "신선한 야채와 햄", 0)
-            ),
-            "메인" to listOf(
-                MenuItemData("5", "마르게리타 피자", 16000),
-                MenuItemData("6", "신선한 토마토와 모짜렐라", 0),
-                MenuItemData("7", "파스타", 14000),
-                MenuItemData("8", "정통 이탈리안 파스타", 0)
-            )
-        )
+fun MenuSelectStep(
+    reservationData: ReservationData,
+    menus: List<MenuResponse>,
+    sections: List<MenuSectionResponse>,
+    onUpdateMenus: (MutableMap<String, MenuItemData>) -> Unit
+) {
+    val sortSections = sections.sortedBy { it.priority }
+    val sectionedMenus = sortSections.associateWith { section ->
+        menus.filter { it.section?.sectionPK == section.sectionPK }
     }
 
     LaunchedEffect(reservationData.selectedMenus) {
         reservationData.totalPrice = reservationData.selectedMenus.values
             .sumOf { it.price * it.quantity }
+        onUpdateMenus(reservationData.selectedMenus)
     }
 
     Column(
@@ -875,30 +875,38 @@ fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(Dimens.Large)
         ) {
-            menuCategories.forEach { (category, items) ->
+            sectionedMenus.forEach { (section, menuList) ->
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.Default)) {
                         Text(
-                            text = category,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
+                            text = section.name,
+                            style = AppTextStyle.Body.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = IconTextColor)
                         )
-                        items.forEach { menu ->
-                            if (menu.price > 0) {
-                                MenuItemCard(
-                                    menu = menu,
-                                    quantity = reservationData.selectedMenus[menu.menuId]?.quantity
-                                        ?: 0,
-                                    onQuantityChanged = { newQuantity ->
-                                        if (newQuantity > 0) {
-                                            reservationData.selectedMenus[menu.menuId] =
-                                                menu.copy(quantity = newQuantity)
-                                        } else {
-                                            reservationData.selectedMenus.remove(menu.menuId)
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            menuList.forEach { menu ->
+                                if (menu.available) {
+                                    MenuItemCard(
+                                        menu = menu,
+                                        quantity = reservationData.selectedMenus[menu.menuPK.toString()]?.quantity
+                                            ?: 0,
+                                        onQuantityChanged = { newQuantity ->
+                                            val newSelectedMenus = reservationData.selectedMenus.toMutableMap()
+                                            if (newQuantity > 0) {
+                                                reservationData.selectedMenus[menu.menuPK.toString()] =
+                                                    MenuItemData(
+                                                        menuId = menu.menuPK.toString(),
+                                                        name = menu.name,
+                                                        price = menu.price,
+                                                        quantity = newQuantity
+                                                    )
+                                            } else {
+                                                reservationData.selectedMenus.remove(menu.menuPK.toString())
+                                            }
+
+                                            onUpdateMenus(newSelectedMenus)
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }
@@ -912,7 +920,7 @@ fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Small)
             ) {
                 Row(
                     modifier = Modifier
@@ -923,9 +931,7 @@ fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
                 ) {
                     Text(
                         text = "총 주문 금액",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2C3E50)
+                        style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = IconTextColor)
                     )
                     Text(
                         text = "${String.format("%,d", reservationData.totalPrice)}원",
@@ -941,42 +947,47 @@ fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
 
 @Composable
 fun MenuItemCard(
-    menu: MenuItemData,
+    menu: MenuResponse,
     quantity: Int,
     onQuantityChanged: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA))
+        shape = RoundedCornerShape(Dimens.Default),
+        colors = CardDefaults.cardColors(containerColor = StoreTabBackgroundColor)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Dimens.Medium),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
             ) {
                 Text(
                     text = menu.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
+                    style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = IconTextColor)
                 )
                 Text(
                     text = "${String.format("%,d", menu.price)}원",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF3498DB)
+                    style = AppTextStyle.Body.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold, color = reservationCountColor)
                 )
+                if (menu.description.isNotBlank()) {
+                    Text(
+                        text = menu.description,
+                        style = AppTextStyle.Body.copy(fontSize = 12.sp, color = CategoryTextColor),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
@@ -986,15 +997,17 @@ fun MenuItemCard(
                     Icon(
                         Icons.Default.Remove,
                         contentDescription = null,
-                        tint = Color(0xFF7F8C8D)
+                        tint = IconColor
                     )
                 }
 
                 Text(
                     text = quantity.toString(),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50),
+                    style = AppTextStyle.Body.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = IconTextColor
+                    ),
                     modifier = Modifier.widthIn(min = 24.dp),
                     textAlign = TextAlign.Center
                 )
@@ -1006,7 +1019,7 @@ fun MenuItemCard(
                     Icon(
                         Icons.Default.Add,
                         contentDescription = null,
-                        tint = Color(0xFF3498DB)
+                        tint = reservationCountColor
                     )
                 }
             }
@@ -1019,23 +1032,34 @@ fun MenuItemCard(
 fun ConfirmationStep(
     reservationData: ReservationData,
     storeName: String,
-    onConfirm: () -> Unit
+    onPaymentSelected: (String) -> Unit
 ) {
-    var selectedPaymentMethod by remember { mutableStateOf("카드결제") }
+    var selectedPaymentMethod by rememberSaveable {
+        mutableStateOf(reservationData.paymentMethod ?: "offline")
+    }
+
+    LaunchedEffect(selectedPaymentMethod) {
+        if (reservationData.paymentMethod != selectedPaymentMethod) {
+            onPaymentSelected(selectedPaymentMethod)
+        }
+    }
+    LaunchedEffect(reservationData.paymentMethod) {
+        reservationData.paymentMethod.let { vmValue ->
+            if (vmValue != selectedPaymentMethod) selectedPaymentMethod = vmValue
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA)),
+            .background(StoreTabBackgroundColor),
         contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         item {
             Text(
                 text = "예약 정보 확인",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2C3E50)
+                style = AppTextStyle.Body.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = IconTextColor)
             )
         }
 
@@ -1043,14 +1067,14 @@ fun ConfirmationStep(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(Dimens.Medium),
+                colors = CardDefaults.cardColors(containerColor = White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Medium)
                 ) {
                     InfoRow("매장", storeName)
                     InfoRow("인원", "${reservationData.numberOfPeople}명")
@@ -1070,20 +1094,18 @@ fun ConfirmationStep(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    shape = RoundedCornerShape(Dimens.Medium),
+                    colors = CardDefaults.cardColors(containerColor = White)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(Dimens.Default)
                     ) {
                         Text(
                             text = "주문 메뉴",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
+                            style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = IconTextColor)
                         )
 
                         reservationData.selectedMenus.values.forEach { menu ->
@@ -1093,18 +1115,16 @@ fun ConfirmationStep(
                             ) {
                                 Text(
                                     text = "${menu.name} × ${menu.quantity}",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF2C3E50)
+                                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
                                 )
                                 Text(
                                     text = "${String.format("%,d", menu.price * menu.quantity)}원",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF2C3E50)
+                                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
                                 )
                             }
                         }
 
-                        Divider(color = Color(0xFFE0E0E0))
+                        HorizontalDivider(color = ChipBorderColor)
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -1112,15 +1132,11 @@ fun ConfirmationStep(
                         ) {
                             Text(
                                 text = "총 금액",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2C3E50)
+                                style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = IconTextColor)
                             )
                             Text(
                                 text = "${String.format("%,d", reservationData.totalPrice)}원",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF3498DB)
+                                style = AppTextStyle.Body.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = reservationCountColor)
                             )
                         }
                     }
@@ -1132,20 +1148,18 @@ fun ConfirmationStep(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(Dimens.Medium),
+                colors = CardDefaults.cardColors(containerColor = White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Default)
                 ) {
                     Text(
                         text = "결제 방법",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2C3E50)
+                        style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = IconTextColor)
                     )
 
                     Row(
@@ -1155,22 +1169,28 @@ fun ConfirmationStep(
                         PaymentMethodButton(
                             icon = Icons.Default.CreditCard,
                             label = "카드결제",
-                            isSelected = selectedPaymentMethod == "카드결제",
-                            onClick = { selectedPaymentMethod = "카드결제" },
+                            isSelected = selectedPaymentMethod == "card",
+                            onClick = {
+                                selectedPaymentMethod = "card"
+                            },
                             modifier = Modifier.weight(1f)
                         )
                         PaymentMethodButton(
                             icon = Icons.Default.PhoneAndroid,
                             label = "모바일결제",
-                            isSelected = selectedPaymentMethod == "모바일결제",
-                            onClick = { selectedPaymentMethod = "모바일결제" },
+                            isSelected = selectedPaymentMethod == "mobile",
+                            onClick = {
+                                selectedPaymentMethod = "mobile"
+                            },
                             modifier = Modifier.weight(1f)
                         )
                         PaymentMethodButton(
                             icon = Icons.Default.Money,
                             label = "현장결제",
-                            isSelected = selectedPaymentMethod == "현장결제",
-                            onClick = { selectedPaymentMethod = "현장결제" },
+                            isSelected = selectedPaymentMethod == "offline",
+                            onClick = {
+                                selectedPaymentMethod = "offline"
+                            },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -1188,14 +1208,11 @@ fun InfoRow(label: String, value: String) {
     ) {
         Text(
             text = label,
-            fontSize = 14.sp,
-            color = Color(0xFF7F8C8D)
+            style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
         )
         Text(
             text = value,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF2C3E50)
+            style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor, fontWeight = FontWeight.Bold)
         )
     }
 }
@@ -1210,30 +1227,30 @@ fun PaymentMethodButton(
 ) {
     Card(
         modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Dimens.Default),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFE3F2FD) else Color(0xFFF8F9FA)
+            containerColor = if (isSelected) TableOptionColor else StoreTabBackgroundColor
         ),
-        border = if (isSelected) BorderStroke(2.dp, Color(0xFF3498DB)) else null
+        border = if (isSelected) BorderStroke(Dimens.Nano, reservationCountColor) else null
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Dimens.Medium),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(Dimens.Small)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) Color(0xFF3498DB) else Color(0xFF7F8C8D),
+                tint = if (isSelected) reservationCountColor else IconColor,
                 modifier = Modifier.size(24.dp)
             )
             Text(
                 text = label,
                 fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) Color(0xFF3498DB) else Color(0xFF2C3E50)
+                color = if (isSelected) reservationCountColor else IconTextColor
             )
         }
     }

@@ -5,13 +5,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.data.menu.MenuResponse
 import com.example.searchplacement.data.reserve.ReservationData
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.data.reserve.ReservationWithStore
+import com.example.searchplacement.data.section.MenuSectionResponse
 import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.repository.MenuRepository
+import com.example.searchplacement.repository.MenuSectionRepository
 import com.example.searchplacement.repository.ReservationRepository
 import com.example.searchplacement.repository.StoreRepository
+import com.example.searchplacement.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +28,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ReservationViewModel @Inject constructor(
     private val reservationRepository: ReservationRepository,
-    private val storeRepository: StoreRepository
+    private val storeRepository: StoreRepository,
+    private val menuRepository: MenuRepository,
+    private val menuSectionRepository: MenuSectionRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _reservations = MutableStateFlow<List<ReservationResponse>>(emptyList())
@@ -38,20 +46,23 @@ class ReservationViewModel @Inject constructor(
     private val _reservationData = mutableStateOf(ReservationData())
     val reservationData: State<ReservationData> = _reservationData
 
+    private val _menus = MutableStateFlow<List<MenuResponse>>(emptyList())
+    val menus: StateFlow<List<MenuResponse>> = _menus.asStateFlow()
+
+    private val _sections = MutableStateFlow<List<MenuSectionResponse>>(emptyList())
+    val sections: StateFlow<List<MenuSectionResponse>> = _sections.asStateFlow()
+
+    private val _userId = MutableStateFlow<String?>(null)
+    val userId: StateFlow<String?> = _userId.asStateFlow()
 
     fun updateReservation(block: (ReservationData) -> ReservationData) {
         _reservationData.value = block(_reservationData.value)
-    }
-
-    fun reset() {
-        _reservationData.value = ReservationData()
     }
 
     private val _storeData = MutableStateFlow<StoreResponse?>(null)
     val storeData: StateFlow<StoreResponse?> = _storeData.asStateFlow()
 
 
-    val userId = MutableStateFlow<Long>(0L)
 
     fun createReservation(request: ReservationRequest, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -66,6 +77,16 @@ class ReservationViewModel @Inject constructor(
             val res = reservationRepository.cancelReservation(reservationId)
             _statusMessage.value = res.body()?.message ?: "예약 취소 실패"
             onComplete(res.isSuccessful)
+        }
+    }
+
+    fun fetchMenusAndSections(storeId: Long) {
+        viewModelScope.launch {
+            _userId.value = userRepository.getUser()?.userId
+            val menuRes = menuRepository.getMenus(storeId)
+            val sectionRes = menuSectionRepository.getSections(storeId)
+            if (menuRes.isSuccessful) _menus.value = menuRes.body()?.data ?: emptyList()
+            if (sectionRes.isSuccessful) _sections.value = sectionRes.body()?.data ?: emptyList()
         }
     }
 
