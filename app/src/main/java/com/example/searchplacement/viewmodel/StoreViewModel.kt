@@ -27,15 +27,6 @@ class StoreViewModel @Inject constructor(
     private val _storeData = MutableStateFlow<StoreResponse?>(null)
     val storeData: StateFlow<StoreResponse?> = _storeData.asStateFlow()
 
-    private val _userId = MutableStateFlow<String?>(null)
-    val userId: StateFlow<String?> = _userId.asStateFlow()
-
-    fun getUserId() {
-        viewModelScope.launch {
-            _userId.value = userRepository.getUser()?.userId
-        }
-    }
-
     fun getStoreData(storeId: Long) {
         viewModelScope.launch {
             val response = storeRepository.getStoreData(storeId)

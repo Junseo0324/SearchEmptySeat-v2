@@ -12,13 +12,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.viewmodel.FavoriteViewModel
 
 @Composable
-fun FavoriteScreen(navController: NavHostController, favoriteViewModel: FavoriteViewModel) {
+fun FavoriteScreen(navController: NavHostController) {
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
 
     val favoriteListState by favoriteViewModel.favoriteList.collectAsState()
 

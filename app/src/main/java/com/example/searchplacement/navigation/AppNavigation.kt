@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.example.searchplacement.data.reserve.ReservationDraft
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.ui.user.category.CategoryScreen
 import com.example.searchplacement.ui.user.favorite.FavoriteScreen
@@ -21,19 +20,13 @@ import com.example.searchplacement.ui.user.login.RegisterScreen
 import com.example.searchplacement.ui.user.login.UpdatePassword
 import com.example.searchplacement.ui.user.reserve.my.ReserveScreen
 import com.example.searchplacement.ui.user.reserve.store.ReservationFlowScreen
-import com.example.searchplacement.ui.user.reserve.store.SeatMenuSelectionScreen
 import com.example.searchplacement.ui.user.search.SearchScreen
 import com.example.searchplacement.ui.user.setting.InformationScreen
 import com.example.searchplacement.ui.user.setting.SettingScreen
 import com.example.searchplacement.ui.user.store.StoreMapScreen
 import com.example.searchplacement.ui.user.store.StoreScreen
-import com.example.searchplacement.viewmodel.FavoriteViewModel
 import com.example.searchplacement.viewmodel.LoginViewModel
 import com.example.searchplacement.viewmodel.MainViewModel
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
-import com.example.searchplacement.viewmodel.MenuViewModel
-import com.example.searchplacement.viewmodel.PlacementViewModel
-import com.example.searchplacement.viewmodel.StoreViewModel
 
 @Composable
 fun LoginNavigation(navController: NavHostController,loginViewModel: LoginViewModel) {
@@ -52,12 +45,7 @@ fun LoginNavigation(navController: NavHostController,loginViewModel: LoginViewMo
 @Composable
 fun MainNavigation(
     navController: NavHostController,
-    mainViewModel: MainViewModel,
-    storeViewModel: StoreViewModel,
-    favoriteViewModel: FavoriteViewModel,
-    menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel,
-    placementViewModel: PlacementViewModel
+    mainViewModel: MainViewModel
 ) {
 
     NavHost(navController = navController, startDestination = "main") {
@@ -66,18 +54,9 @@ fun MainNavigation(
             route = "main"
         ) {
             composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
-            composable(MainBottomNavItem.Category.screenRoute) {
-                CategoryScreen(
-                    navController
-                )
-            }
+            composable(MainBottomNavItem.Category.screenRoute) { CategoryScreen(navController) }
             composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
-            composable(MainBottomNavItem.Favorite.screenRoute) {
-                FavoriteScreen(
-                    navController,
-                    favoriteViewModel
-                )
-            }
+            composable(MainBottomNavItem.Favorite.screenRoute) { FavoriteScreen(navController) }
             composable(MainBottomNavItem.Setting.screenRoute) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry("main")
@@ -99,11 +78,7 @@ fun MainNavigation(
                 arguments = listOf(navArgument("storeId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
-                StoreScreen(
-                    navController,
-                    storeId,
-                    storeViewModel
-                )
+                StoreScreen(navController, storeId)
             }
 
             composable("map_with_store") {
@@ -130,19 +105,6 @@ fun MainNavigation(
                 UpdatePassword(
                     navController = navController,
                     mainViewModel = mainViewModel
-                )
-            }
-            composable("seatMenuSelection") {
-                val reservationDraft = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<ReservationDraft>("reservationDraft") ?: return@composable
-
-                SeatMenuSelectionScreen(
-                    navController = navController,
-                    placementViewModel = placementViewModel,
-                    reservationDraft = reservationDraft,
-                    menuViewModel = menuViewModel,
-                    sectionViewModel = menuSectionViewModel
                 )
             }
         }

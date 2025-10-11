@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
@@ -54,9 +55,10 @@ import com.example.searchplacement.viewmodel.StoreViewModel
 @Composable
 fun StoreScreen(
     navController: NavHostController,
-    storeId: Long,
-    storeViewModel: StoreViewModel
+    storeId: Long
 ) {
+    val storeViewModel: StoreViewModel = hiltViewModel()
+
     val tabs = remember { listOf("예약현황", "리뷰", "자리현황", "메뉴") }
 
     var selectedTabIndex by remember { mutableStateOf(0) }
