@@ -94,7 +94,7 @@ fun ConfirmationStep(
                             ?: ""
                     )
                     InfoRow("시간", reservationData.selectedTime ?: "")
-                    InfoRow("좌석", getTableName(reservationData.selectedTable))
+                    InfoRow("좌석", reservationData.selectedTable ?: "")
                 }
             }
         }

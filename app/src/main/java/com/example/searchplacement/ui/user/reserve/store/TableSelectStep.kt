@@ -20,6 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.searchplacement.data.placement.PlacementResponse
+import com.example.searchplacement.data.placement.TableLayoutData
+import com.example.searchplacement.data.placement.TableOption
 import com.example.searchplacement.data.reserve.ReservationData
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
@@ -28,23 +31,17 @@ import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.StoreTabBackgroundColor
 import com.example.searchplacement.ui.theme.reservationCountColor
 
-// 4단계: 좌석 선택
 @Composable
 fun TableSelectStep(
     reservationData: ReservationData,
-    storeId: Long,
+    placement: PlacementResponse?,
     onSelectTable: (String) -> Unit
 ) {
-    val availableTables = remember {
-        listOf(
-            TableOption("중앙 4인석", "4인석 · 최대 4명", true, "table_1"),
-            TableOption("대형 8인석", "8인석 · 최대 8명", true, "table_2"),
-            TableOption("입구 4인석", "4인석 · 최대 4명", true, "table_3"),
-            TableOption("창가 2인석", "2인석 · 최대 2명", false, "table_4")
-        ).filter {
-            val cap = it.capacity.filter { c -> c.isDigit() }.toIntOrNull() ?: 0
-            cap >= reservationData.numberOfPeople
-        }
+    val availableTables = remember(reservationData.numberOfPeople, placement) {
+        mapPlacementToTableOptions(
+            layout = placement?.layout ?: emptyMap(),
+            requiredPeople = reservationData.numberOfPeople
+        )
     }
 
     Column(
@@ -86,5 +83,22 @@ fun TableSelectStep(
                 )
             }
         }
+    }
+}
+
+fun mapPlacementToTableOptions(
+    layout: Map<String, TableLayoutData>,
+    requiredPeople: Int
+): List<TableOption> {
+    return layout.map { (_, data) ->
+        val capacityText = "${data.table}인석 · 최대 ${data.table}명"
+        val isAvailable = data.status == 0 && data.table >= requiredPeople
+
+        TableOption(
+            name = "${data.table}인 테이블",
+            capacity = capacityText,
+            isAvailable = isAvailable,
+            id = "${data.table} 인석 테이블"
+        )
     }
 }

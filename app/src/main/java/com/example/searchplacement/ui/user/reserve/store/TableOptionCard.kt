@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.searchplacement.data.placement.TableOption
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.CardBorderTransparentColor
 import com.example.searchplacement.ui.theme.Dimens
@@ -33,13 +34,6 @@ import com.example.searchplacement.ui.theme.TableOptionColor
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.theme.reservationCountColor
 
-
-data class TableOption(
-    val name: String,
-    val capacity: String,
-    val isAvailable: Boolean,
-    val id: String
-)
 
 @Composable
 fun TableOptionCard(

@@ -5,7 +5,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.menu.MenuResponse
 import com.example.searchplacement.data.placement.PlacementResponse
 import com.example.searchplacement.data.reserve.ReservationData
@@ -59,7 +58,7 @@ class ReservationViewModel @Inject constructor(
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
 
-    private val _placement = MutableStateFlow<ApiResponse<PlacementResponse>?>(null)
+    private val _placement = MutableStateFlow<PlacementResponse?>(null)
     val placement = _placement.asStateFlow()
 
 
@@ -93,8 +92,7 @@ class ReservationViewModel @Inject constructor(
             try {
                 val response = placementRepository.getPlacementByStore(storePK)
                 if (response.isSuccessful && response.body() != null) {
-                    _placement.value = response.body()
-
+                    _placement.value = response.body()?.data
                 } else {
 
                 }

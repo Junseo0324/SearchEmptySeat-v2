@@ -170,7 +170,7 @@ fun ReservationFlowScreen(
                     )
                     ReservationStep.TABLE_SELECT -> TableSelectStep(
                         reservationData = reservationData,
-                        storeId = storeId,
+                        placement = placement,
                         onSelectTable = { tableId ->
                             reservationViewModel.updateReservation {
                                 it.copy(selectedTable = tableId)
