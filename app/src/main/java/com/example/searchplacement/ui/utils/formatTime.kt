@@ -1,5 +1,6 @@
 package com.example.searchplacement.ui.utils
 
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -65,8 +66,15 @@ fun getDayOfWeek(date: LocalDate): String {
 }
 
 fun getDayOfWeekKey(date: LocalDate): String {
-    val days = listOf("일", "월", "화", "수", "목", "금", "토")
-    return days[date.dayOfWeek.value % 7]
+    return when (date.dayOfWeek) {
+        DayOfWeek.MONDAY -> "월요일"
+        DayOfWeek.TUESDAY -> "화요일"
+        DayOfWeek.WEDNESDAY -> "수요일"
+        DayOfWeek.THURSDAY -> "목요일"
+        DayOfWeek.FRIDAY -> "금요일"
+        DayOfWeek.SATURDAY -> "토요일"
+        DayOfWeek.SUNDAY -> "일요일"
+    }
 }
 
 

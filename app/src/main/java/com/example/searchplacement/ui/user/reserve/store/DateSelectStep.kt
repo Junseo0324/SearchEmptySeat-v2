@@ -33,6 +33,8 @@ import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.StoreTabBackgroundColor
 import com.example.searchplacement.ui.theme.reservationCountColor
+import com.example.searchplacement.ui.utils.getDayOfWeek
+import com.example.searchplacement.ui.utils.getDayOfWeekKey
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -102,7 +104,7 @@ fun DateSelectStep(
                         )
                     )
                     val dayKey = getDayOfWeekKey(selectedDate)
-                    val hours = businessHours[dayKey] ?: "정보 없음"
+                    val hours = businessHours[dayKey] ?: "휴무일"
                     Text(
                         text = "영업시간: $hours",
                         style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
