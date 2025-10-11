@@ -5,7 +5,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.menu.MenuResponse
+import com.example.searchplacement.data.placement.PlacementResponse
 import com.example.searchplacement.data.reserve.ReservationData
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
@@ -14,6 +16,7 @@ import com.example.searchplacement.data.section.MenuSectionResponse
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.repository.MenuRepository
 import com.example.searchplacement.repository.MenuSectionRepository
+import com.example.searchplacement.repository.PlacementRepository
 import com.example.searchplacement.repository.ReservationRepository
 import com.example.searchplacement.repository.StoreRepository
 import com.example.searchplacement.repository.UserRepository
@@ -31,7 +34,8 @@ class ReservationViewModel @Inject constructor(
     private val storeRepository: StoreRepository,
     private val menuRepository: MenuRepository,
     private val menuSectionRepository: MenuSectionRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val placementRepository: PlacementRepository
 ) : ViewModel() {
 
     private val _reservations = MutableStateFlow<List<ReservationResponse>>(emptyList())
@@ -55,6 +59,10 @@ class ReservationViewModel @Inject constructor(
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
 
+    private val _placement = MutableStateFlow<ApiResponse<PlacementResponse>?>(null)
+    val placement = _placement.asStateFlow()
+
+
     fun updateReservation(block: (ReservationData) -> ReservationData) {
         _reservationData.value = block(_reservationData.value)
     }
@@ -77,6 +85,21 @@ class ReservationViewModel @Inject constructor(
             val res = reservationRepository.cancelReservation(reservationId)
             _statusMessage.value = res.body()?.message ?: "예약 취소 실패"
             onComplete(res.isSuccessful)
+        }
+    }
+
+    fun getPlacementByStore(storePK: Long) {
+        viewModelScope.launch {
+            try {
+                val response = placementRepository.getPlacementByStore(storePK)
+                if (response.isSuccessful && response.body() != null) {
+                    _placement.value = response.body()
+
+                } else {
+
+                }
+            } catch (e: Exception) {
+            }
         }
     }
 
