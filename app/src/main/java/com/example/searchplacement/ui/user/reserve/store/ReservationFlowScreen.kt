@@ -231,9 +231,7 @@ fun ReservationFlowScreen(
                         reservationViewModel.createReservation(request) { success ->
                             if (success) {
                                 Toast.makeText(context, "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                navController.navigate("store/$storeId") {
-                                    popUpTo("reservation_flow") { inclusive = true }
-                                }
+                                navController.popBackStack("store/$storeId", false)
                             } else {
                                 Toast.makeText(context, "예약에 실패했습니다.", Toast.LENGTH_SHORT).show()
                             }
