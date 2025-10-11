@@ -74,16 +74,16 @@ fun MenuSelectStep(
                                             ?: 0,
                                         onQuantityChanged = { newQuantity ->
                                             val newSelectedMenus = reservationData.selectedMenus.toMutableMap()
+
                                             if (newQuantity > 0) {
-                                                reservationData.selectedMenus[menu.menuPK.toString()] =
-                                                    MenuItemData(
-                                                        menuId = menu.menuPK.toString(),
-                                                        name = menu.name,
-                                                        price = menu.price,
-                                                        quantity = newQuantity
-                                                    )
+                                                newSelectedMenus[menu.menuPK.toString()] = MenuItemData(
+                                                    menuId = menu.menuPK.toString(),
+                                                    name = menu.name,
+                                                    price = menu.price,
+                                                    quantity = newQuantity
+                                                )
                                             } else {
-                                                reservationData.selectedMenus.remove(menu.menuPK.toString())
+                                                newSelectedMenus.remove(menu.menuPK.toString())
                                             }
 
                                             onUpdateMenus(newSelectedMenus)

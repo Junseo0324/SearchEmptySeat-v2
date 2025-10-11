@@ -97,7 +97,7 @@ fun MenuItemCard(
                         fontWeight = FontWeight.Bold,
                         color = IconTextColor
                     ),
-                    modifier = Modifier.widthIn(min = 24.dp),
+                    modifier = Modifier.widthIn(min = Dimens.Large),
                     textAlign = TextAlign.Center
                 )
 
