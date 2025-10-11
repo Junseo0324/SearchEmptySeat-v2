@@ -136,7 +136,7 @@ fun StoreScreen(
         storeData.value?.let {
             Button(
                 onClick = {
-                    navController.navigate("reserveStore")
+                    navController.navigate("reservation_store/${storeId}")
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

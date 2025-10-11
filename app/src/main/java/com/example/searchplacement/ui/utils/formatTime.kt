@@ -1,6 +1,9 @@
 package com.example.searchplacement.ui.utils
 
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -37,3 +40,50 @@ fun sortDay(day: String): Int = when (day) {
     "일요일" -> 7
     else -> 8
 }
+
+
+
+
+fun getDatesForMonth(year: Int, month: Int): List<LocalDate> {
+    val firstOfMonth = LocalDate.of(year, month, 1)
+    val lastOfMonth = firstOfMonth.withDayOfMonth(firstOfMonth.lengthOfMonth())
+
+    val startDayOfWeek = firstOfMonth.dayOfWeek.value % 7
+    val totalDays = startDayOfWeek + lastOfMonth.dayOfMonth
+    val totalWeeks = (totalDays + 6) / 7
+    val totalCells = totalWeeks * 7
+
+    val firstDate = firstOfMonth.minusDays(startDayOfWeek.toLong())
+
+    return List(totalCells) { firstDate.plusDays(it.toLong()) }
+}
+
+
+fun getDayOfWeek(date: LocalDate): String {
+    val days = listOf("일", "월", "화", "수", "목", "금", "토")
+    return "${days[date.dayOfWeek.value % 7]}요일"
+}
+
+fun getDayOfWeekKey(date: LocalDate): String {
+    val days = listOf("일", "월", "화", "수", "목", "금", "토")
+    return days[date.dayOfWeek.value % 7]
+}
+
+
+fun generateTimeSlots(hours: String): List<String> {
+    val parts = hours.split("-").map { it.trim() }
+    if (parts.size != 2) return emptyList()
+
+    val start = LocalTime.parse(parts[0], DateTimeFormatter.ofPattern("HH:mm"))
+    val end = LocalTime.parse(parts[1], DateTimeFormatter.ofPattern("HH:mm"))
+
+    val slots = mutableListOf<String>()
+    var time = start
+    while (time.isBefore(end)) {
+        slots.add(time.format(DateTimeFormatter.ofPattern("HH:mm")))
+        time = time.plusMinutes(60)
+    }
+    return slots
+}
+
+

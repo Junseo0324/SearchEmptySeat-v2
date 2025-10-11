@@ -20,8 +20,8 @@ import com.example.searchplacement.ui.user.login.LoginScreen
 import com.example.searchplacement.ui.user.login.RegisterScreen
 import com.example.searchplacement.ui.user.login.UpdatePassword
 import com.example.searchplacement.ui.user.reserve.my.ReserveScreen
+import com.example.searchplacement.ui.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.ui.user.reserve.store.SeatMenuSelectionScreen
-import com.example.searchplacement.ui.user.reserve.store.StoreReservationScreen
 import com.example.searchplacement.ui.user.search.SearchScreen
 import com.example.searchplacement.ui.user.setting.InformationScreen
 import com.example.searchplacement.ui.user.setting.SettingScreen
@@ -113,7 +113,13 @@ fun MainNavigation(
 
                 StoreMapScreen(navController, store)
             }
-            composable("reserveStore") { StoreReservationScreen(navController, storeViewModel) }
+            composable(
+                route = "reservation_store/{storeId}",
+                arguments = listOf(navArgument("storeId") { type = NavType.LongType })
+            ){ backStackEntry ->
+                val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
+                ReservationFlowScreen(navController,storeId)
+            }
             composable("checkPassword") {
                 CheckPassword(
                     navController = navController,
