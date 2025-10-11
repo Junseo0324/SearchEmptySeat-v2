@@ -31,6 +31,7 @@ val StoreTabBackgroundColor = Color(0xFFF8F9FA)
 val isOpenColor = Color(0xFF27AE60)
 val reservationCountColor = Color(0xFF3498DB)
 val ChipBorderColor = Color(0xFFE0E0E0)
+val TableOptionColor = Color(0xFFE3F2FD)
 
 
 //카드 테두리 색상

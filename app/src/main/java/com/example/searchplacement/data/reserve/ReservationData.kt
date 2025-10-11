@@ -8,5 +8,6 @@ data class ReservationData(
     var selectedTime: String? = null,
     var selectedTable: String? = null,
     var selectedMenus: MutableMap<Long, Int> = mutableMapOf(),
-    var totalPrice: Int = 0
+    var totalPrice: Int = 0,
+    var paymentMethod: String = "offline"
 )

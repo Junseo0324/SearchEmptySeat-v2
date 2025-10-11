@@ -1,8 +1,11 @@
 package com.example.searchplacement.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.data.reserve.ReservationData
 import com.example.searchplacement.data.reserve.ReservationRequest
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.data.reserve.ReservationWithStore
@@ -32,6 +35,17 @@ class ReservationViewModel @Inject constructor(
     private val _statusMessage = MutableStateFlow<String?>(null)
     val statusMessage: StateFlow<String?> = _statusMessage
 
+    private val _reservationData = mutableStateOf(ReservationData())
+    val reservationData: State<ReservationData> = _reservationData
+
+
+    fun updateReservation(block: (ReservationData) -> ReservationData) {
+        _reservationData.value = block(_reservationData.value)
+    }
+
+    fun reset() {
+        _reservationData.value = ReservationData()
+    }
 
     private val _storeData = MutableStateFlow<StoreResponse?>(null)
     val storeData: StateFlow<StoreResponse?> = _storeData.asStateFlow()

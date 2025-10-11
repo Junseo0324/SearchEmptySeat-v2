@@ -30,8 +30,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -65,6 +63,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,6 +79,7 @@ import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.RedPoint
 import com.example.searchplacement.ui.theme.StoreTabBackgroundColor
+import com.example.searchplacement.ui.theme.TableOptionColor
 import com.example.searchplacement.ui.theme.ViewCountColor
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.theme.isOpenColor
@@ -96,7 +96,7 @@ fun ReservationFlowScreen(
     storeName: String,
     businessHours: Map<String, String>,
 ) {
-
+    val context = LocalContext.current
     val reservationViewModel: ReservationViewModel = hiltViewModel()
     LaunchedEffect(Unit) {
         reservationViewModel.getStoreData(storeId)
@@ -104,7 +104,9 @@ fun ReservationFlowScreen(
     val store = reservationViewModel.storeData.collectAsState().value
 
     var currentStep by remember { mutableStateOf(ReservationStep.PEOPLE_COUNT) }
-    val reservationData = remember { ReservationData() }
+//    val reservationData = remember { ReservationData() }
+    val reservationData by reservationViewModel.reservationData
+
 
     val stepProgress = when (currentStep) {
         ReservationStep.PEOPLE_COUNT -> 0.16f
@@ -174,8 +176,23 @@ fun ReservationFlowScreen(
             // 단계별 컨텐츠
             Box(modifier = Modifier.weight(1f)) {
                 when (currentStep) {
-                    ReservationStep.PEOPLE_COUNT -> PeopleCountStep(reservationData)
-                    ReservationStep.DATE_SELECT -> DateSelectStep(reservationData, businessHours)
+                    ReservationStep.PEOPLE_COUNT -> PeopleCountStep(
+                        reservationData = reservationData,
+                        onChangePeople = { newCount ->
+                            reservationViewModel.updateReservation {
+                                it.copy(numberOfPeople = newCount)
+                            }
+                        }
+                    )
+                    ReservationStep.DATE_SELECT -> DateSelectStep(
+                        reservationData = reservationData,
+                        businessHours = businessHours,
+                        onSelectedDate = { date ->
+                            reservationViewModel.updateReservation {
+                                it.copy(selectedDate = date)
+                            }
+                        }
+                    )
                     ReservationStep.TIME_SELECT -> TimeSelectStep(reservationData, businessHours)
                     ReservationStep.TABLE_SELECT -> TableSelectStep(reservationData, storeId)
                     ReservationStep.MENU_SELECT -> MenuSelectStep(reservationData, storeId)
@@ -186,6 +203,7 @@ fun ReservationFlowScreen(
                             /* 예약 완료 로직 */
 //                            reservationViewModel.submitReservation(storeId, reservationData)
 //                            navController.popBackStack()
+
                         }
                     )
                 }
@@ -233,7 +251,10 @@ fun isStepComplete(step: ReservationStep, data: ReservationData): Boolean {
 
 // 1단계: 방문 인원
 @Composable
-fun PeopleCountStep(reservationData: ReservationData) {
+fun PeopleCountStep(
+    reservationData: ReservationData,
+    onChangePeople: (Int) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -279,7 +300,9 @@ fun PeopleCountStep(reservationData: ReservationData) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { if (reservationData.numberOfPeople > 1) reservationData.numberOfPeople-- },
+                        onClick = {
+                            if (reservationData.numberOfPeople > 1) onChangePeople(reservationData.numberOfPeople - 1)
+                        },
                         modifier = Modifier
                             .size(56.dp)
                             .border(Dimens.Nano, ChipBorderColor, CircleShape)
@@ -301,7 +324,10 @@ fun PeopleCountStep(reservationData: ReservationData) {
                     }
 
                     IconButton(
-                        onClick = { if (reservationData.numberOfPeople < 8) reservationData.numberOfPeople++ },
+                        onClick = {
+                            if (reservationData.numberOfPeople < 8)
+                                onChangePeople(reservationData.numberOfPeople + 1)
+                        },
                         modifier = Modifier
                             .size(56.dp)
                             .border(Dimens.Nano, ChipBorderColor, CircleShape)
@@ -365,13 +391,12 @@ fun PeopleCountStep(reservationData: ReservationData) {
 
 // 2단계: 날짜 선택
 @Composable
-fun DateSelectStep(reservationData: ReservationData, businessHours: Map<String, String>) {
+fun DateSelectStep(
+    reservationData: ReservationData,
+    businessHours: Map<String, String>,
+    onSelectedDate: (LocalDate) -> Unit
+) {
     var selectedDate by remember { mutableStateOf(reservationData.selectedDate ?: LocalDate.now()) }
-    val currentMonth = remember { mutableStateOf(LocalDate.now()) }
-
-    LaunchedEffect(selectedDate) {
-        reservationData.selectedDate = selectedDate
-    }
 
     Column(
         modifier = Modifier
@@ -380,6 +405,7 @@ fun DateSelectStep(reservationData: ReservationData, businessHours: Map<String, 
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
@@ -392,19 +418,22 @@ fun DateSelectStep(reservationData: ReservationData, businessHours: Map<String, 
             )
             Text(
                 text = "방문 날짜를 선택해주세요",
-                style = AppTextStyle.Body.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = IconTextColor)
+                style = AppTextStyle.Body.copy(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = IconTextColor
+                )
             )
         }
 
-        // 캘린더
-        CalendarView(
-            currentMonth = currentMonth.value,
+        CustomCalendarView(
             selectedDate = selectedDate,
-            onDateSelected = { selectedDate = it },
-            onMonthChanged = { currentMonth.value = it }
+            onDateSelected = { date ->
+                selectedDate = date
+                onSelectedDate(date)
+            }
         )
 
-        // 선택된 날짜 정보
         if (reservationData.selectedDate != null) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -419,11 +448,12 @@ fun DateSelectStep(reservationData: ReservationData, businessHours: Map<String, 
                 ) {
                     Text(
                         text = "선택된 날짜: ${selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))} ${
-                            getDayOfWeek(
-                                selectedDate
-                            )
+                            getDayOfWeek(selectedDate)
                         }",
-                        style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold, color = Color(0xFF1565C0))
+                        style = AppTextStyle.Body.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1565C0)
+                        )
                     )
                     val dayKey = getDayOfWeekKey(selectedDate)
                     val hours = businessHours[dayKey] ?: "정보 없음"
@@ -467,7 +497,11 @@ fun TimeSelectStep(reservationData: ReservationData, businessHours: Map<String, 
             )
             Text(
                 text = "방문 시간을 선택해주세요",
-                style = AppTextStyle.Body.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = IconTextColor)
+                style = AppTextStyle.Body.copy(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = IconTextColor
+                )
             )
         }
 
@@ -545,7 +579,10 @@ fun TimeSlotCard(
             )
             Text(
                 text = if (isAvailable) "${availableSeats}석 남음" else "예약 불가",
-                style = AppTextStyle.Body.copy(fontSize = 12.sp, color = if (isAvailable) isOpenColor else RedPoint)
+                style = AppTextStyle.Body.copy(
+                    fontSize = 12.sp,
+                    color = if (isAvailable) isOpenColor else RedPoint
+                )
             )
         }
     }
@@ -664,7 +701,7 @@ fun TableSelectStep(reservationData: ReservationData, storeId: Long) {
             TableOption("입구 4인석", "4인석 · 최대 4명", true, "table_3"),
             TableOption("창가 2인석", "2인석 · 최대 2명", false, "table_4")
         ).filter {
-            it.capacity.replace("인석", "").toIntOrNull() ?: 0 >= reservationData.numberOfPeople
+            (it.capacity.replace("인석", "").toIntOrNull() ?: 0) >= reservationData.numberOfPeople
         }
     }
 
@@ -732,9 +769,9 @@ fun TableOptionCard(
             .clickable(enabled = table.isAvailable, onClick = onClick),
         shape = RoundedCornerShape(Dimens.Default),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
+            containerColor = if (isSelected) TableOptionColor else White
         ),
-        border = if (isSelected) BorderStroke(Dimens.Nano, Color(0xFF3498DB)) else null
+        border = if (isSelected) BorderStroke(Dimens.Nano, reservationCountColor) else null
     ) {
         Row(
             modifier = Modifier
@@ -744,38 +781,40 @@ fun TableOptionCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
             ) {
                 Text(
                     text = table.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
+                    style = AppTextStyle.Body.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = IconTextColor
+                    )
                 )
                 Text(
                     text = table.capacity,
-                    fontSize = 14.sp,
-                    color = Color(0xFF7F8C8D)
+                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
                 )
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
                         .background(
-                            if (table.isAvailable) Color(0xFFD5EDDA) else Color(0xFFF5F5F5),
+                            if (table.isAvailable) Color(0xFFD5EDDA) else CardBorderTransparentColor,
                             shape = RoundedCornerShape(6.dp)
                         )
                         .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Text(
                         text = if (table.isAvailable) "예약가능" else "예약불가",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (table.isAvailable) Color(0xFF27AE60) else Color(0xFF95A5A6)
+                        style = AppTextStyle.Body.copy(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (table.isAvailable) Color(0xFF27AE60) else Color(0xFF95A5A6)
+                        )
                     )
                 }
 
@@ -783,7 +822,7 @@ fun TableOptionCard(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = Color(0xFF3498DB),
+                        tint = reservationCountColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -791,6 +830,13 @@ fun TableOptionCard(
         }
     }
 }
+
+data class MenuItemData(
+    val menuId: String,
+    val name: String,
+    val price: Int,
+    var quantity: Int = 0
+)
 
 // 5단계: 메뉴 선택
 @Composable
@@ -822,16 +868,16 @@ fun MenuSelectStep(reservationData: ReservationData, storeId: Long) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(White)
     ) {
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(Dimens.Large)
         ) {
             menuCategories.forEach { (category, items) ->
                 item {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.Default)) {
                         Text(
                             text = category,
                             fontSize = 18.sp,
