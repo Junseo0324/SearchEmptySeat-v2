@@ -5,5 +5,6 @@ data class TableOption(
     val name: String,
     val capacity: String,
     val isAvailable: Boolean,
-    val id: String
+    val id: String,
+    val serverKey: String
 )

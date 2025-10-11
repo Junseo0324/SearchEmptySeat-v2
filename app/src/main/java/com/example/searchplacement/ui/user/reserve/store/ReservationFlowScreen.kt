@@ -1,6 +1,5 @@
 package com.example.searchplacement.ui.user.reserve.store
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,7 +66,6 @@ fun ReservationFlowScreen(
         reservationViewModel.getPlacementByStore(storeId)
     }
 
-    Log.d("TAG", "ReservationFlowScreen: $placement")
     val store = reservationViewModel.storeData.collectAsState().value
 
     val storeName = store?.storeName ?: ""
@@ -224,7 +222,7 @@ fun ReservationFlowScreen(
                             userId = reservationViewModel.userId.value?.toLong() ?: 0L,
                             storePK = storeId,
                             reservationTime = "${reservationData.selectedDate}T${reservationData.selectedTime}",
-                            tableNumber = reservationData.selectedTable?.removePrefix("table_")?.toIntOrNull() ?: 0,
+                            tableNumber = reservationData.selectedTable?.toIntOrNull() ?: 0,
                             menu = menuMap,
                             partySize = reservationData.numberOfPeople,
                             paymentMethod = reservationData.paymentMethod,

@@ -78,8 +78,8 @@ fun TableSelectStep(
             items(availableTables) { table ->
                 TableOptionCard(
                     table = table,
-                    isSelected = reservationData.selectedTable == table.id,
-                    onClick = { onSelectTable(table.id) }
+                    isSelected = reservationData.selectedTable == table.serverKey,
+                    onClick = { onSelectTable(table.serverKey) }
                 )
             }
         }
@@ -90,7 +90,7 @@ fun mapPlacementToTableOptions(
     layout: Map<String, TableLayoutData>,
     requiredPeople: Int
 ): List<TableOption> {
-    return layout.map { (_, data) ->
+    return layout.map { (key, data) ->
         val capacityText = "${data.table}인석 · 최대 ${data.table}명"
         val isAvailable = data.status == 0 && data.table >= requiredPeople
 
@@ -98,7 +98,8 @@ fun mapPlacementToTableOptions(
             name = "${data.table}인 테이블",
             capacity = capacityText,
             isAvailable = isAvailable,
-            id = "${data.table} 인석 테이블"
+            id = "table_$key",
+            serverKey = key
         )
     }
 }
