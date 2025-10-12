@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 fun parseReservationDateTime(dateTimeString: String): Pair<String, String> {
@@ -94,4 +95,14 @@ fun generateTimeSlots(hours: String): List<String> {
     return slots
 }
 
-
+fun isCancellable(reservationTime: String): Boolean {
+    return try {
+        val targetDateTime = LocalDateTime.parse(reservationTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val now = LocalDateTime.now()
+        val diffMinutes = ChronoUnit.MINUTES.between(now, targetDateTime)
+        diffMinutes > 30
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
+    }
+}

@@ -46,6 +46,7 @@ import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.user.review.ReviewBottomSheet
+import com.example.searchplacement.ui.utils.isCancellable
 import com.example.searchplacement.viewmodel.ReservationViewModel
 import com.example.searchplacement.viewmodel.ReviewViewModel
 
@@ -166,6 +167,21 @@ fun ReserveScreen(navController: NavHostController) {
                             selectedReservation = reservation
                             selectedStore = store
                             showBottomSheet = true
+                        },
+                        onCancelClick = { reservationId ->
+                            val reservationTime = item.reservation.reservationTime
+                            if (isCancellable(reservationTime)) {
+                                reservationViewModel.cancelReservation(reservationId) { success ->
+                                    if (success) {
+                                        Toast.makeText(context, "예약이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                                        reservationViewModel.fetchUserReservations()
+                                    } else {
+                                        Toast.makeText(context, "예약 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "예약 30분 전에는 취소할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     )
                 }
