@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -34,7 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +43,8 @@ import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.IconTextColor
+import com.example.searchplacement.ui.theme.StoreTabBackgroundColor
 import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.viewmodel.CategoryViewModel
 
@@ -107,32 +110,53 @@ fun CategoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(StoreTabBackgroundColor)
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = White,
             shadowElevation = Dimens.Nano
         ) {
-            Column(
-                modifier = Modifier.padding(Dimens.Medium)
-            ) {
-                Text(
-                    text = "매장 찾기",
-                    style = AppTextStyle.BodyLarge
-                )
-
-                Spacer(modifier = Modifier.height(Dimens.Default))
-
-                LazyRow(
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = Dimens.Medium),
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
                 ) {
-                    items(categoryList) { (display, _) ->
-                        CategoryChip(
-                            text = display,
-                            isSelected = selectedCategory == display,
-                            onClick = { selectedCategory = display }
+                    Icon(
+                        imageVector = Icons.Default.GridOn,
+                        contentDescription = null,
+                        tint = Black,
+                        modifier = Modifier.size(Dimens.Large)
+                    )
+                    Text(
+                        text = "매장 찾기",
+                        style = AppTextStyle.Body.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IconTextColor
                         )
+                    )
+                }
+                Column(
+                    modifier = Modifier.padding(Dimens.Medium)
+                ) {
+
+
+                    Spacer(modifier = Modifier.height(Dimens.Default))
+
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
+                    ) {
+                        items(categoryList) { (display, _) ->
+                            CategoryChip(
+                                text = display,
+                                isSelected = selectedCategory == display,
+                                onClick = { selectedCategory = display }
+                            )
+                        }
                     }
                 }
             }

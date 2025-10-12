@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -54,7 +55,9 @@ import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.ui.theme.CardBorderTransparentColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
+import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.theme.reservationCountColor
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 import com.example.searchplacement.viewmodel.MainViewModel
 
@@ -76,157 +79,175 @@ fun SettingScreen(navController: NavHostController,mainViewModel: MainViewModel)
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.Small)
-    ) {
-
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-            Text(
-                text = "개인정보 변경",
-                style = AppTextStyle.BodyGray
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = Dimens.Medium),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null,
+                tint = reservationCountColor,
+                modifier = Modifier.size(Dimens.Large)
             )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate("information")
-                    },
-                shape = RoundedCornerShape(Dimens.Default),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Nano)
-            ) {
-                Row(
+            Text(
+                text = "마이 페이지",
+                style = AppTextStyle.Body.copy(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = IconTextColor
+                )
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(Dimens.Small)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(Dimens.Medium),
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (user?.image != null) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(IMAGE_URL + user?.image)
-                                .crossfade(true)
-                                .build(),
-                            imageLoader = imageLoader,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(CircleShape)
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(CircleShape)
-                                .background(CardBorderTransparentColor),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "기본 프로필",
-                                modifier = Modifier.size(32.dp),
-                                tint = Black
-                            )
-                        }
-                    }
-
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
-                    ) {
-                        Text(
-                            text = user?.name ?: "",
-                            style = AppTextStyle.BodyText
-                        )
-                        Text(
-                            text = user?.email ?: "",
-                            style = AppTextStyle.BodyGray.copy(fontWeight = FontWeight.Normal)
-                        )
-                    }
-                }
-            }
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("checkPassword") },
-                shape = RoundedCornerShape(Dimens.Default),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Nano)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimens.Medium),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .clickable {
+                            navController.navigate("information")
+                        },
+                    shape = RoundedCornerShape(Dimens.Default),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Nano)
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.Medium),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(Dimens.Small))
-                                .background(White),
-                            contentAlignment = Alignment.Center
+                        if (user?.image != null) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(IMAGE_URL + user?.image)
+                                    .crossfade(true)
+                                    .build(),
+                                imageLoader = imageLoader,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clip(CircleShape)
+                                    .background(CardBorderTransparentColor),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "기본 프로필",
+                                    modifier = Modifier.size(32.dp),
+                                    tint = Black
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "비밀번호",
-                                tint = ButtonMainColor,
-                                modifier = Modifier.size(24.dp)
+                            Text(
+                                text = user?.name ?: "",
+                                style = AppTextStyle.BodyText
+                            )
+                            Text(
+                                text = user?.email ?: "",
+                                style = AppTextStyle.BodyGray.copy(fontWeight = FontWeight.Normal)
                             )
                         }
-                        Text(
-                            text = "비밀번호 변경",
-                            style = AppTextStyle.Button.copy(color = Black)
-                        )
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("checkPassword") },
+                    shape = RoundedCornerShape(Dimens.Default),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = Dimens.Nano)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.Medium),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.Default),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(Dimens.Small))
+                                    .background(White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "비밀번호",
+                                    tint = ButtonMainColor,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Text(
+                                text = "비밀번호 변경",
+                                style = AppTextStyle.Button.copy(color = Black)
+                            )
+                        }
                     }
                 }
             }
-        }
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(Dimens.Small)
-        ) {
-            OutlinedButton(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(44.dp),
-                shape = RoundedCornerShape(Dimens.Small),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Gray
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(Dimens.Small)
             ) {
-                Text(
-                    text = "로그아웃",
-                    style = AppTextStyle.BodySmall.copy(fontSize = 14.sp)
-                )
-            }
+                OutlinedButton(
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp),
+                    shape = RoundedCornerShape(Dimens.Small),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Gray
+                    )
+                ) {
+                    Text(
+                        text = "로그아웃",
+                        style = AppTextStyle.BodySmall.copy(fontSize = 14.sp)
+                    )
+                }
 
-            TextButton(
-                onClick = { showDeleteDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-            ) {
-                Text(
-                    text = "회원탈퇴",
-                    style = AppTextStyle.redPoint.copy(fontWeight = FontWeight.Medium)
-                )
+                TextButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                ) {
+                    Text(
+                        text = "회원탈퇴",
+                        style = AppTextStyle.redPoint.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
             }
         }
     }
