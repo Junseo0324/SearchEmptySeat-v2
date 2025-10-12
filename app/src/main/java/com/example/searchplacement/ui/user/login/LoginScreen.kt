@@ -2,24 +2,33 @@ package com.example.searchplacement.ui.user.login
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -27,84 +36,151 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.activity.MainActivity
 import com.example.searchplacement.activity.OwnerMainActivity
-import com.example.searchplacement.ui.theme.AppButtonStyle
 import com.example.searchplacement.ui.theme.AppTextStyle
-import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.IconColor
+import com.example.searchplacement.ui.theme.IconTextColor
+import com.example.searchplacement.ui.theme.ViewCountColor
+import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.theme.reservationCountColor
 import com.example.searchplacement.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel = viewModel()) {
-    val showPassword = remember { mutableStateOf(false) }
-    val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val snackbarHostState = remember {SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+fun LoginScreen(navController: NavHostController) {
 
+    val loginViewModel: LoginViewModel = hiltViewModel()
+    var showPassword by remember { mutableStateOf(false) }
+    var emailState by remember { mutableStateOf("") }
+    var passwordState by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     val passwordFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(snackbarHostState)
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(White)
                 .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }
-                .padding(bottom = paddingValues.calculateBottomPadding(), top = Dimens.Small, start = Dimens.Small, end = Dimens.Small)
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }
+                .padding(paddingValues)
+                .padding(horizontal = Dimens.Large),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
-            AppTitle()
-            Column(
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                OutlinedTextField(
-                    value = emailState.value,
-                    onValueChange = { emailState.value = it },
-                    label = { Text("Email") },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(Dimens.Large))
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
+                        )
                     ),
-                    singleLine = true,
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "로고",
+                    tint = Color.White,
+                    modifier = Modifier.size(56.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "빈자리를 부탁해",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = IconTextColor,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(Dimens.Small))
+
+            Text(
+                text = "매장의 빈자리를 쉽고 빠르게 예약하세요",
+                fontSize = 15.sp,
+                color = IconColor,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimens.Small)
+            ) {
+                Text(
+                    text = "이메일",
+                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
+                )
+
+                OutlinedTextField(
+                    value = emailState,
+                    onValueChange = { emailState = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(Dimens.Small),
-                    keyboardOptions = KeyboardOptions.Default.copy(
+                        .height(56.dp),
+                    placeholder = {
+                        Text(
+                            "example@email.com",
+                            style = AppTextStyle.Body.copy(fontSize = 15.sp, color = ViewCountColor)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null,
+                            tint = IconColor
+                        )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(Dimens.Default),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF667EEA),
+                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedContainerColor = Color(0xFFFAFAFA),
+                        cursorColor = Color(0xFF667EEA)
+                    ),
+                    keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
@@ -112,111 +188,162 @@ fun LoginScreen(navController: NavHostController,loginViewModel: LoginViewModel 
                         onNext = { passwordFocusRequester.requestFocus() }
                     )
                 )
+            }
 
-                Spacer(modifier = Modifier.height(Dimens.Small))
+            Spacer(modifier = Modifier.height(Dimens.Medium))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimens.Small)
+            ) {
+                Text(
+                    text = "비밀번호",
+                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
+                )
 
                 OutlinedTextField(
-                    value = passwordState.value,
-                    onValueChange = { passwordState.value = it },
-                    label = { Text("Password") },
+                    value = passwordState,
+                    onValueChange = { passwordState = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .focusRequester(passwordFocusRequester),
+                    placeholder = {
+                        Text(
+                            "••••••••",
+                            style = AppTextStyle.Body.copy(fontSize = 15.sp, color = ViewCountColor)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = IconColor
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = if (showPassword) "비밀번호 숨기기" else "비밀번호 보기",
+                                tint = IconColor
+                            )
+                        }
+                    },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.copy(
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    shape = RoundedCornerShape(Dimens.Default),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF667EEA),
+                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedContainerColor = Color(0xFFFAFAFA),
+                        cursorColor = Color(0xFF667EEA)
+                    ),
+                    keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = { focusManager.clearFocus() }
-                    ),
-                    visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(onClick = { showPassword.value = !showPassword.value }) {
-                            Icon(
-                                imageVector = if (showPassword.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                contentDescription = if (showPassword.value) "Hide password" else "Show password"
-                            )
-                        }
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimens.Small)
-                        .focusRequester(passwordFocusRequester),
                     )
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = "처음이신가요?",
-                    style = AppTextStyle.mainPoint,
-                    modifier = Modifier
-                        .padding(bottom = 30.dp, start = Dimens.Small, end = Dimens.Small)
-                        .align(Alignment.End)
-                        .clickable {
-                            navController.navigate("register")
-                        }
                 )
+            }
 
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            loginViewModel.login(emailState.value,passwordState.value)
-                            loginViewModel.loginResult.collect { response ->
-                                if (response !=null) {
-                                    if (response.status == "success") {
-                                        val userType = response.data?.userType ?: "USER"
-                                        val intent = when(userType) {
-                                            "OWNER" -> Intent(context,OwnerMainActivity::class.java)
-                                            else -> Intent(context, MainActivity::class.java)
-                                        }
-                                        context.startActivity(intent)
-                                        (context as? Activity)?.finish()
-                                    } else {
-                                        snackbarHostState.showSnackbar("로그인 실패: ${response?.message ?: "잘못된 이메일 또는 비밀번호"}")
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // 로그인 버튼
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        loginViewModel.login(emailState, passwordState)
+                        loginViewModel.loginResult.collect { response ->
+                            if (response != null) {
+                                if (response.status == "success") {
+                                    val userType = response.data?.userType ?: "USER"
+                                    val intent = when (userType) {
+                                        "OWNER" -> Intent(context, OwnerMainActivity::class.java)
+                                        else -> Intent(context, MainActivity::class.java)
                                     }
+                                    context.startActivity(intent)
+                                    (context as? Activity)?.finish()
+                                } else {
+                                    snackbarHostState.showSnackbar(
+                                        "로그인 실패: ${response.message ?: "잘못된 이메일 또는 비밀번호"}"
+                                    )
                                 }
                             }
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(Dimens.Small),
-                    shape = AppButtonStyle.RoundedShape,
-                    colors = ButtonColors(
-                        containerColor = ButtonMainColor, contentColor = Color.Black,
-                        disabledContainerColor = Color.DarkGray, disabledContentColor = Color.Black
-                    )
-                ) {
-                    Text("Log In",style= AppTextStyle.Button.copy(color = Color.White))
-                }
-
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(Dimens.Default),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF667EEA),
+                    contentColor = Color.White
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                )
+            ) {
                 Text(
-                    text = "Forgot your password?",
-                    style = AppTextStyle.mainPoint,
-                    modifier = Modifier.align(Alignment.End).padding(Dimens.Small)
-                        .clickable {
-                            navController.navigate("find_password")
-                        }
+                    text = "로그인",
+                    style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold)
                 )
             }
+
+            Spacer(modifier = Modifier.height(Dimens.Large))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "또는",
+                    style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconColor)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Dimens.Large))
+
+            // 회원가입 버튼
+            OutlinedButton(
+                onClick = { navController.navigate("register") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(Dimens.Default),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFF667EEA)
+                ),
+                border = ButtonDefaults.outlinedButtonBorder.copy(
+                    width = 1.5.dp
+                )
+            ) {
+                Text(
+                    text = "회원가입",
+                    style = AppTextStyle.Body.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Dimens.Large))
+
+            Text(
+                text = "비밀번호를 잊으셨나요?",
+                style = AppTextStyle.Body.copy(fontSize = 14.sp, color = reservationCountColor),
+                modifier = Modifier
+                    .clickable { navController.navigate("find_password") }
+                    .padding(Dimens.Small)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
-
-
 }
 
-@Composable
-fun AppTitle(){
-        Text(
-            text = "빈자리를 부탁해",
-            style = AppTextStyle.Title,
-            color = Color.Black,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-}
 

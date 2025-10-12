@@ -90,8 +90,13 @@ fun RegisterScreen(
             .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(80.dp))
-        AppTitle()
-
+        Text(
+            text = "빈자리를 부탁해",
+            style = AppTextStyle.Title,
+            color = Color.Black,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
         UserTypeInput(signUpData)
         if (signUpData.value.userType.isNotBlank()) {
             EmailInput(signUpData)

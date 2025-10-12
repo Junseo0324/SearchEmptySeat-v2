@@ -32,7 +32,7 @@ import com.example.searchplacement.viewmodel.MainViewModel
 fun LoginNavigation(navController: NavHostController,loginViewModel: LoginViewModel) {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
-            LoginScreen(navController, loginViewModel)
+            LoginScreen(navController)
         }
         composable("register") {
             RegisterScreen(navController, loginViewModel)
