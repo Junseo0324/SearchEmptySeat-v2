@@ -65,7 +65,8 @@ fun ReservedList(
     navController: NavHostController,
     reservation: ReservationResponse,
     store: StoreResponse?,
-    onReviewClick: (ReservationResponse, StoreResponse?) -> Unit
+    onReviewClick: (ReservationResponse, StoreResponse?) -> Unit,
+    onCancelClick: (Long) -> Unit
 ) {
 
     val (statusText, statusBgColor, statusTextColor) = when (reservation.status) {
@@ -236,7 +237,9 @@ fun ReservedList(
                         Text("매장 문의", fontSize = 14.sp)
                     }
                     Button(
-                        onClick = { },
+                        onClick = {
+                            onCancelClick(reservation.reservationPK)
+                        },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(Dimens.Small),
                         colors = ButtonDefaults.buttonColors(
