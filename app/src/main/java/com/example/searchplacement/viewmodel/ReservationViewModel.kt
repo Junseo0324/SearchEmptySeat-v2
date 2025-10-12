@@ -43,9 +43,6 @@ class ReservationViewModel @Inject constructor(
     private val _reservationsWithStore = MutableStateFlow<List<ReservationWithStore>>(emptyList())
     val reservationsWithStore: StateFlow<List<ReservationWithStore>> = _reservationsWithStore
 
-    private val _statusMessage = MutableStateFlow<String?>(null)
-    val statusMessage: StateFlow<String?> = _statusMessage
-
     private val _reservationData = mutableStateOf(ReservationData())
     val reservationData: State<ReservationData> = _reservationData
 
@@ -74,7 +71,6 @@ class ReservationViewModel @Inject constructor(
     fun createReservation(request: ReservationRequest, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val res = reservationRepository.createReservation(request)
-            _statusMessage.value = res.body()?.message ?: "예약 생성 실패"
             onComplete(res.isSuccessful)
         }
     }
@@ -82,7 +78,6 @@ class ReservationViewModel @Inject constructor(
     fun cancelReservation(reservationId: Long, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val res = reservationRepository.cancelReservation(reservationId)
-            _statusMessage.value = res.body()?.message ?: "예약 취소 실패"
             onComplete(res.isSuccessful)
         }
     }
@@ -118,7 +113,6 @@ class ReservationViewModel @Inject constructor(
             if (res.isSuccessful) {
                 _reservations.value = res.body()?.data ?: emptyList()
             } else {
-                _statusMessage.value = res.body()?.message ?: "예약 조회 실패"
             }
         }
     }
@@ -142,7 +136,6 @@ class ReservationViewModel @Inject constructor(
 
                 _reservationsWithStore.value = combinedList
             } else {
-                _statusMessage.value = res.body()?.message ?: "예약 조회 실패"
             }
         }
     }
@@ -156,10 +149,5 @@ class ReservationViewModel @Inject constructor(
                 Log.d("ReservationViewModel", "getStoreData: 실패")
             }
         }
-    }
-
-
-    fun clearStatusMessage() {
-        _statusMessage.value = null
     }
 }
