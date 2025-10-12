@@ -1,5 +1,4 @@
-package com.example.searchplacement.ui.user.home
-
+package com.example.searchplacement.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

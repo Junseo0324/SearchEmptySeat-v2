@@ -36,7 +36,7 @@ import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.White
-import com.example.searchplacement.ui.user.home.MapViewModel
+import com.example.searchplacement.viewmodel.MapViewModel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
@@ -53,21 +53,14 @@ fun NaverMapScreen(
     val mapPins by mapViewModel.mapPins.collectAsState()
     val mapPinDetail by mapViewModel.mapPinDetail.collectAsState()
 
+    val naverMapHolder = remember { mutableStateOf<NaverMap?>(null) }
 
 
     LaunchedEffect(Unit) {
         mapViewModel.loadMapPins()
     }
 
-
-
-    val naverMapHolder = remember { mutableStateOf<NaverMap?>(null) }
-
-    Box(
-        modifier = Modifier
-            .padding(Dimens.Small)
-            .border(1.dp, Black, shape = RoundedCornerShape(12.dp)),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()){
         AndroidView(
             factory = {
                 MapView(context).apply {
@@ -131,7 +124,7 @@ fun NaverMapScreen(
                     val marker = Marker().apply {
                         position = LatLng(lat, lng)
                         map = naverMap
-                        iconTintColor = androidx.compose.ui.graphics.Color.Red.toArgb()
+                        iconTintColor = androidx.compose.ui.graphics.Color(0xFF4CAF50).toArgb()
                         width = 80
                         height = 80
                         captionText = "가게"
@@ -164,7 +157,7 @@ fun NaverMapScreen(
                     val marker = Marker().apply {
                         position = LatLng(lat, lng)
                         map = naverMap
-                        iconTintColor = androidx.compose.ui.graphics.Color.Red.toArgb()
+                        iconTintColor = androidx.compose.ui.graphics.Color(0xFF4CAF50).toArgb()
                         width = 80
                         height = 80
                         captionText = "가게"
