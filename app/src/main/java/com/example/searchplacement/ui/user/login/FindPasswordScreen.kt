@@ -132,13 +132,3 @@ fun FindPasswordScreen(navController: NavHostController,viewModel: LoginViewMode
         }
     }
 }
-
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun FindPasswordPreview() {
-//    SearchPlacementTheme {
-//        val navController = rememberNavController()
-//        FindPasswordScreen(navController)
-//    }
-//}
