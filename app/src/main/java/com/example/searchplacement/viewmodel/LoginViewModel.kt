@@ -30,10 +30,6 @@ class LoginViewModel @Inject constructor(
     val loginResult = _loginResult.asStateFlow()
 
 
-    private val _registerResult = MutableStateFlow<ApiResponse<Map<String, Any>>?>(null)
-    val registerResult = _registerResult.asStateFlow()
-
-
     private val _findPasswordResult = MutableSharedFlow<ApiResponse<Map<String, String>>>(replay = 0)
     val findPasswordResult = _findPasswordResult.asSharedFlow()
 
@@ -86,9 +82,8 @@ class LoginViewModel @Inject constructor(
                 userType = userType
             )
 
-            val response = authRepository.register(signUpRequest, imageFile)
+            authRepository.register(signUpRequest, imageFile)
 
-            _registerResult.value = response
         }
     }
 
