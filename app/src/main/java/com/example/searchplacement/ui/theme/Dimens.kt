@@ -11,6 +11,4 @@ object Dimens {
     val Medium = 16.dp
     val Large = 24.dp
     val XLarge = 32.dp
-    val XXLarge = 48.dp
-    val DefaultCornerRadius = 10.dp
 }
