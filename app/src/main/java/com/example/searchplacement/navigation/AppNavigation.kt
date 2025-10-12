@@ -35,7 +35,7 @@ fun LoginNavigation(navController: NavHostController,loginViewModel: LoginViewMo
             LoginScreen(navController)
         }
         composable("register") {
-            RegisterScreen(navController, loginViewModel)
+            RegisterScreen(navController)
         }
         composable("find_password") { FindPasswordScreen(navController, loginViewModel) }
 
