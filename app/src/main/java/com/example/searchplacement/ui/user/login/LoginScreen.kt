@@ -64,19 +64,21 @@ import androidx.navigation.NavHostController
 import com.example.searchplacement.activity.MainActivity
 import com.example.searchplacement.activity.OwnerMainActivity
 import com.example.searchplacement.ui.theme.AppTextStyle
+import com.example.searchplacement.ui.theme.ChipBorderColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.IconColor
 import com.example.searchplacement.ui.theme.IconTextColor
 import com.example.searchplacement.ui.theme.ViewCountColor
 import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.ui.theme.loginLogoColor
 import com.example.searchplacement.ui.theme.reservationCountColor
 import com.example.searchplacement.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
-
     val loginViewModel: LoginViewModel = hiltViewModel()
+
     var showPassword by remember { mutableStateOf(false) }
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
@@ -109,7 +111,7 @@ fun LoginScreen(navController: NavHostController) {
                     .clip(RoundedCornerShape(Dimens.Large))
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
+                            colors = listOf(loginLogoColor, Color(0xFF764BA2))
                         )
                     ),
                 contentAlignment = Alignment.Center
@@ -174,11 +176,11 @@ fun LoginScreen(navController: NavHostController) {
                     singleLine = true,
                     shape = RoundedCornerShape(Dimens.Default),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF667EEA),
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedBorderColor = loginLogoColor,
+                        unfocusedBorderColor = ChipBorderColor,
                         focusedContainerColor = Color(0xFFFAFAFA),
                         unfocusedContainerColor = Color(0xFFFAFAFA),
-                        cursorColor = Color(0xFF667EEA)
+                        cursorColor = loginLogoColor
                     ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -234,11 +236,11 @@ fun LoginScreen(navController: NavHostController) {
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(Dimens.Default),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF667EEA),
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedBorderColor = loginLogoColor,
+                        unfocusedBorderColor = ChipBorderColor,
                         focusedContainerColor = Color(0xFFFAFAFA),
                         unfocusedContainerColor = Color(0xFFFAFAFA),
-                        cursorColor = Color(0xFF667EEA)
+                        cursorColor = loginLogoColor
                     ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -281,7 +283,7 @@ fun LoginScreen(navController: NavHostController) {
                     .height(56.dp),
                 shape = RoundedCornerShape(Dimens.Default),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF667EEA),
+                    containerColor = loginLogoColor,
                     contentColor = Color.White
                 ),
                 elevation = ButtonDefaults.buttonElevation(
