@@ -36,10 +36,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,21 +74,37 @@ import com.example.searchplacement.ui.theme.White
 import com.example.searchplacement.ui.theme.loginLogoColor
 import com.example.searchplacement.ui.theme.reservationCountColor
 import com.example.searchplacement.viewmodel.LoginViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
     val loginViewModel: LoginViewModel = hiltViewModel()
-
+    val loginResult by loginViewModel.loginResult.collectAsState()
     var showPassword by remember { mutableStateOf(false) }
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
     val passwordFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
+    LaunchedEffect(loginResult) {
+        loginResult?.let { response ->
+            when(response.status) {
+                "success" -> {
+                    val userType = response.data?.userType ?: "USER"
+                    val intent = when (userType) {
+                        "OWNER" -> Intent(context, OwnerMainActivity::class.java)
+                        else -> Intent(context, MainActivity::class.java)
+                    }
+                    context.startActivity(intent)
+                    (context as? Activity)?.finish()
+                }
+                "fail","error" -> {
+                    snackbarHostState.showSnackbar(response.message ?: "로그인 실패")
+                }
+            }
+        }
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -257,26 +274,7 @@ fun LoginScreen(navController: NavHostController) {
             // 로그인 버튼
             Button(
                 onClick = {
-                    coroutineScope.launch {
-                        loginViewModel.login(emailState, passwordState)
-                        loginViewModel.loginResult.collect { response ->
-                            if (response != null) {
-                                if (response.status == "success") {
-                                    val userType = response.data?.userType ?: "USER"
-                                    val intent = when (userType) {
-                                        "OWNER" -> Intent(context, OwnerMainActivity::class.java)
-                                        else -> Intent(context, MainActivity::class.java)
-                                    }
-                                    context.startActivity(intent)
-                                    (context as? Activity)?.finish()
-                                } else {
-                                    snackbarHostState.showSnackbar(
-                                        "로그인 실패: ${response.message ?: "잘못된 이메일 또는 비밀번호"}"
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    loginViewModel.login(emailState, passwordState)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

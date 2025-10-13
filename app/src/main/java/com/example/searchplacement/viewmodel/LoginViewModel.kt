@@ -1,5 +1,6 @@
 package com.example.searchplacement.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.local.UserEntity
@@ -37,39 +38,48 @@ class LoginViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            val response = authRepository.login(LoginRequest(email, password))
-            if (response.isSuccessful && response.body() != null) {
-                val loginResponse = response.body()!!.data
+            try {
+                val response = authRepository.login(LoginRequest(email, password))
+                Log.d("TAG", "login: ${response.body()}")
+                if (response.isSuccessful && response.body() != null) {
+                    val loginResponse = response.body()!!.data
 
-                val userEntity = loginResponse?.let {
-                    UserEntity(
-                        userId = it.userId,
-                        name = loginResponse.name,
-                        email = loginResponse.email,
-                        phone = loginResponse.phone,
-                        userType = loginResponse.userType,
-                        token = loginResponse.token,
-                        location = loginResponse.location,
-                        image = loginResponse.image.firstOrNull() ?: ""
+                    val userEntity = loginResponse?.let {
+                        UserEntity(
+                            userId = it.userId,
+                            name = it.name,
+                            email = it.email,
+                            phone = it.phone,
+                            userType = it.userType,
+                            token = it.token,
+                            location = it.location,
+                            image = it.image.firstOrNull() ?: ""
+                        )
+                    }
+
+                    if (userEntity != null) {
+                        userRepository.saveUser(userEntity)
+                        TokenManager.setToken(userEntity.token)
+                    }
+
+                    _loginResult.value = response.body()
+                } else {
+                    _loginResult.value = ApiResponse(
+                        status = "fail",
+                        message = "로그인 실패",
+                        data = null
                     )
                 }
-
-                if (userEntity != null) {
-                    userRepository.saveUser(userEntity)
-
-                    TokenManager.setToken(userEntity.token)
-                }
-
-                _loginResult.value = response.body()
-            } else {
+            } catch (e: Exception) {
                 _loginResult.value = ApiResponse(
-                    status = "fail",
-                    message = "Login failed",
+                    status = "error",
+                    message = e.localizedMessage ?: "네트워크 연결 오류입니다.",
                     data = null
                 )
             }
         }
     }
+
 
     fun register(email: String, password: String, name: String, phone: String, location: String, userType: String, imageFile: MultipartBody.Part?) {
         viewModelScope.launch {
