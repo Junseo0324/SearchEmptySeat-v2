@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
-import com.example.searchplacement.ui.theme.LoginTextColor
+import com.example.searchplacement.ui.theme.UserPrimaryColor
 import com.example.searchplacement.ui.utils.getDatesForMonth
 import java.time.LocalDate
 import java.time.YearMonth
@@ -108,7 +108,7 @@ fun CustomCalendarView(
                         .padding(Dimens.Tiny)
                         .background(
                             when {
-                                isSelected -> LoginTextColor
+                                isSelected -> UserPrimaryColor
                                 !isCurrentMonth -> Color.LightGray.copy(alpha = 0.2f)
                                 else -> Color.Transparent
                             }

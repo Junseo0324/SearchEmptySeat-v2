@@ -2,16 +2,10 @@ package com.example.searchplacement.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val LoginTextColor = Color(0xFFAFD4EF)
-
-
-// 사용자 앱 포인트 컬러
 val UserPrimaryColor = Color(0xFFAFD4EF)
 
-// 판매자 앱 포인트 컬러
 val OwnerPrimaryColor = Color(0xFFFF9E9E)
 
-// 공통 색상
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 val Gray = Color(0xFF808089)

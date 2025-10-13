@@ -52,7 +52,7 @@ import com.example.searchplacement.data.menu.MenuStockDto
 import com.example.searchplacement.data.menu.OutOfStockRequest
 import com.example.searchplacement.di.AppModule
 import com.example.searchplacement.ui.theme.ButtonMainColor
-import com.example.searchplacement.ui.theme.LoginTextColor
+import com.example.searchplacement.ui.theme.UserPrimaryColor
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
 import com.example.searchplacement.viewmodel.MenuSectionViewModel
 import com.example.searchplacement.viewmodel.MenuViewModel
@@ -238,14 +238,13 @@ fun MenuStockItem(menu: MenuResponse, stockStateMap: MutableMap<Long, Boolean>,i
 }
 
 
-//custom toggle 사용
 @Composable
 fun MultiToggleSwitch(
     labels: List<String>,
     selectedIndex: Int,
     onToggle: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    activeBgColor: Color = LoginTextColor,
+    activeBgColor: Color = UserPrimaryColor,
     inactiveBgColor: Color = Color.LightGray,
     activeTextColor: Color = Color.White,
     inactiveTextColor: Color = Color.Black
@@ -265,7 +264,6 @@ fun MultiToggleSwitch(
             .width(totalWidth)
             .height(switchHeight)
             .background(inactiveBgColor)
-//            .padding(4.dp)
     ) {
 
         Box(

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.searchplacement.navigation.MainBottomNavItem
-import com.example.searchplacement.ui.theme.LoginTextColor
+import com.example.searchplacement.ui.theme.UserPrimaryColor
 
 
 @Composable
@@ -55,9 +55,9 @@ fun MainBottomBar(
                     },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent,
-                        selectedIconColor = LoginTextColor,
+                        selectedIconColor = UserPrimaryColor,
                         unselectedIconColor = Color.Black,
-                        selectedTextColor = LoginTextColor,
+                        selectedTextColor = UserPrimaryColor,
                         unselectedTextColor = Color.Black
                     ),
                     onClick = {
