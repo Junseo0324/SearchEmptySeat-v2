@@ -68,6 +68,8 @@ fun RegisterScreen(
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val showWebView = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val isNavigatingBack = remember { mutableStateOf(false) }
+
 
     Box(
         modifier = Modifier
@@ -90,7 +92,12 @@ fun RegisterScreen(
                     contentDescription = "뒤로가기",
                     modifier = Modifier
                         .size(Dimens.Large)
-                        .clickable { navController.popBackStack() }
+                        .clickable {
+                            if (!isNavigatingBack.value) {
+                                isNavigatingBack.value = true
+                                navController.popBackStack()
+                            }
+                        }
                 )
                 Text(
                     text = "뒤로가기",
