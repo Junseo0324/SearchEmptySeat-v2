@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.AppButtonStyle
 import com.example.searchplacement.ui.theme.AppTextStyle
@@ -52,7 +53,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckPassword(navController: NavHostController, mainViewModel: MainViewModel) {
+fun CheckPassword(navController: NavHostController) {
+    val mainViewModel: MainViewModel = hiltViewModel()
     val showPassword = remember { mutableStateOf(false) }
     val passwordState = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()

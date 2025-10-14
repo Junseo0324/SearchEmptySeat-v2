@@ -62,8 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.activity.MainActivity
 import com.example.searchplacement.activity.OwnerMainActivity
+import com.example.searchplacement.navigation.MainBottomNavItem
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.ChipBorderColor
 import com.example.searchplacement.ui.theme.Dimens
@@ -89,17 +89,19 @@ fun LoginScreen(navController: NavHostController) {
 
     LaunchedEffect(loginResult) {
         loginResult?.let { response ->
-            when(response.status) {
+            when (response.status) {
                 "success" -> {
                     val userType = response.data?.userType ?: "USER"
-                    val intent = when (userType) {
-                        "OWNER" -> Intent(context, OwnerMainActivity::class.java)
-                        else -> Intent(context, MainActivity::class.java)
+                    if (userType == "OWNER") {
+                        val intent = Intent(context, OwnerMainActivity::class.java)
+                        context.startActivity(intent)
+                        (context as? Activity)?.finish()
+                    } else {
+                        navController.navigate(MainBottomNavItem.Home.screenRoute)
                     }
-                    context.startActivity(intent)
-                    (context as? Activity)?.finish()
                 }
-                "fail","error" -> {
+
+                "fail", "error" -> {
                     snackbarHostState.showSnackbar(response.message ?: "로그인 실패")
                 }
             }

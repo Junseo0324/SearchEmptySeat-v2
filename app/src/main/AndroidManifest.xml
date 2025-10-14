@@ -28,21 +28,17 @@
         <meta-data
             android:name="com.naver.maps.map.NCP_KEY_ID"
             android:value="@string/client_id" />
-
         <activity
-            android:name=".activity.LoginActivity"
-            android:exported="true">
+            android:name=".activity.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.SearchPlacement">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.SearchPlacement" />
     </application>
 
 </manifest>
