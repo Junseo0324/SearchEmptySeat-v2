@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.data.section.MenuSectionBulkUpdateRequest
 import com.example.searchplacement.data.section.MenuSectionRequest
@@ -59,11 +60,10 @@ fun <T> MutableList<T>.move(fromIndex: Int, toIndex: Int) {
 
 @Composable
 fun EditSectionScreen(
-    menuSectionViewModel: MenuSectionViewModel,
-    navController: NavHostController,
-    storeListViewModel: StoreListViewModel
+    navController: NavHostController
 ) {
-
+    val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val context = LocalContext.current
     val sections by menuSectionViewModel.sections.collectAsState()
     var showDialog by remember { mutableStateOf(false) }

@@ -95,9 +95,7 @@ fun OwnerNavigation(
 
         composable("editSection") {
             EditSectionScreen(
-                navController = navController,
-                menuSectionViewModel = menuSectionViewModel,
-                storeListViewModel = storeListViewModel
+                navController = navController
             )
         }
 
