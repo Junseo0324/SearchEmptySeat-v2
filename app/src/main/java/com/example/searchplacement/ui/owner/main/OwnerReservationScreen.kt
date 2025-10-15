@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.owner.reservation.CompletedReservationCard
 import com.example.searchplacement.ui.owner.reservation.PendingReservationCard
 import com.example.searchplacement.ui.theme.Dimens
@@ -28,7 +27,8 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OwnerReservationScreen(navController: NavHostController, storeListViewModel: StoreListViewModel) {
+fun OwnerReservationScreen() {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val viewModel: ReservationViewModel = hiltViewModel()
     val stateList = listOf("진행 중", "완료")
 

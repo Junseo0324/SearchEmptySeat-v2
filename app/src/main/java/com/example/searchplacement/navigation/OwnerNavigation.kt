@@ -46,7 +46,7 @@ fun OwnerNavigation(
             OwnerStoreScreen(navController)
         }
         composable(OwnerBottomNavItem.Reservation.screenRoute) {
-            OwnerReservationScreen(navController,storeListViewModel)
+            OwnerReservationScreen()
         }
         composable("storeSelect") {
             StoreSelectScreen(
