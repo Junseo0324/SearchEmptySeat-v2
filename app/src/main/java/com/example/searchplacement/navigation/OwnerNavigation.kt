@@ -77,9 +77,7 @@ fun OwnerNavigation(
 
         composable("checkPlacement") {
             CheckPlacementScreen(
-                navController = navController,
-                storeListViewModel = storeListViewModel,
-                placementViewModel = placementViewModel
+                navController = navController
             )
         }
 

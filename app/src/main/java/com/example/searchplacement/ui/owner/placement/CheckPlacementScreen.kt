@@ -9,16 +9,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.viewmodel.PlacementViewModel
 import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
 fun CheckPlacementScreen(
-    navController: NavHostController,
-    storeListViewModel: StoreListViewModel,
-    placementViewModel: PlacementViewModel
+    navController: NavHostController
 ) {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
+    val placementViewModel: PlacementViewModel = hiltViewModel()
     val placementState by placementViewModel.placement.collectAsState()
     val selectedStore = storeListViewModel.selectedStore.collectAsState().value
 
