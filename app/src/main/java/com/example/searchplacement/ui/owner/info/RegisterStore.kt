@@ -31,10 +31,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.data.store.StoreRequest
 import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.viewmodel.MainViewModel
 import com.example.searchplacement.viewmodel.OwnerStoreViewModel
@@ -43,10 +44,10 @@ import java.io.File
 
 @Composable
 fun RegisterStore(
-    ownerStoreViewModel: OwnerStoreViewModel,
-    mainViewModel: MainViewModel,
     navController: NavHostController,
 ) {
+    val ownerStoreViewModel: OwnerStoreViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val context = LocalContext.current
     val user by mainViewModel.user.collectAsState()
 
