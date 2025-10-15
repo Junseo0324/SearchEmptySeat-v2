@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.searchplacement.ui.owner.info.BusinessHourScreen
 import com.example.searchplacement.ui.owner.info.RegisterStore
 import com.example.searchplacement.ui.owner.info.StoreInformationScreen
@@ -21,23 +20,9 @@ import com.example.searchplacement.ui.owner.placement.TableEditorScreen
 import com.example.searchplacement.ui.owner.reservation.ReservationHistoryScreen
 import com.example.searchplacement.ui.owner.review.OwnerReviewScreen
 import com.example.searchplacement.ui.owner.section.EditSectionScreen
-import com.example.searchplacement.viewmodel.MainViewModel
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
-import com.example.searchplacement.viewmodel.MenuViewModel
-import com.example.searchplacement.viewmodel.OwnerStoreViewModel
-import com.example.searchplacement.viewmodel.PlacementViewModel
-import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
-fun OwnerNavigation(
-    navController: NavHostController = rememberNavController(),
-    storeListViewModel: StoreListViewModel,
-    mainViewModel: MainViewModel,
-    ownerStoreViewModel: OwnerStoreViewModel,
-    placementViewModel: PlacementViewModel,
-    menuSectionViewModel: MenuSectionViewModel,
-    menuViewModel: MenuViewModel
-) {
+fun OwnerNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable(OwnerBottomNavItem.Home.screenRoute) {
             OwnerHomeScreen()

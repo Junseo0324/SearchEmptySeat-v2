@@ -49,12 +49,6 @@ class OwnerMainActivity : ComponentActivity() {
 @Composable
 fun OwnerMainView() {
     val navController = rememberNavController()
-    val storeListViewModel: StoreListViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
-    val ownerStoreViewModel: OwnerStoreViewModel = hiltViewModel()
-    val placementViewModel: PlacementViewModel = hiltViewModel()
-    val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
-    val menuViewModel: MenuViewModel = hiltViewModel()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -74,7 +68,7 @@ fun OwnerMainView() {
             }
         }
     ) { padding ->
-        OwnerNavigation(navController, storeListViewModel,mainViewModel,ownerStoreViewModel,placementViewModel,menuSectionViewModel,menuViewModel)
+        OwnerNavigation(navController)
     }
 }
 
