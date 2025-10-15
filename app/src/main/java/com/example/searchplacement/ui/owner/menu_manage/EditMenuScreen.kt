@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.example.searchplacement.data.menu.MenuResponse
@@ -62,11 +63,10 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 //메뉴 품절 처리
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditMenuScreen(
-    storeListViewModel: StoreListViewModel,
-    menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel
-) {
+fun EditMenuScreen() {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
+    val menuViewModel: MenuViewModel = hiltViewModel()
+    val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
     val store by storeListViewModel.selectedStore.collectAsState()
     val storePk = store?.storePK ?: return
 

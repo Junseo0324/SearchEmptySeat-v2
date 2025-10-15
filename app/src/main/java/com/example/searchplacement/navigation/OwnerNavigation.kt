@@ -103,7 +103,7 @@ fun OwnerNavigation(
             MenuInformationScreen()
         }
         composable("soldOut") {
-            EditMenuScreen(storeListViewModel,menuViewModel,menuSectionViewModel)
+            EditMenuScreen()
         }
 
         composable("reservationHistory") {
