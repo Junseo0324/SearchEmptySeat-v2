@@ -50,7 +50,6 @@ fun OwnerNavigation(
         }
         composable("storeSelect") {
             StoreSelectScreen(
-                viewModel = storeListViewModel,
                 onStoreSelected = {
                     navController.navigate(OwnerBottomNavItem.Home.screenRoute)
                 }
