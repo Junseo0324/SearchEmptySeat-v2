@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.searchplacement.di.AppModule
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
@@ -36,9 +37,9 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
 fun StoreSelectScreen(
-    viewModel: StoreListViewModel,
     onStoreSelected: () -> Unit
 ) {
+    val viewModel: StoreListViewModel = hiltViewModel()
     val stores = viewModel.myStores.collectAsState().value
     val selectedStore = viewModel.selectedStore.collectAsState().value
     val imageLoader = rememberImageLoaderWithToken()
