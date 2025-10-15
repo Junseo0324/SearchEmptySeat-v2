@@ -40,7 +40,7 @@ fun OwnerNavigation(
 ) {
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable(OwnerBottomNavItem.Home.screenRoute) {
-            OwnerHomeScreen(storeListViewModel)
+            OwnerHomeScreen()
         }
         composable(OwnerBottomNavItem.Store.screenRoute) {
             OwnerStoreScreen(navController, storeListViewModel, placementViewModel)

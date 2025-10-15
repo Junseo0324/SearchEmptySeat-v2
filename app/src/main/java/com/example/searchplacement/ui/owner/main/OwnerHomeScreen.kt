@@ -20,21 +20,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
-fun OwnerHomeScreen(storeListViewModel: StoreListViewModel? = null){
-    val stores = storeListViewModel?.selectedStore?.collectAsState()?.value
+fun OwnerHomeScreen(){
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
+    val stores = storeListViewModel.selectedStore.collectAsState().value
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text =stores?.storeName ?: "xxx",modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+        Text(text =stores?.storeName ?: "",modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
             fontSize = 25.sp, fontWeight = FontWeight.Bold)
 
         // 오늘의 매출 현황
@@ -47,7 +48,6 @@ fun OwnerHomeScreen(storeListViewModel: StoreListViewModel? = null){
 
 @Composable
 fun SalesSummaryCard() {
-    // 카드 형태로 한 번에 요약
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,11 +85,4 @@ fun SummaryItem(title: String, value: String) {
         Text(title, fontSize = 13.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 5.dp))
         Text(value, fontSize = 17.sp, fontWeight = FontWeight.Bold)
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun OwnerHomeScreenPreview() {
-    OwnerHomeScreen()
 }
