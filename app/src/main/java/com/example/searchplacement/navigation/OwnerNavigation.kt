@@ -64,7 +64,7 @@ fun OwnerNavigation(
         }
 
         composable("storeInfo") {
-            StoreInformationScreen(storeListViewModel, mainViewModel, navController)
+            StoreInformationScreen(navController)
         }
         composable("businessHour") {
             BusinessHourScreen(storeListViewModel, navController)

@@ -50,6 +50,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -62,7 +63,9 @@ import com.example.searchplacement.viewmodel.MainViewModel
 import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
-fun StoreInformationScreen(storeListViewModel: StoreListViewModel, mainViewModel: MainViewModel,navController: NavHostController) {
+fun StoreInformationScreen(navController: NavHostController) {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val store by storeListViewModel.selectedStore.collectAsState()
     val user by mainViewModel.user.collectAsState()
     var isEdit by remember { mutableStateOf(false) }
