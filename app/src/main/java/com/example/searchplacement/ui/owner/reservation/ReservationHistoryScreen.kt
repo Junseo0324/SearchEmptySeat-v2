@@ -31,7 +31,8 @@ import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservationHistoryScreen(navController: NavHostController,storeListViewModel: StoreListViewModel) {
+fun ReservationHistoryScreen(navController: NavHostController) {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val viewModel: ReservationViewModel = hiltViewModel()
 
     val completedReservations = viewModel.reservations.map {
