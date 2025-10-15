@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.R
 import com.example.searchplacement.data.placement.PlacementRequest
 import com.example.searchplacement.data.placement.PlacementUpdateRequest
@@ -61,10 +62,10 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun TableEditorScreen(
-    layoutSize: Int,
-    placementViewModel: PlacementViewModel,
-    storeListViewModel: StoreListViewModel
+    layoutSize: Int
 ) {
+    val placementViewModel: PlacementViewModel = hiltViewModel()
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val tables = remember { mutableStateListOf<TableData>() }
     var selectedTableType by remember { mutableStateOf(1) }
     var minPeople by remember { mutableStateOf("1") }

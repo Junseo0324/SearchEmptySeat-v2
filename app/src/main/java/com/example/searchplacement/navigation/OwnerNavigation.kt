@@ -89,9 +89,7 @@ fun OwnerNavigation(
         composable("placement/{layoutSize}") { backStackEntry ->
             val layoutSize = backStackEntry.arguments?.getString("layoutSize")?.toIntOrNull() ?: 1
             TableEditorScreen(
-                layoutSize = layoutSize,
-                placementViewModel = placementViewModel,
-                storeListViewModel = storeListViewModel
+                layoutSize = layoutSize
             )
         }
 
