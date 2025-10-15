@@ -100,7 +100,7 @@ fun OwnerNavigation(
         }
 
         composable("editMenu") {
-            MenuInformationScreen(storeListViewModel,menuViewModel,menuSectionViewModel,navController)
+            MenuInformationScreen()
         }
         composable("soldOut") {
             EditMenuScreen(storeListViewModel,menuViewModel,menuSectionViewModel)

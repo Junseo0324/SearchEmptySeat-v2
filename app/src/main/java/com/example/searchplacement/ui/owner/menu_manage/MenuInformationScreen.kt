@@ -54,7 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -72,12 +72,10 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuInformationScreen(
-    storeListViewModel: StoreListViewModel,
-    menuViewModel: MenuViewModel,
-    menuSectionViewModel: MenuSectionViewModel,
-    navController: NavHostController
-) {
+fun MenuInformationScreen() {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
+    val menuViewModel: MenuViewModel = hiltViewModel()
+    val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
     val store by storeListViewModel.selectedStore.collectAsState()
     val storePk = store?.storePK ?: return // 가게 선택 안 된 경우 리턴
     val menus by menuViewModel.menus.collectAsState()
