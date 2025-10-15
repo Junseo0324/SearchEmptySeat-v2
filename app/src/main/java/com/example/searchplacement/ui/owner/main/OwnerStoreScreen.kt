@@ -21,19 +21,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.searchplacement.viewmodel.PlacementViewModel
-import com.example.searchplacement.viewmodel.StoreListViewModel
+import com.example.searchplacement.ui.theme.Dimens
 
 @Composable
-fun OwnerStoreScreen(navController: NavHostController,storeListViewModel: StoreListViewModel,
-                     placementViewModel: PlacementViewModel) {
+fun OwnerStoreScreen(navController: NavHostController) {
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(15.dp)
+        .padding(Dimens.Medium)
         .verticalScroll(rememberScrollState())
     ) {
         Text("매장 관리", fontSize = 25.sp)
-        HorizontalDivider(Modifier.padding(top = 5.dp, bottom = 16.dp))
+        HorizontalDivider(Modifier.padding(top = 5.dp, bottom = Dimens.Medium))
         ServiceCard(
             navController,
             "매장 관리",
@@ -44,9 +42,7 @@ fun OwnerStoreScreen(navController: NavHostController,storeListViewModel: StoreL
                 "영업 시간 및 휴무" to "businessHour",
                 "예약 내역" to "reservationHistory",
                 "매장 리뷰" to "storeReview"
-            ),
-            storeListViewModel,
-            placementViewModel
+            )
         )
         Spacer(Modifier.height(32.dp))
 
@@ -57,16 +53,14 @@ fun OwnerStoreScreen(navController: NavHostController,storeListViewModel: StoreL
                 "품절 처리" to "soldOut",
                 "메뉴 관리" to "editMenu",
                 "섹션 관리" to "editSection"
-            ),storeListViewModel,
-            placementViewModel
+            )
         )
         ServiceCard(
             navController = navController,
             title = "신규 가게 등록",
             items = listOf(
                 "신규 가게 등록" to "storeRegister"
-            ),storeListViewModel,
-            placementViewModel
+            )
         )
     }
 }
@@ -75,9 +69,7 @@ fun OwnerStoreScreen(navController: NavHostController,storeListViewModel: StoreL
 fun ServiceCard(
     navController: NavHostController,
     title: String,
-    items: List<Pair<String, String>>,
-    storeListViewModel: StoreListViewModel,
-    placementViewModel: PlacementViewModel
+    items: List<Pair<String, String>>
 ) {
     Card(
         Modifier
@@ -104,11 +96,7 @@ fun ServiceCard(
                         .padding(vertical = 8.dp)
                         .clickable {
                             if (route == "store_size") {
-                                val storePK = storeListViewModel.selectedStore.value?.storePK
-                                if (storePK != null) {
-                                    placementViewModel.getPlacementByStore(storePK)
                                     navController.navigate("checkPlacement")
-                                }
                             } else {
                                 navController.navigate(route)
                             }
