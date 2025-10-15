@@ -111,7 +111,7 @@ fun OwnerNavigation(
         }
 
         composable("storeReview") {
-            OwnerReviewScreen(navController,storeListViewModel)
+            OwnerReviewScreen(navController)
         }
 
     }

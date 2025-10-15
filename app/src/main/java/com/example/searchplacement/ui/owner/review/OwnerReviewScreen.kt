@@ -29,7 +29,8 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OwnerReviewScreen(navController: NavHostController,storeListViewModel: StoreListViewModel) {
+fun OwnerReviewScreen(navController: NavHostController) {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val viewModel: ReviewViewModel = hiltViewModel()
     val reviews = viewModel.reviews.collectAsState().value
 
