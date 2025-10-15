@@ -37,17 +37,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.data.store.BusinessHour
 import com.example.searchplacement.data.store.StoreRequest
+import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.viewmodel.StoreListViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun BusinessHourScreen(storeListViewModel: StoreListViewModel,navController: NavHostController) {
+fun BusinessHourScreen(navController: NavHostController) {
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val daysOfWeek = listOf("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
     var businessHours by remember {
         mutableStateOf(
