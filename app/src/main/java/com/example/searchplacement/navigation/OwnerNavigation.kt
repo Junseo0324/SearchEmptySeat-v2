@@ -83,9 +83,7 @@ fun OwnerNavigation(
 
         composable("place_edit") {
             EditPlacementScreen(
-                navController = navController,
-                placementViewModel = placementViewModel,
-                storeListViewModel = storeListViewModel
+                navController = navController
             )
         }
         composable("placement/{layoutSize}") { backStackEntry ->

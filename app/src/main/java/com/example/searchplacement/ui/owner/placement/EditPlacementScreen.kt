@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.data.placement.PlacementUpdateRequest
 import com.example.searchplacement.data.placement.TableData
@@ -43,10 +44,10 @@ import com.example.searchplacement.viewmodel.StoreListViewModel
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun EditPlacementScreen(
-    navController: NavHostController,
-    placementViewModel: PlacementViewModel,
-    storeListViewModel: StoreListViewModel
+    navController: NavHostController
 ) {
+    val placementViewModel: PlacementViewModel = hiltViewModel()
+    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val placement = placementViewModel.placement.collectAsState().value
     val placementPK = placementViewModel.placementPK.collectAsState().value
 
