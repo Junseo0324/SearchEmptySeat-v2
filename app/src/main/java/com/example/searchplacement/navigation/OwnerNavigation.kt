@@ -107,7 +107,7 @@ fun OwnerNavigation(
         }
 
         composable("reservationHistory") {
-            ReservationHistoryScreen(navController,storeListViewModel)
+            ReservationHistoryScreen(navController)
         }
 
         composable("storeReview") {
