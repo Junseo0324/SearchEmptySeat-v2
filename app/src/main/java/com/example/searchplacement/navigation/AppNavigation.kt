@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.ui.owner.main.OwnerMainView
 import com.example.searchplacement.ui.user.category.CategoryScreen
 import com.example.searchplacement.ui.user.favorite.FavoriteScreen
 import com.example.searchplacement.ui.user.home.MainScreen
@@ -88,6 +89,9 @@ fun AppNavigation(
             UpdatePassword(
                 navController = navController
             )
+        }
+        composable("owner_main") {
+            OwnerMainView()
         }
     }
 }

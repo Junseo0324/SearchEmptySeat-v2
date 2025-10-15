@@ -1,76 +1,20 @@
-package com.example.searchplacement.activity
+package com.example.searchplacement.ui.owner.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.searchplacement.navigation.OwnerBottomNavItem
-import com.example.searchplacement.navigation.OwnerNavigation
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.Gray
-import com.example.searchplacement.ui.theme.SearchPlacementTheme
-import com.example.searchplacement.viewmodel.MainViewModel
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
-import com.example.searchplacement.viewmodel.MenuViewModel
-import com.example.searchplacement.viewmodel.OwnerStoreViewModel
-import com.example.searchplacement.viewmodel.PlacementViewModel
-import com.example.searchplacement.viewmodel.StoreListViewModel
-import dagger.hilt.android.AndroidEntryPoint
-
-@AndroidEntryPoint
-class OwnerMainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SearchPlacementTheme {
-                OwnerMainView()
-            }
-        }
-    }
-}
-
-@Composable
-fun OwnerMainView() {
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    val bottomNavRoutes = listOf(
-        OwnerBottomNavItem.Home.screenRoute,
-        OwnerBottomNavItem.Store.screenRoute,
-        OwnerBottomNavItem.Reservation.screenRoute
-    )
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            if (currentRoute in bottomNavRoutes) {
-                OwnerBottomNavigation(
-                    Color.White, Color.Black, navController
-                )
-            }
-        }
-    ) { padding ->
-        OwnerNavigation(navController)
-    }
-}
 
 @Composable
 fun OwnerBottomNavigation(

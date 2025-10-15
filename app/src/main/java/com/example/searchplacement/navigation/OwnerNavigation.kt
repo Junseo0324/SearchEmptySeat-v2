@@ -55,33 +55,23 @@ fun OwnerNavigation(navController: NavHostController) {
             BusinessHourScreen(navController)
         }
         composable("storeRegister") {
-            RegisterStore(
-                navController = navController
-            )
+            RegisterStore(navController)
         }
 
         composable("checkPlacement") {
-            CheckPlacementScreen(
-                navController = navController
-            )
+            CheckPlacementScreen(navController)
         }
 
         composable("place_edit") {
-            EditPlacementScreen(
-                navController = navController
-            )
+            EditPlacementScreen(navController)
         }
         composable("placement/{layoutSize}") { backStackEntry ->
             val layoutSize = backStackEntry.arguments?.getString("layoutSize")?.toIntOrNull() ?: 1
-            TableEditorScreen(
-                layoutSize = layoutSize
-            )
+            TableEditorScreen(layoutSize)
         }
 
         composable("editSection") {
-            EditSectionScreen(
-                navController = navController
-            )
+            EditSectionScreen(navController)
         }
 
         composable("editMenu") {

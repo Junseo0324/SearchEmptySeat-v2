@@ -1,7 +1,5 @@
 package com.example.searchplacement.ui.user.login
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -50,7 +48,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.activity.OwnerMainActivity
 import com.example.searchplacement.navigation.MainBottomNavItem
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.ChipBorderColor
@@ -82,7 +78,6 @@ fun LoginScreen(navController: NavHostController) {
     var showPassword by remember { mutableStateOf(false) }
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val passwordFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -93,9 +88,7 @@ fun LoginScreen(navController: NavHostController) {
                 "success" -> {
                     val userType = response.data?.userType ?: "USER"
                     if (userType == "OWNER") {
-                        val intent = Intent(context, OwnerMainActivity::class.java)
-                        context.startActivity(intent)
-                        (context as? Activity)?.finish()
+                        navController.navigate("owner_main")
                     } else {
                         navController.navigate(MainBottomNavItem.Home.screenRoute)
                     }
