@@ -71,8 +71,6 @@ fun OwnerNavigation(
         }
         composable("storeRegister") {
             RegisterStore(
-                ownerStoreViewModel = ownerStoreViewModel,
-                mainViewModel = mainViewModel,
                 navController = navController
             )
         }
