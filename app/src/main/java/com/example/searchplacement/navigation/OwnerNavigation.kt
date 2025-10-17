@@ -25,12 +25,6 @@ import com.example.searchplacement.ui.owner.selection.StoreSelectScreen
 fun OwnerNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable("storeSelect") {
-//            StoreSelectScreen(
-////                navController,
-//                onStoreSelected = {
-//                    navController.navigate(OwnerBottomNavItem.Home.screenRoute)
-//                }
-//            )
             StoreSelectScreen(navController)
         }
         composable(OwnerBottomNavItem.Home.screenRoute) {
