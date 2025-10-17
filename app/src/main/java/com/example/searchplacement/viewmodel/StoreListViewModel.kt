@@ -1,5 +1,6 @@
 package com.example.searchplacement.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.member.ApiResponse
@@ -32,6 +33,7 @@ class StoreListViewModel @Inject constructor(
             val response = ownerStoreRepository.getMyStores()
             if (response.isSuccessful) {
                 _myStores.value = response.body()?.data ?: emptyList()
+                Log.d("StroeSelectionScreen", "StoreSelectScreen: ${response.body()}")
 
                 _selectedStore.value = response.body()?.data?.firstOrNull()
             }

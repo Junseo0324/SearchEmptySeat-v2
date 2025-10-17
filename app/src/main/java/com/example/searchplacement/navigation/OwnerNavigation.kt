@@ -10,7 +10,6 @@ import com.example.searchplacement.ui.owner.info.StoreInformationScreen
 import com.example.searchplacement.ui.owner.main.OwnerHomeScreen
 import com.example.searchplacement.ui.owner.main.OwnerReservationScreen
 import com.example.searchplacement.ui.owner.main.OwnerStoreScreen
-import com.example.searchplacement.ui.owner.main.StoreSelectScreen
 import com.example.searchplacement.ui.owner.menu_manage.EditMenuScreen
 import com.example.searchplacement.ui.owner.menu_manage.MenuInformationScreen
 import com.example.searchplacement.ui.owner.placement.CheckPlacementScreen
@@ -20,16 +19,19 @@ import com.example.searchplacement.ui.owner.placement.TableEditorScreen
 import com.example.searchplacement.ui.owner.reservation.ReservationHistoryScreen
 import com.example.searchplacement.ui.owner.review.OwnerReviewScreen
 import com.example.searchplacement.ui.owner.section.EditSectionScreen
+import com.example.searchplacement.ui.owner.selection.StoreSelectScreen
 
 @Composable
 fun OwnerNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable("storeSelect") {
-            StoreSelectScreen(
-                onStoreSelected = {
-                    navController.navigate(OwnerBottomNavItem.Home.screenRoute)
-                }
-            )
+//            StoreSelectScreen(
+////                navController,
+//                onStoreSelected = {
+//                    navController.navigate(OwnerBottomNavItem.Home.screenRoute)
+//                }
+//            )
+            StoreSelectScreen(navController)
         }
         composable(OwnerBottomNavItem.Home.screenRoute) {
             OwnerHomeScreen()
