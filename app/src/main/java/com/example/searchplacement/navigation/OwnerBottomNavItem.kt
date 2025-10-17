@@ -15,7 +15,7 @@ sealed class OwnerBottomNavItem(
     val filledIcon: ImageVector,
     val screenRoute: String
 ) {
-    object Home : OwnerBottomNavItem("홈", Icons.Outlined.Home, Icons.Filled.Home, "owner_home")
+    object Home : OwnerBottomNavItem("홈", Icons.Outlined.Home, Icons.Filled.Home, "owner_home/{storeId}")
     object Store : OwnerBottomNavItem("매장 관리", Icons.Outlined.Store, Icons.Filled.Store, "owner_store")
     object Reservation : OwnerBottomNavItem("예약 관리", Icons.Outlined.Event, Icons.Filled.Event, "owner_reserve")
 }

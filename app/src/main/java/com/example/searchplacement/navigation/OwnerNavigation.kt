@@ -2,8 +2,10 @@ package com.example.searchplacement.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.searchplacement.ui.owner.info.BusinessHourScreen
 import com.example.searchplacement.ui.owner.info.RegisterStore
 import com.example.searchplacement.ui.owner.info.StoreInformationScreen
@@ -27,8 +29,14 @@ fun OwnerNavigation(navController: NavHostController) {
         composable("storeSelect") {
             StoreSelectScreen(navController)
         }
-        composable(OwnerBottomNavItem.Home.screenRoute) {
-            OwnerHomeScreen()
+        composable(
+            route = OwnerBottomNavItem.Home.screenRoute,
+            arguments = listOf(
+                navArgument("storeId") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
+            OwnerHomeScreen(storeId = storeId)
         }
         composable(OwnerBottomNavItem.Store.screenRoute) {
             OwnerStoreScreen(navController)

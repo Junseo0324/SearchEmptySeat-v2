@@ -26,7 +26,6 @@ fun StoreSelectScreen(
 ) {
     val viewModel: StoreSelectViewModel = hiltViewModel()
     val stores = viewModel.myStores.collectAsState().value
-    val selectedStore = viewModel.selectedStore.collectAsState().value
 
 
     LaunchedEffect(Unit) {

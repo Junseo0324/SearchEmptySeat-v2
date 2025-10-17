@@ -18,9 +18,6 @@ class StoreSelectViewModel @Inject constructor(
     private val _myStores = MutableStateFlow<List<StoreSelectDTO>>(emptyList())
     val myStores = _myStores.asStateFlow()
 
-    private val _selectedStore = MutableStateFlow<StoreSelectDTO?>(null)
-    val selectedStore = _selectedStore.asStateFlow()
-
     fun fetchMyStores() {
         viewModelScope.launch {
             val response = ownerStoreRepository.getMyStores()
@@ -48,13 +45,8 @@ class StoreSelectViewModel @Inject constructor(
                         isAvailable = isStoreOpen(it)
                     )
                 }
-                _selectedStore.value = _myStores.value.firstOrNull()
             }
         }
-    }
-
-    fun selectStore(store: StoreSelectDTO) {
-        _selectedStore.value = store
     }
 
     private fun isStoreOpen(store: StoreResponse): Boolean {

@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @Composable
-fun OwnerHomeScreen(){
+fun OwnerHomeScreen(storeId: Long){
     val storeListViewModel: StoreListViewModel = hiltViewModel()
     val stores = storeListViewModel.selectedStore.collectAsState().value
 
