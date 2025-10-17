@@ -24,6 +24,13 @@ import com.example.searchplacement.ui.owner.section.EditSectionScreen
 @Composable
 fun OwnerNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "storeSelect") {
+        composable("storeSelect") {
+            StoreSelectScreen(
+                onStoreSelected = {
+                    navController.navigate(OwnerBottomNavItem.Home.screenRoute)
+                }
+            )
+        }
         composable(OwnerBottomNavItem.Home.screenRoute) {
             OwnerHomeScreen()
         }
@@ -33,13 +40,7 @@ fun OwnerNavigation(navController: NavHostController) {
         composable(OwnerBottomNavItem.Reservation.screenRoute) {
             OwnerReservationScreen()
         }
-        composable("storeSelect") {
-            StoreSelectScreen(
-                onStoreSelected = {
-                    navController.navigate(OwnerBottomNavItem.Home.screenRoute)
-                }
-            )
-        }
+
         composable("store_size") {
             StoreSizeSelectionScreen(onNext = { selectedSize ->
                 navController.navigate("placement/$selectedSize") {
