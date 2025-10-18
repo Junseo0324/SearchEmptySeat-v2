@@ -25,19 +25,17 @@ import com.example.searchplacement.viewmodel.OwnerMainViewModel
 
 @Composable
 fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerMainViewModel) {
+    val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable("storeSelect") { StoreSelectScreen(navController,ownerMainViewModel) }
 
         composable(OwnerBottomNavItem.Home.screenRoute) { backStackEntry ->
-            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
             OwnerHomeScreen(storeId = storeId?.toLong() ?: 0L)
         }
         composable(OwnerBottomNavItem.Store.screenRoute) {
-            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
             OwnerStoreScreen(navController,storeId?.toLong() ?: 0L)
         }
         composable(OwnerBottomNavItem.Reservation.screenRoute) {
-            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
             OwnerReservationScreen(storeId?.toLong() ?: 0L)
         }
         composable("store_size") {
