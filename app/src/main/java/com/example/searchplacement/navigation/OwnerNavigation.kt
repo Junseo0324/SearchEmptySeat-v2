@@ -27,7 +27,10 @@ fun OwnerNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "storeSelect") {
         composable("storeSelect") { StoreSelectScreen(navController) }
 
-        navigation(startDestination = OwnerBottomNavItem.Home.screenRoute, route = "owner_main/{storeId}") {
+        navigation(
+            startDestination = OwnerBottomNavItem.Home.screenRoute,
+            route = "owner_main/{storeId}"
+        ) {
             composable(OwnerBottomNavItem.Home.screenRoute) { backStackEntry ->
                 val storeId = backStackEntry.arguments?.getString("storeId")?.toIntOrNull()
                 OwnerHomeScreen(storeId = storeId?.toLong() ?: 0L)
@@ -40,11 +43,13 @@ fun OwnerNavigation(navController: NavHostController) {
             }
         }
         composable("store_size") {
-            StoreSizeSelectionScreen(onNext = { selectedSize ->
-                navController.navigate("placement/$selectedSize") {
-                    popUpTo("store_size") { inclusive = true }
+            StoreSizeSelectionScreen(
+                onNext = { selectedSize ->
+                    navController.navigate("placement/$selectedSize") {
+                        popUpTo("store_size") { inclusive = true }
+                    }
                 }
-            })
+            )
         }
 
         composable("storeInfo") {
