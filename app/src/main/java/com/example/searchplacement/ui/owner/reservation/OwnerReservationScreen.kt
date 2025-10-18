@@ -1,4 +1,4 @@
-package com.example.searchplacement.ui.owner.main
+package com.example.searchplacement.ui.owner.reservation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.searchplacement.ui.owner.reservation.OwnerReservedList
 import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.ButtonMainColor
 import com.example.searchplacement.ui.theme.CategoryBgColor
