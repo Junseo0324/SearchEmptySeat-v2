@@ -37,7 +37,8 @@ fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerM
             OwnerStoreScreen(navController,storeId?.toLong() ?: 0L)
         }
         composable(OwnerBottomNavItem.Reservation.screenRoute) {
-            OwnerReservationScreen()
+            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
+            OwnerReservationScreen(storeId?.toLong() ?: 0L)
         }
         composable("store_size") {
             StoreSizeSelectionScreen(

@@ -23,12 +23,10 @@ import com.example.searchplacement.ui.owner.reservation.PendingReservationCard
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.user.reserve.my.ReservationTabBar
 import com.example.searchplacement.viewmodel.ReservationViewModel
-import com.example.searchplacement.viewmodel.StoreListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OwnerReservationScreen() {
-    val storeListViewModel: StoreListViewModel = hiltViewModel()
+fun OwnerReservationScreen(storeId: Long) {
     val viewModel: ReservationViewModel = hiltViewModel()
     val stateList = listOf("진행 중", "완료")
 
@@ -36,10 +34,7 @@ fun OwnerReservationScreen() {
     val selectedState = stateList[selectedIndex]
 
     LaunchedEffect(Unit) {
-        val storeId = storeListViewModel.selectedStore.value?.storePK
-        if (storeId != null) {
-            viewModel.fetchOwnerReservations(storeId)
-        }
+        viewModel.fetchOwnerReservations(storeId)
     }
     val reservations by viewModel.reservations.collectAsState()
 
