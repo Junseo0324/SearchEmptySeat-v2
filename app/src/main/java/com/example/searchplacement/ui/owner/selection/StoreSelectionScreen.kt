@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.searchplacement.navigation.OwnerBottomNavItem
 import com.example.searchplacement.ui.theme.CardBorderTransparentColor
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.viewmodel.OwnerMainViewModel
@@ -22,10 +23,10 @@ import com.example.searchplacement.viewmodel.StoreSelectViewModel
 
 @Composable
 fun StoreSelectScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    ownerMainViewModel: OwnerMainViewModel
 ) {
     val viewModel: StoreSelectViewModel = hiltViewModel()
-    val ownerMainViewModel: OwnerMainViewModel = hiltViewModel()
     val stores = viewModel.myStores.collectAsState().value
 
 
@@ -50,7 +51,8 @@ fun StoreSelectScreen(
                 StoreCard(
                     store = store,
                     onClick = {
-                        navController.navigate("owner_main/${store.storePK}")
+                        ownerMainViewModel.selectStore(store.storePK)
+                        navController.navigate(OwnerBottomNavItem.Home.screenRoute)
                     }
                 )
             }

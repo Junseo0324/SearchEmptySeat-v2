@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.searchplacement.ui.theme.Dimens
 
 @Composable
-fun OwnerStoreScreen(navController: NavHostController) {
+fun OwnerStoreScreen(navController: NavHostController,storeId: Long) {
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(Dimens.Medium)

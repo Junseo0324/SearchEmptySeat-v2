@@ -9,10 +9,14 @@ import com.example.searchplacement.navigation.OwnerNavigation
 import com.example.searchplacement.ui.theme.Black
 import com.example.searchplacement.ui.theme.White
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.searchplacement.viewmodel.OwnerMainViewModel
 
 @Composable
 fun OwnerMainView() {
     val navController = rememberNavController()
+
+    val ownerMainViewModel: OwnerMainViewModel = hiltViewModel()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -33,6 +37,6 @@ fun OwnerMainView() {
             }
         }
     ) { padding ->
-        OwnerNavigation(navController)
+        OwnerNavigation(navController,ownerMainViewModel)
     }
 }

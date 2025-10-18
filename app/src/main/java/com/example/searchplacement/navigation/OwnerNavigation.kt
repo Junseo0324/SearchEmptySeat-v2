@@ -1,10 +1,10 @@
 package com.example.searchplacement.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.example.searchplacement.ui.owner.info.BusinessHourScreen
 import com.example.searchplacement.ui.owner.info.RegisterStore
 import com.example.searchplacement.ui.owner.info.StoreInformationScreen
@@ -21,26 +21,23 @@ import com.example.searchplacement.ui.owner.reservation.ReservationHistoryScreen
 import com.example.searchplacement.ui.owner.review.OwnerReviewScreen
 import com.example.searchplacement.ui.owner.section.EditSectionScreen
 import com.example.searchplacement.ui.owner.selection.StoreSelectScreen
+import com.example.searchplacement.viewmodel.OwnerMainViewModel
 
 @Composable
-fun OwnerNavigation(navController: NavHostController) {
+fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerMainViewModel) {
     NavHost(navController = navController, startDestination = "storeSelect") {
-        composable("storeSelect") { StoreSelectScreen(navController) }
+        composable("storeSelect") { StoreSelectScreen(navController,ownerMainViewModel) }
 
-        navigation(
-            startDestination = OwnerBottomNavItem.Home.screenRoute,
-            route = "owner_main/{storeId}"
-        ) {
-            composable(OwnerBottomNavItem.Home.screenRoute) { backStackEntry ->
-                val storeId = backStackEntry.arguments?.getString("storeId")?.toIntOrNull()
-                OwnerHomeScreen(storeId = storeId?.toLong() ?: 0L)
-            }
-            composable(OwnerBottomNavItem.Store.screenRoute) {
-                OwnerStoreScreen(navController)
-            }
-            composable(OwnerBottomNavItem.Reservation.screenRoute) {
-                OwnerReservationScreen()
-            }
+        composable(OwnerBottomNavItem.Home.screenRoute) { backStackEntry ->
+            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
+            OwnerHomeScreen(storeId = storeId?.toLong() ?: 0L)
+        }
+        composable(OwnerBottomNavItem.Store.screenRoute) {
+            val storeId = ownerMainViewModel.selectedStoreId.collectAsState().value
+            OwnerStoreScreen(navController,storeId?.toLong() ?: 0L)
+        }
+        composable(OwnerBottomNavItem.Reservation.screenRoute) {
+            OwnerReservationScreen()
         }
         composable("store_size") {
             StoreSizeSelectionScreen(

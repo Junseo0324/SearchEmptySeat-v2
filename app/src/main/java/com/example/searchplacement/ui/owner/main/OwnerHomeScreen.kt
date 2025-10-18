@@ -3,7 +3,6 @@ package com.example.searchplacement.ui.owner.main
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -31,8 +30,7 @@ fun OwnerHomeScreen(storeId: Long){
             .fillMaxSize()
             .padding(Dimens.Medium)
     ) {
-        Text(text =stores?.storeName ?: "",modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
-            fontSize = 25.sp, fontWeight = FontWeight.Bold)
+        Text(text =stores?.storeName ?: "", fontSize = 25.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(20.dp))
 
