@@ -77,7 +77,7 @@ fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerM
             MenuInformationScreen()
         }
         composable("soldOut") {
-            EditMenuScreen()
+            EditMenuScreen(storeId = storeId?.toLong() ?: 0L)
         }
 
         composable("storeReview") {
