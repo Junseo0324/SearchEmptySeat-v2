@@ -54,6 +54,7 @@ fun ManagementMenuCard(
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Box(
                 modifier = Modifier
                     .size(56.dp)
