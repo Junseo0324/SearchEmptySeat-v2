@@ -1,4 +1,4 @@
-package com.example.searchplacement.viewmodel
+package com.example.searchplacement.viewmodel.owner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +24,6 @@ class MenuSectionViewModel @Inject constructor(
     private val _updateResult = MutableStateFlow<String?>(null)
     val updateResult: StateFlow<String?> = _updateResult.asStateFlow()
 
-    /** 메뉴 섹션 전체 조회 */
     fun fetchSections(storePK: Long) {
         viewModelScope.launch {
             val res = menuSectionRepository.getSections(storePK)
@@ -44,15 +43,6 @@ class MenuSectionViewModel @Inject constructor(
         }
     }
 
-    /** 메뉴 섹션 개별 업데이트 */
-    fun updateSection(sectionPK: Long, request: MenuSectionRequest) {
-        viewModelScope.launch {
-            val res = menuSectionRepository.updateSection(sectionPK, request)
-            _updateResult.value = res.body()?.message ?: "섹션 수정 실패"
-        }
-    }
-
-    /** 메뉴 섹션 삭제 */
     fun deleteSection(sectionPK: Long, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val res = menuSectionRepository.deleteSection(sectionPK)
@@ -61,7 +51,6 @@ class MenuSectionViewModel @Inject constructor(
         }
     }
 
-    /** 메뉴 섹션 일괄 업데이트 */
     fun bulkUpdateSections(storePK: Long, requests: List<MenuSectionBulkUpdateRequest>) {
         viewModelScope.launch {
             val res = menuSectionRepository.bulkUpdateSections(storePK, requests)

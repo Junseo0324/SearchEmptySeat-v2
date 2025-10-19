@@ -70,7 +70,7 @@ fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerM
         }
 
         composable("editSection") {
-            EditSectionScreen(navController)
+            EditSectionScreen(navController,storeId = storeId?.toLong() ?: 0L)
         }
 
         composable("editMenu") {

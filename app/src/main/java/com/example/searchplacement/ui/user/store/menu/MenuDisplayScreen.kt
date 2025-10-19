@@ -34,7 +34,7 @@ import com.example.searchplacement.ui.theme.AppTextStyle
 import com.example.searchplacement.ui.theme.Dimens
 import com.example.searchplacement.ui.theme.Gray
 import com.example.searchplacement.ui.utils.rememberImageLoaderWithToken
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
+import com.example.searchplacement.viewmodel.owner.MenuSectionViewModel
 import com.example.searchplacement.viewmodel.MenuViewModel
 
 

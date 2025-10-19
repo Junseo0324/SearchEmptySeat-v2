@@ -33,18 +33,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.data.section.MenuSectionBulkUpdateRequest
 import com.example.searchplacement.data.section.MenuSectionRequest
 import com.example.searchplacement.data.section.MenuSectionResponse
-import com.example.searchplacement.viewmodel.MenuSectionViewModel
-import com.example.searchplacement.viewmodel.StoreListViewModel
+import com.example.searchplacement.ui.theme.AppTextStyle
+import com.example.searchplacement.ui.theme.Dimens
+import com.example.searchplacement.ui.theme.IconColor
+import com.example.searchplacement.ui.theme.RedPoint
+import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.viewmodel.owner.MenuSectionViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -60,10 +61,10 @@ fun <T> MutableList<T>.move(fromIndex: Int, toIndex: Int) {
 
 @Composable
 fun EditSectionScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    storeId: Long
 ) {
     val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
-    val storeListViewModel: StoreListViewModel = hiltViewModel()
     val context = LocalContext.current
     val sections by menuSectionViewModel.sections.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -72,13 +73,10 @@ fun EditSectionScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var sectionToDeletePK by remember { mutableStateOf<Long?>(null) }
 
-    val store = storeListViewModel.selectedStore.collectAsState()
-    val storePK = store.value?.storePK?.toLong() ?: 0L
     val list = remember { mutableStateListOf<MenuSectionResponse>() }
 
-    // 최초 데이터 가져오기
     LaunchedEffect(Unit) {
-        menuSectionViewModel.fetchSections(storePK)
+        menuSectionViewModel.fetchSections(storeId)
     }
 
     LaunchedEffect(sections) {
@@ -98,7 +96,6 @@ fun EditSectionScreen(
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             menuSectionViewModel.clearUpdateResult()
             if (msg.contains("성공")) {
-                // 저장 성공 시 이전 화면 복귀
                 navController.popBackStack()
                 menuSectionViewModel.clearUpdateResult()
             }
@@ -106,25 +103,22 @@ fun EditSectionScreen(
     }
 
     Column(Modifier.fillMaxSize()) {
-
-        // 상단 바
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Dimens.Small),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("섹션 관리", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text("섹션 관리", style = AppTextStyle.BodyLarge)
             IconButton(onClick = { showDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "섹션 추가")
             }
         }
 
-
-        // 섹션 추가 다이얼로그
         if (showDialog) {
             AlertDialog(
+                containerColor = White,
                 onDismissRequest = { showDialog = false },
                 title = { Text("섹션 추가") },
                 text = {
@@ -138,13 +132,13 @@ fun EditSectionScreen(
                     Button(onClick = {
                         if (newSectionName.isNotBlank()) {
                             val request = MenuSectionRequest(
-                                storePK = storePK,
+                                storePK = storeId,
                                 name = newSectionName,
                                 priority = list.size+1
                             )
-                            menuSectionViewModel.addSection(storePK, request) { success ->
+                            menuSectionViewModel.addSection(storeId, request) { success ->
                                 if(success) {
-                                    menuSectionViewModel.fetchSections(storePK)
+                                    menuSectionViewModel.fetchSections(storeId)
                                 }
                             }
                         }
@@ -155,9 +149,9 @@ fun EditSectionScreen(
             )
         }
 
-        // 삭제 확인 다이얼로그
         if (showDeleteDialog && sectionToDeletePK != null) {
             AlertDialog(
+                containerColor = White,
                 onDismissRequest = { showDeleteDialog = false },
                 title = { Text("삭제 확인") },
                 text = { Text("정말 삭제하시겠습니까?") },
@@ -165,7 +159,7 @@ fun EditSectionScreen(
                     Button(onClick = {
                         menuSectionViewModel.deleteSection(sectionToDeletePK!!) {success ->
                             if(success) {
-                                menuSectionViewModel.fetchSections(storePK)
+                                menuSectionViewModel.fetchSections(storeId)
                             }
                         }
                         showDeleteDialog = false
@@ -182,10 +176,9 @@ fun EditSectionScreen(
         }
         if (list.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("섹션이 없습니다. 추가 버튼을 눌러 섹션을 등록해주세요.", color = Color.Gray)
+                Text("섹션이 없습니다. \n 추가 버튼을 눌러 섹션을 등록해주세요.", style = AppTextStyle.Body.copy(color = IconColor))
             }
         } else {
-            // Drag-and-Drop 리스트
             LazyColumn(
                 state = reorderableState.listState,
                 modifier = Modifier
@@ -198,18 +191,14 @@ fun EditSectionScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
-                                .border(
-                                    1.dp,
-                                    if (isDragging) Color.Red else Color.LightGray,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .background(Color.White)
-                                .padding(12.dp),
+                                .padding(Dimens.Small)
+                                .border(1.dp, if (isDragging) RedPoint else IconColor, RoundedCornerShape(Dimens.Small))
+                                .background(White)
+                                .padding(Dimens.Default),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("${index + 1}. ${section.name}", fontSize = 16.sp)
+                            Text("${index + 1}. ${section.name}", style = AppTextStyle.Body)
                             Row(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -220,15 +209,15 @@ fun EditSectionScreen(
                                     Icon(
                                         imageVector = Icons.Outlined.Delete,
                                         contentDescription = "삭제",
-                                        tint = Color.Red
+                                        tint = RedPoint
                                     )
                                 }
 
                                 Icon(
                                     imageVector = Icons.Default.Menu,
                                     contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.padding(start = 8.dp)
+                                    tint = IconColor,
+                                    modifier = Modifier.padding(start = Dimens.Small)
                                 )
                             }
                         }
@@ -245,11 +234,11 @@ fun EditSectionScreen(
                             priority = index+1
                         )
                     }
-                    menuSectionViewModel.bulkUpdateSections(storePK, requests)
+                    menuSectionViewModel.bulkUpdateSections(storeId, requests)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(Dimens.Medium)
             ) {
                 Text("저장")
             }
