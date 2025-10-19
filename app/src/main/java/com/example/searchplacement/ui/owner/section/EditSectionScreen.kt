@@ -1,6 +1,5 @@
 package com.example.searchplacement.ui.owner.section
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -65,7 +63,6 @@ fun EditSectionScreen(
     storeId: Long
 ) {
     val menuSectionViewModel: MenuSectionViewModel = hiltViewModel()
-    val context = LocalContext.current
     val sections by menuSectionViewModel.sections.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var newSectionName by remember { mutableStateOf("") }
@@ -89,18 +86,6 @@ fun EditSectionScreen(
             list.move(from.index, to.index)
         }
     )
-
-    val updateResult by menuSectionViewModel.updateResult.collectAsState()
-    LaunchedEffect(updateResult) {
-        updateResult?.let { msg ->
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-            menuSectionViewModel.clearUpdateResult()
-            if (msg.contains("성공")) {
-                navController.popBackStack()
-                menuSectionViewModel.clearUpdateResult()
-            }
-        }
-    }
 
     Column(Modifier.fillMaxSize()) {
         Row(
@@ -235,6 +220,7 @@ fun EditSectionScreen(
                         )
                     }
                     menuSectionViewModel.bulkUpdateSections(storeId, requests)
+                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
