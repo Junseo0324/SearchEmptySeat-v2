@@ -9,7 +9,6 @@ import com.example.searchplacement.ui.owner.info.BusinessHourScreen
 import com.example.searchplacement.ui.owner.info.RegisterStore
 import com.example.searchplacement.ui.owner.info.StoreInformationScreen
 import com.example.searchplacement.ui.owner.main.OwnerHomeScreen
-import com.example.searchplacement.ui.owner.reservation.OwnerReservationScreen
 import com.example.searchplacement.ui.owner.main.OwnerStoreScreen
 import com.example.searchplacement.ui.owner.menu_manage.EditMenuScreen
 import com.example.searchplacement.ui.owner.menu_manage.MenuInformationScreen
@@ -17,6 +16,7 @@ import com.example.searchplacement.ui.owner.placement.CheckPlacementScreen
 import com.example.searchplacement.ui.owner.placement.EditPlacementScreen
 import com.example.searchplacement.ui.owner.placement.StoreSizeSelectionScreen
 import com.example.searchplacement.ui.owner.placement.TableEditorScreen
+import com.example.searchplacement.ui.owner.reservation.OwnerReservationScreen
 import com.example.searchplacement.ui.owner.review.OwnerReviewScreen
 import com.example.searchplacement.ui.owner.section.EditSectionScreen
 import com.example.searchplacement.ui.owner.selection.StoreSelectScreen
@@ -29,7 +29,7 @@ fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerM
         composable("storeSelect") { StoreSelectScreen(navController,ownerMainViewModel) }
 
         composable(OwnerBottomNavItem.Home.screenRoute) { backStackEntry ->
-            OwnerHomeScreen(storeId = storeId?.toLong() ?: 0L)
+            OwnerHomeScreen(navController,storeId = storeId?.toLong() ?: 0L)
         }
         composable(OwnerBottomNavItem.Store.screenRoute) {
             OwnerStoreScreen(navController,storeId?.toLong() ?: 0L)
