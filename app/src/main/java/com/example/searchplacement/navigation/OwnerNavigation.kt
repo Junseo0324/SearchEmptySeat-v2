@@ -11,7 +11,7 @@ import com.example.searchplacement.ui.owner.info.StoreInformationScreen
 import com.example.searchplacement.ui.owner.main.OwnerHomeScreen
 import com.example.searchplacement.ui.owner.main.OwnerStoreScreen
 import com.example.searchplacement.ui.owner.menu_manage.EditMenuScreen
-import com.example.searchplacement.ui.owner.menu_manage.MenuInformationScreen
+import com.example.searchplacement.ui.owner.menu_manage.information.MenuInformationScreen
 import com.example.searchplacement.ui.owner.placement.CheckPlacementScreen
 import com.example.searchplacement.ui.owner.placement.EditPlacementScreen
 import com.example.searchplacement.ui.owner.placement.StoreSizeSelectionScreen
@@ -74,7 +74,7 @@ fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerM
         }
 
         composable("editMenu") {
-            MenuInformationScreen()
+            MenuInformationScreen(storeId = storeId?.toLong() ?: 0L)
         }
         composable("soldOut") {
             EditMenuScreen(navController,storeId = storeId?.toLong() ?: 0L)
