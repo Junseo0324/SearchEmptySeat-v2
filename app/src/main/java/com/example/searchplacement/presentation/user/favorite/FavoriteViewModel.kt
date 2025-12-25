@@ -1,0 +1,65 @@
+package com.example.searchplacement.presentation.user.favorite
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.data.member.ApiResponse
+import com.example.searchplacement.data.store.FavoriteResponse
+import com.example.searchplacement.domain.repository.FavoriteRepository
+import com.example.searchplacement.domain.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class FavoriteViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val favoriteRepository: FavoriteRepository
+) : ViewModel() {
+
+    private val _favoriteList = MutableStateFlow<ApiResponse<List<FavoriteResponse>>?>(null)
+    val favoriteList: StateFlow<ApiResponse<List<FavoriteResponse>>?> = _favoriteList.asStateFlow()
+    fun getFavoriteList() {
+        viewModelScope.launch {
+            try {
+                val userId = userRepository.getUser()?.userId ?: ""
+                val response = favoriteRepository.getFavoriteList(userId)
+
+                if (response.status == "success" && response != null) {
+                    _favoriteList.value = response
+                } else {
+                    _favoriteList.value = ApiResponse(
+                        status = "fail",
+                        message = response.message ?: "찜 목록 불러오기 실패",
+                        data = emptyList()
+                    )
+                }
+            } catch (e: Exception) {
+                _favoriteList.value = ApiResponse(
+                    status = "fail",
+                    message = "네트워크 오류: ${e.message}",
+                    data = emptyList()
+                )
+            }
+        }
+    }
+
+
+    fun addFavorite(storeId: Long) {
+        viewModelScope.launch {
+            try {
+                favoriteRepository.addFavorite(storeId)
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun removeFavorite(storeId: Long) {
+        viewModelScope.launch {
+            try {
+                favoriteRepository.removeFavorite(storeId)
+            } catch (_: Exception) {}
+        }
+    }
+}

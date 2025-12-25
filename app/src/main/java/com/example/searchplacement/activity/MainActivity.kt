@@ -17,10 +17,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.searchplacement.navigation.AppNavigation
 import com.example.searchplacement.navigation.MainBottomNavItem
-import com.example.searchplacement.ui.theme.AppTextStyle
-import com.example.searchplacement.ui.theme.SearchPlacementTheme
-import com.example.searchplacement.ui.theme.UserPrimaryColor
-import com.example.searchplacement.ui.theme.White
+import com.example.searchplacement.presentation.theme.AppTextStyle
+import com.example.searchplacement.presentation.theme.SearchPlacementTheme
+import com.example.searchplacement.presentation.theme.UserPrimaryColor
+import com.example.searchplacement.presentation.theme.White
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

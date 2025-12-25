@@ -5,22 +5,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.searchplacement.ui.owner.info.BusinessHourScreen
-import com.example.searchplacement.ui.owner.info.RegisterStore
-import com.example.searchplacement.ui.owner.info.StoreInformationScreen
-import com.example.searchplacement.ui.owner.main.OwnerHomeScreen
-import com.example.searchplacement.ui.owner.main.OwnerStoreScreen
-import com.example.searchplacement.ui.owner.menu_manage.EditMenuScreen
-import com.example.searchplacement.ui.owner.menu_manage.information.MenuInformationScreen
-import com.example.searchplacement.ui.owner.placement.CheckPlacementScreen
-import com.example.searchplacement.ui.owner.placement.EditPlacementScreen
-import com.example.searchplacement.ui.owner.placement.StoreSizeSelectionScreen
-import com.example.searchplacement.ui.owner.placement.TableEditorScreen
-import com.example.searchplacement.ui.owner.reservation.OwnerReservationScreen
-import com.example.searchplacement.ui.owner.review.OwnerReviewScreen
-import com.example.searchplacement.ui.owner.section.EditSectionScreen
-import com.example.searchplacement.ui.owner.selection.StoreSelectScreen
-import com.example.searchplacement.viewmodel.OwnerMainViewModel
+import com.example.searchplacement.presentation.owner.info.BusinessHourScreen
+import com.example.searchplacement.presentation.owner.info.RegisterStore
+import com.example.searchplacement.presentation.owner.info.StoreInformationScreen
+import com.example.searchplacement.presentation.owner.main.OwnerHomeScreen
+import com.example.searchplacement.presentation.owner.main.OwnerStoreScreen
+import com.example.searchplacement.presentation.owner.menu_manage.EditMenuScreen
+import com.example.searchplacement.presentation.owner.menu_manage.information.MenuInformationScreen
+import com.example.searchplacement.presentation.owner.placement.CheckPlacementScreen
+import com.example.searchplacement.presentation.owner.placement.EditPlacementScreen
+import com.example.searchplacement.presentation.owner.placement.StoreSizeSelectionScreen
+import com.example.searchplacement.presentation.owner.placement.TableEditorScreen
+import com.example.searchplacement.presentation.owner.reservation.OwnerReservationScreen
+import com.example.searchplacement.presentation.owner.review.OwnerReviewScreen
+import com.example.searchplacement.presentation.owner.section.EditSectionScreen
+import com.example.searchplacement.presentation.owner.selection.StoreSelectScreen
+import com.example.searchplacement.presentation.owner.main.OwnerMainViewModel
 
 @Composable
 fun OwnerNavigation(navController: NavHostController, ownerMainViewModel: OwnerMainViewModel) {
