@@ -42,7 +42,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.searchplacement.data.menu.MenuResponse
 import com.example.searchplacement.data.section.MenuSectionResponse
-import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.owner.info.uriToFile
 import com.example.searchplacement.presentation.theme.White
 import java.io.File

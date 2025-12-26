@@ -34,11 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.data.store.StoreRequest
-import com.example.searchplacement.di.AppModule
-import com.example.searchplacement.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.di.AppModule
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.user.main.MainViewModel
-import com.example.searchplacement.presentation.owner.info.OwnerStoreViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 

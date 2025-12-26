@@ -1,4 +1,4 @@
-package com.example.searchplacement.di
+package com.example.searchplacement.core.di
 
 import com.example.searchplacement.BuildConfig
 import com.example.searchplacement.data.api.AuthApiService
@@ -10,7 +10,7 @@ import com.example.searchplacement.data.api.PlacementApiService
 import com.example.searchplacement.data.api.ReservationApiService
 import com.example.searchplacement.data.api.ReviewApiService
 import com.example.searchplacement.data.api.StoreApiService
-import com.example.searchplacement.util.AuthInterceptor
+import com.example.searchplacement.core.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -63,7 +63,7 @@ import coil.request.ImageRequest
 import com.example.searchplacement.R
 import com.example.searchplacement.data.reserve.ReservationResponse
 import com.example.searchplacement.data.store.StoreResponse
-import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.ButtonMainColor

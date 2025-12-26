@@ -1,4 +1,4 @@
-package com.example.searchplacement.di
+package com.example.searchplacement.core.di
 
 import com.example.searchplacement.data.repository.*
 import com.example.searchplacement.domain.repository.*

@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.navigation.MainBottomNavItem
+import com.example.searchplacement.core.navigation.MainBottomNavItem
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.ChipBorderColor
 import com.example.searchplacement.presentation.theme.Dimens

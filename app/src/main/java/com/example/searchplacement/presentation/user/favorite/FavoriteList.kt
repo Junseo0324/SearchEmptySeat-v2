@@ -39,7 +39,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
 import com.example.searchplacement.data.store.Store
-import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.CategoryBgColor
 import com.example.searchplacement.presentation.theme.CategoryTextColor
@@ -47,7 +47,6 @@ import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.ViewCountColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
-import com.example.searchplacement.presentation.user.favorite.FavoriteViewModel
 
 
 @Composable

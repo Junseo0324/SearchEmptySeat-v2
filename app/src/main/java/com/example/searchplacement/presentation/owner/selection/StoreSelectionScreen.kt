@@ -15,7 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.CardBorderTransparentColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.owner.main.OwnerMainViewModel

@@ -1,4 +1,4 @@
-package com.example.searchplacement.activity
+package com.example.searchplacement
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.searchplacement.navigation.AppNavigation
-import com.example.searchplacement.navigation.MainBottomNavItem
+import com.example.searchplacement.core.navigation.AppNavigation
+import com.example.searchplacement.core.navigation.MainBottomNavItem
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.SearchPlacementTheme
 import com.example.searchplacement.presentation.theme.UserPrimaryColor
@@ -41,10 +41,16 @@ class MainActivity : ComponentActivity() {
                                 containerColor = White
                             ) {
                                 MainBottomNavItem.items.forEach { item ->
-                                    val selected = currentRoute?.startsWith(item.screenRoute) == true
+                                    val selected =
+                                        currentRoute?.startsWith(item.screenRoute) == true
                                     NavigationBarItem(
                                         icon = { Icon(item.icon, contentDescription = item.title) },
-                                        label = { Text(item.title, style = AppTextStyle.BodySmall) },
+                                        label = {
+                                            Text(
+                                                item.title,
+                                                style = AppTextStyle.BodySmall
+                                            )
+                                        },
                                         selected = selected,
                                         onClick = {
                                             navController.navigate(item.screenRoute) {
@@ -68,11 +74,12 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-                    AppNavigation(navController = navController,modifier = Modifier.padding(innerPadding))
+                    AppNavigation(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
     }
 }
-
-

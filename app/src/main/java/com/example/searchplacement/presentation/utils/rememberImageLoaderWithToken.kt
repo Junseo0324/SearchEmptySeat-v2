@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
-import com.example.searchplacement.util.TokenManager
+import com.example.searchplacement.core.util.TokenManager
 import okhttp3.OkHttpClient
 
 

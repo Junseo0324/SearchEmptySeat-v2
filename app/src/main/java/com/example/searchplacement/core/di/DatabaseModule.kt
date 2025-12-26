@@ -1,4 +1,4 @@
-package com.example.searchplacement.di
+package com.example.searchplacement.core.di
 
 import android.content.Context
 import androidx.room.Room

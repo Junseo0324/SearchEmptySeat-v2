@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.searchplacement.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.Gray
 

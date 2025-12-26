@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.searchplacement.data.menu.MenuResponse
-import com.example.searchplacement.di.AppModule
+import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.White

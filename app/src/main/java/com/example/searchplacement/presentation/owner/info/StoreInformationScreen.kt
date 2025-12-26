@@ -55,8 +55,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.searchplacement.data.store.StoreRequest
-import com.example.searchplacement.di.AppModule
-import com.example.searchplacement.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.di.AppModule
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
 import com.example.searchplacement.presentation.user.main.MainViewModel

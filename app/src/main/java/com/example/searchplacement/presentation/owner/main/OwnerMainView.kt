@@ -4,8 +4,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.searchplacement.navigation.OwnerBottomNavItem
-import com.example.searchplacement.navigation.OwnerNavigation
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.navigation.OwnerNavigation
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.White
 import androidx.compose.runtime.getValue

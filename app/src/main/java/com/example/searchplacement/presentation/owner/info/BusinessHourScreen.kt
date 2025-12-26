@@ -41,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.data.store.BusinessHour
 import com.example.searchplacement.data.store.StoreRequest
-import com.example.searchplacement.navigation.OwnerBottomNavItem
+import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.user.home.StoreListViewModel
 import java.time.LocalDate
