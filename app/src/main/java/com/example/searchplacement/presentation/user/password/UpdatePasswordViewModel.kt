@@ -3,7 +3,6 @@ package com.example.searchplacement.presentation.user.password
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.core.util.Result
-import com.example.searchplacement.domain.repository.UserRepository
 import com.example.searchplacement.domain.usecase.UpdatePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UpdatePasswordViewModel @Inject constructor(
-    private val updatePasswordUseCase: UpdatePasswordUseCase,
-    private val userRepository: UserRepository
+    private val updatePasswordUseCase: UpdatePasswordUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UpdatePasswordState())
@@ -85,10 +83,8 @@ class UpdatePasswordViewModel @Inject constructor(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val user = userRepository.getUser()
-            val userId = user?.userId?.toLong() ?: 0L
 
-            when (val result = updatePasswordUseCase.execute(userId, currentState.newPassword)) {
+            when (val result = updatePasswordUseCase.execute(currentState.newPassword)) {
                 is Result.Success -> {
                     _state.update { it.copy(isLoading = false) }
                     _event.emit(UpdatePasswordEvent.PasswordUpdated)

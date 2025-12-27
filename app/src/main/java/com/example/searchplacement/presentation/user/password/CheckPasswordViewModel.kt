@@ -3,7 +3,6 @@ package com.example.searchplacement.presentation.user.password
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.core.util.Result
-import com.example.searchplacement.domain.repository.UserRepository
 import com.example.searchplacement.domain.usecase.CheckPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CheckPasswordViewModel @Inject constructor(
-    private val checkPasswordUseCase: CheckPasswordUseCase,
-    private val userRepository: UserRepository
+    private val checkPasswordUseCase: CheckPasswordUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CheckPasswordState())
@@ -43,10 +41,8 @@ class CheckPasswordViewModel @Inject constructor(
     private fun checkPassword() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val user = userRepository.getUser()
-            val email = user?.email ?: ""
             
-            when (val result = checkPasswordUseCase.execute(email, _state.value.password)) {
+            when (val result = checkPasswordUseCase.execute(_state.value.password)) {
                 is Result.Success -> {
                     _state.update { it.copy(isLoading = false) }
                     _event.emit(CheckPasswordEvent.PasswordCorrect)

@@ -2,13 +2,18 @@ package com.example.searchplacement.domain.usecase
 
 import com.example.searchplacement.core.util.Result
 import com.example.searchplacement.domain.repository.AuthRepository
+import com.example.searchplacement.domain.repository.UserRepository
 import javax.inject.Inject
 
 class UpdatePasswordUseCase @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) {
-    suspend fun execute(userId: Long, newPassword: String): Result<Unit, String> {
+    suspend fun execute(newPassword: String): Result<Unit, String> {
         return try {
+            val user = userRepository.getUser()
+            val userId = user?.userId?.toLong() ?: return Result.Error("사용자 정보를 찾을 수 없습니다.")
+
             val response = authRepository.updatePassword(userId, newPassword)
             if (response.status == "success") {
                 Result.Success(Unit)
