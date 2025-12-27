@@ -2,7 +2,6 @@ package com.example.searchplacement.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,15 +13,14 @@ import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
 import com.example.searchplacement.presentation.user.auth.register.RegisterScreenRoot
 import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreenRoot
-import com.example.searchplacement.presentation.user.home.HomeScreen
+import com.example.searchplacement.presentation.user.home.HomeScreenRoot
 import com.example.searchplacement.presentation.user.login.CheckPassword
 import com.example.searchplacement.presentation.user.login.UpdatePassword
-import com.example.searchplacement.presentation.user.home.HomeViewModel
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreen
-import com.example.searchplacement.presentation.user.setting.InformationScreen
-import com.example.searchplacement.presentation.user.setting.SettingScreen
+import com.example.searchplacement.presentation.user.setting.InformationScreenRoot
+import com.example.searchplacement.presentation.user.setting.SettingScreenRoot
 import com.example.searchplacement.presentation.user.store.StoreMapScreen
 import com.example.searchplacement.presentation.user.store.StoreScreen
 
@@ -31,7 +29,6 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val sharedMainViewModel: HomeViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = "login",
@@ -78,7 +75,16 @@ fun AppNavigation(
             )
         }
 
-        composable(MainBottomNavItem.Home.screenRoute) { HomeScreen(navController) }
+        composable(MainBottomNavItem.Home.screenRoute) { 
+            HomeScreenRoot(
+                onNavigateToStoreDetail = { storeId ->
+                    navController.navigate("store/$storeId")
+                },
+                onNavigateToSearch = {
+                    navController.navigate("search")
+                }
+            )
+        }
         composable(MainBottomNavItem.Category.screenRoute) { 
             CategoryScreenRoot(
                 onNavigateToStoreDetail = { storeId ->
@@ -94,8 +100,28 @@ fun AppNavigation(
                 }
             )
         }
-        composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController, sharedMainViewModel) }
-        composable("information") { InformationScreen(navController, sharedMainViewModel) }
+        composable(MainBottomNavItem.Setting.screenRoute) { 
+            SettingScreenRoot(
+                onNavigateToInformation = {
+                    navController.navigate("information")
+                },
+                onNavigateToCheckPassword = {
+                    navController.navigate("checkPassword")
+                },
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("information") { 
+            InformationScreenRoot(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable("search") { SearchScreen(navController) }
 
         composable(

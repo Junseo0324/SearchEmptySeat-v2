@@ -27,8 +27,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.core.di.AppModule
@@ -57,27 +54,20 @@ import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.reservationCountColor
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
-import com.example.searchplacement.presentation.user.home.HomeViewModel
 
 @Composable
-fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel) {
-    val user by mainViewModel.user.collectAsState()
+fun SettingScreen(
+    state: SettingState,
+    onAction: (SettingAction) -> Unit,
+    onNavigateToInformation: () -> Unit,
+    onNavigateToCheckPassword: () -> Unit
+) {
+    val user = state.user
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val imageLoader = rememberImageLoaderWithToken()
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.logoutEvent.collect {
-            navController.navigate("login") {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-            }
-        }
-    }
 
     Column {
         Row(
@@ -112,7 +102,7 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate("information")
+                            onNavigateToInformation()
                         },
                     shape = RoundedCornerShape(Dimens.Default),
                     colors = CardDefaults.cardColors(
@@ -130,7 +120,7 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
                         if (user?.image != null) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(IMAGE_URL + user?.image)
+                                    .data(IMAGE_URL + user.image)
                                     .crossfade(true)
                                     .build(),
                                 imageLoader = imageLoader,
@@ -176,7 +166,7 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { navController.navigate("checkPassword") },
+                        .clickable { onNavigateToCheckPassword() },
                     shape = RoundedCornerShape(Dimens.Default),
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White
@@ -269,7 +259,7 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
                 TextButton(
                     onClick = {
                         showLogoutDialog = false
-                        mainViewModel.logout()
+                        onAction(SettingAction.Logout)
                     }
                 ) {
                     Text("로그아웃", color = Red)
@@ -308,7 +298,7 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
                 TextButton(
                     onClick = {
                         showDeleteDialog = false
-                        // TODO : 회원 탈퇴 처리
+                        onAction(SettingAction.DeleteAccount)
                     }
                 ) {
                     Text("탈퇴", color = Red)
@@ -323,6 +313,4 @@ fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel)
             }
         )
     }
-
-
 }

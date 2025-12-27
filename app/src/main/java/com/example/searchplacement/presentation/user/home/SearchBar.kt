@@ -26,12 +26,12 @@ import com.example.searchplacement.presentation.theme.White
 
 
 @Composable
-fun SearchBar(navController: NavHostController) {
+fun SearchBar(onSearchClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Dimens.Small)
-            .clickable { navController.navigate("search") }
+            .clickable { onSearchClick() }
             .border(1.dp, IconColor, shape = RoundedCornerShape(Dimens.Default)),
         shape = AppButtonStyle.RoundedShape,
         color = White

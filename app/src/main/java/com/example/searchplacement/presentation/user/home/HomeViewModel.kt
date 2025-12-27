@@ -1,38 +1,50 @@
 package com.example.searchplacement.presentation.user.home
 
 import android.content.Context
-import android.net.Uri
-import android.util.Log
+import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchplacement.core.util.TokenManager
+import com.example.searchplacement.core.util.Result
 import com.example.searchplacement.data.dto.login.LoginRequest
 import com.example.searchplacement.data.dto.login.LoginResponse
-import com.example.searchplacement.data.local.UserEntity
 import com.example.searchplacement.data.member.ApiResponse
-import com.example.searchplacement.data.member.MyInfoUpdateRequest
 import com.example.searchplacement.domain.repository.AuthRepository
 import com.example.searchplacement.domain.repository.UserRepository
+import com.example.searchplacement.domain.usecase.GetMapPinDetailUseCase
+import com.example.searchplacement.domain.usecase.GetMapPinsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.FileNotFoundException
+import kotlinx.coroutines.withContext
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val getMapPinsUseCase: GetMapPinsUseCase,
+    private val getMapPinDetailUseCase: GetMapPinDetailUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _user = MutableStateFlow<UserEntity?>(null)
-    val user = _user.asStateFlow()
+    private val _state = MutableStateFlow(HomeState())
+    val state = _state.asStateFlow()
+
+    val user = _state.map { it.user }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    private val _event = MutableSharedFlow<HomeEvent>()
+    val event = _event.asSharedFlow()
 
     private val _loginResult = MutableStateFlow<ApiResponse<LoginResponse>?>(null)
     val loginResult = _loginResult.asStateFlow()
@@ -40,31 +52,81 @@ class HomeViewModel @Inject constructor(
     private val _passwordUpdateResult = MutableStateFlow<ApiResponse<String>?>(null)
     val passwordUpdateResult = _passwordUpdateResult.asStateFlow()
 
-    private val _userInfoUpdateResult = MutableStateFlow<ApiResponse<Map<String, Any>>?>(null)
-    val userInfoUpdateResult = _userInfoUpdateResult.asStateFlow()
-
-    private val _logoutEvent = MutableSharedFlow<Unit>()
-    val logoutEvent = _logoutEvent.asSharedFlow()
-
     init {
         getUserData()
+        loadMapPins()
+    }
+
+    fun onAction(action: HomeAction) {
+        when (action) {
+
+            is HomeAction.OnMarkerClick -> loadMapPinDetail(action.storeId)
+            is HomeAction.OnStoreDetailClick -> {
+                viewModelScope.launch {
+                    _event.emit(HomeEvent.NavigateToStoreDetail(action.storeId))
+                }
+            }
+        }
+    }
+
+    private fun loadMapPins() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = getMapPinsUseCase.execute()) {
+                is Result.Success -> {
+                    val mapPinModels = result.data
+                    val geocoder = Geocoder(context, Locale.KOREA)
+                    
+                    val uiModels = withContext(Dispatchers.IO) {
+                        mapPinModels.mapNotNull { pin ->
+                            try {
+                                val addr = geocoder.getFromLocationName(pin.location, 1)
+                                if (!addr.isNullOrEmpty()) {
+                                    MapPinUi(
+                                        storePK = pin.storePK,
+                                        lat = addr[0].latitude,
+                                        lng = addr[0].longitude
+                                    )
+                                } else {
+                                    null
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                null
+                            }
+                        }
+                    }
+                    _state.update { it.copy(isLoading = false, mapPins = uiModels) }
+                }
+                is Result.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                    _event.emit(HomeEvent.ShowSnackbar(result.error))
+                }
+            }
+        }
+    }
+
+    private fun loadMapPinDetail(storeId: Long) {
+        viewModelScope.launch {
+            when (val result = getMapPinDetailUseCase.execute(storeId)) {
+                is Result.Success -> {
+                    _state.update { it.copy(selectedPinDetail = result.data) }
+                }
+                is Result.Error -> {
+                    _event.emit(HomeEvent.ShowSnackbar(result.error))
+                }
+            }
+        }
     }
 
     private fun getUserData() {
         viewModelScope.launch {
-            _user.value = userRepository.getUser()
+            val user = userRepository.getUser()
+            _state.update { it.copy(user = user) }
         }
     }
 
-    fun logout() {
-        viewModelScope.launch {
-            userRepository.clearUserData()
-            _user.value = null
-
-            TokenManager.clearToken()
-            _logoutEvent.emit(Unit)
-        }
-    }
+    // --- Existing Auth Logic Below (Preserved for compatibility) ---
 
     fun authPassword(email: String, password: String) {
         viewModelScope.launch {
@@ -86,12 +148,12 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = authRepository.updatePassword(userId, newPassword)
-                if (response.status == "success" && response != null) {
+                if (response.status == "success") {
                     _passwordUpdateResult.value = response
                 } else {
                     _passwordUpdateResult.value = ApiResponse(
                         status = "fail",
-                        message = response.message ?: "비밀번호 변경 실패",
+                        message = response.message,
                         data = null
                     )
                 }
@@ -104,70 +166,4 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-    fun updateUserInfo(
-        userId: Long,
-        editedEmail: String?,
-        editedName: String?,
-        editedPassword: String?,
-        editedLocation: String?,
-        imageFile: MultipartBody.Part?
-    ) {
-        val request = MyInfoUpdateRequest(
-            email = editedEmail,
-            name = editedName,
-            password = editedPassword,
-            location = editedLocation
-        )
-
-        viewModelScope.launch {
-            try {
-                val response = authRepository.updateUserInfo(userId, request, imageFile)
-                if (response.status == "success" && response != null) {
-                    val apiResponse = response!!
-                    _userInfoUpdateResult.value = apiResponse
-
-                    val updatedEntity = UserEntity(
-                        userId = userId.toString(),
-                        name = editedName ?: _user.value?.name.orEmpty(),
-                        email = editedEmail ?: _user.value?.email.orEmpty(),
-                        phone = _user.value?.phone.orEmpty(),
-                        userType = _user.value?.userType.orEmpty(),
-                        location = editedLocation ?: _user.value?.location.orEmpty(),
-                        token = _user.value?.token.orEmpty(),
-                        image = apiResponse.data?.get("image") as? String
-                            ?: _user.value?.image.orEmpty()
-                    )
-                    userRepository.saveUser(updatedEntity)
-
-                    getUserData()
-                } else {
-                    _userInfoUpdateResult.value = ApiResponse(
-                        status = "fail",
-                        message = response.message ?: "정보 수정 실패",
-                        data = null
-                    )
-                }
-            } catch (e: Exception) {
-                Log.d("updateInfo", "updateUserInfo: ${e.message}")
-                _userInfoUpdateResult.value = ApiResponse(
-                    status = "fail",
-                    message = "네트워크 오류: ${e.message}",
-                    data = null
-                )
-            }
-        }
-    }
-
-    fun getImageFilePart(context: Context, uri: Uri): MultipartBody.Part {
-        val inputStream = context.contentResolver.openInputStream(uri)
-            ?: throw FileNotFoundException("파일을 찾을 수 없습니다.")
-        val requestFile = inputStream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
-
-        return MultipartBody.Part.createFormData("image", uri.lastPathSegment ?: "image", requestFile)
-    }
-
-
-
-
 }
