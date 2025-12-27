@@ -2,64 +2,75 @@ package com.example.searchplacement.presentation.user.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchplacement.data.member.ApiResponse
-import com.example.searchplacement.data.store.FavoriteResponse
-import com.example.searchplacement.domain.repository.FavoriteRepository
-import com.example.searchplacement.domain.repository.UserRepository
+
+import com.example.searchplacement.core.util.Result
+
+import com.example.searchplacement.domain.usecase.GetFavoriteListUseCase
+import com.example.searchplacement.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val getFavoriteListUseCase: GetFavoriteListUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
-    private val _favoriteList = MutableStateFlow<ApiResponse<List<FavoriteResponse>>?>(null)
-    val favoriteList: StateFlow<ApiResponse<List<FavoriteResponse>>?> = _favoriteList.asStateFlow()
-    fun getFavoriteList() {
-        viewModelScope.launch {
-            try {
-                val userId = userRepository.getUser()?.userId ?: ""
-                val response = favoriteRepository.getFavoriteList(userId)
+    private val _state = MutableStateFlow(FavoriteState())
+    val state: StateFlow<FavoriteState> = _state.asStateFlow()
 
-                if (response.status == "success" && response != null) {
-                    _favoriteList.value = response
-                } else {
-                    _favoriteList.value = ApiResponse(
-                        status = "fail",
-                        message = response.message ?: "찜 목록 불러오기 실패",
-                        data = emptyList()
-                    )
+    private val _event = Channel<FavoriteEvent>()
+    val event = _event.receiveAsFlow()
+
+    init {
+        loadFavorites()
+    }
+
+    fun onAction(action: FavoriteAction) {
+        when (action) {
+
+            is FavoriteAction.OnStoreClick -> {
+                viewModelScope.launch {
+                    _event.send(FavoriteEvent.NavigateToStoreDetail(action.storeId))
                 }
-            } catch (e: Exception) {
-                _favoriteList.value = ApiResponse(
-                    status = "fail",
-                    message = "네트워크 오류: ${e.message}",
-                    data = emptyList()
-                )
+            }
+            is FavoriteAction.OnFavoriteToggle -> toggleFavorite(action.storeId)
+        }
+    }
+
+    private fun loadFavorites() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = getFavoriteListUseCase.execute()) {
+                is Result.Success -> {
+                    _state.update { it.copy(isLoading = false, favorites = result.data) }
+                }
+
+                is Result.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                    _event.send(FavoriteEvent.ShowSnackbar(result.error))
+                }
             }
         }
     }
 
-
-    fun addFavorite(storeId: Long) {
+    private fun toggleFavorite(storeId: Long) {
         viewModelScope.launch {
-            try {
-                favoriteRepository.addFavorite(storeId)
-            } catch (_: Exception) {}
-        }
-    }
-
-    fun removeFavorite(storeId: Long) {
-        viewModelScope.launch {
-            try {
-                favoriteRepository.removeFavorite(storeId)
-            } catch (_: Exception) {}
+             when (val result = toggleFavoriteUseCase.execute(storeId, isFavorite = true)) {
+                 is Result.Success -> {
+                     loadFavorites()
+                 }
+                 is Result.Error -> {
+                     _event.send(FavoriteEvent.ShowSnackbar("변경 실패: ${result.error}"))
+                 }
+             }
         }
     }
 }

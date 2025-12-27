@@ -14,32 +14,24 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.RedPoint
-import com.example.searchplacement.presentation.user.favorite.FavoriteViewModel
 
 @Composable
-fun FavoriteScreen(navController: NavHostController) {
-    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
-
-    val favoriteListState by favoriteViewModel.favoriteList.collectAsState()
-
-    LaunchedEffect(favoriteListState) {
-        favoriteViewModel.getFavoriteList()
-    }
-    Column {
+fun FavoriteScreen(
+    state: FavoriteState = FavoriteState(),
+    onAction: (FavoriteAction) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,12 +60,26 @@ fun FavoriteScreen(navController: NavHostController) {
                 .padding(Dimens.Small)
         ) {
             LazyColumn {
-                favoriteListState?.data?.let { favoriteList ->
+                state.favorites?.let { favoriteList ->
                     items(favoriteList) { favorite ->
-                        FavoriteList(favorite.store, navController, favoriteViewModel)
+                        FavoriteList(
+                            store = favorite.store,
+                            onStoreClick = {
+                                onAction(FavoriteAction.OnStoreClick(favorite.store.storePK))
+                            },
+                            onRemoveFavorite = {
+                                onAction(FavoriteAction.OnFavoriteToggle(favorite.store.storePK))
+                            }
+                        )
                     }
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FavoriteScreenPreview() {
+    FavoriteScreen()
 }

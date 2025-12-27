@@ -13,7 +13,7 @@ import com.example.searchplacement.presentation.user.auth.findpassword.FindPassw
 import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
 import com.example.searchplacement.presentation.user.auth.register.RegisterScreenRoot
 import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
-import com.example.searchplacement.presentation.user.favorite.FavoriteScreen
+import com.example.searchplacement.presentation.user.favorite.FavoriteScreenRoot
 import com.example.searchplacement.presentation.user.home.MainScreen
 import com.example.searchplacement.presentation.user.login.CheckPassword
 import com.example.searchplacement.presentation.user.login.UpdatePassword
@@ -87,7 +87,13 @@ fun AppNavigation(
             ) 
         }
         composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
-        composable(MainBottomNavItem.Favorite.screenRoute) { FavoriteScreen(navController) }
+        composable(MainBottomNavItem.Favorite.screenRoute) { 
+            FavoriteScreenRoot(
+                onNavigateToStoreDetail = { storeId ->
+                    navController.navigate("store/$storeId")
+                }
+            )
+        }
         composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController, sharedMainViewModel) }
         composable("information") { InformationScreen(navController, sharedMainViewModel) }
         composable("search") { SearchScreen(navController) }

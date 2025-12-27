@@ -38,7 +38,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
-import com.example.searchplacement.data.store.Store
+
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.CategoryBgColor
@@ -51,9 +51,9 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 
 @Composable
 fun FavoriteList(
-    store: Store,
-    navController: NavHostController,
-    favoriteViewModel: FavoriteViewModel
+    store: com.example.searchplacement.domain.model.StoreModel,
+    onStoreClick: () -> Unit,
+    onRemoveFavorite: () -> Unit
 ) {
     val imageUrls = store.image
     val imageLoader = rememberImageLoaderWithToken()
@@ -64,28 +64,13 @@ fun FavoriteList(
         "${it.key}: ${it.value}"
     } ?: "운영시간 정보 없음"
 
-    println("store data: $store")
-    var isFavorite = remember { mutableStateOf(true) }
-
-    val handleFavorite = {
-        if (isFavorite.value) {
-            // 즐겨찾기 삭제
-            favoriteViewModel.removeFavorite(store.storePK)
-        } else {
-            // 즐겨찾기 추가
-            favoriteViewModel.addFavorite(store.storePK)
-        }
-        isFavorite.value = !isFavorite.value
-        favoriteViewModel.getFavoriteList()
-    }
+    val isFavorite = remember { mutableStateOf(true) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(Dimens.Small)
-            .clickable {
-                navController.navigate("store/${store.storePK}")
-            },
+            .clickable { onStoreClick() },
         shape = RoundedCornerShape(Dimens.Medium),
         colors = CardDefaults.cardColors(
             containerColor = White
@@ -121,7 +106,7 @@ fun FavoriteList(
                         .padding(Dimens.Small)
                         .size(40.dp)
                         .clickable {
-                            handleFavorite()
+                            onRemoveFavorite()
                         }
                 )
             }
