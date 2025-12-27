@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.local.UserEntity
 import com.example.searchplacement.data.member.ApiResponse
-import com.example.searchplacement.data.member.LoginRequest
-import com.example.searchplacement.data.member.LoginResponse
+import com.example.searchplacement.data.dto.login.LoginRequest
+import com.example.searchplacement.data.dto.login.LoginResponse
 import com.example.searchplacement.data.member.MyInfoUpdateRequest
 import com.example.searchplacement.domain.repository.AuthRepository
 import com.example.searchplacement.domain.repository.UserRepository

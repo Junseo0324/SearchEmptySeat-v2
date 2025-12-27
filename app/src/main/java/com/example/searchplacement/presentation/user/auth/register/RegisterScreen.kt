@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.login
+package com.example.searchplacement.presentation.user.auth.register
 
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -45,6 +45,7 @@ import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.loginLogoColor
+import com.example.searchplacement.presentation.user.auth.login.LoginViewModel
 import com.example.searchplacement.presentation.user.register.EmailInput
 import com.example.searchplacement.presentation.user.register.ImageInput
 import com.example.searchplacement.presentation.user.register.LocationInput
@@ -54,7 +55,6 @@ import com.example.searchplacement.presentation.user.register.PasswordInput
 import com.example.searchplacement.presentation.user.register.PhoneInput
 import com.example.searchplacement.presentation.user.register.UserTypeInput
 import com.example.searchplacement.presentation.utils.getImageFilePart
-import com.example.searchplacement.presentation.user.login.LoginViewModel
 
 
 @OptIn(ExperimentalAnimationApi::class)

@@ -10,14 +10,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.presentation.owner.main.OwnerMainView
+import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
+import com.example.searchplacement.presentation.user.auth.login.LoginViewModel
+import com.example.searchplacement.presentation.user.auth.register.RegisterScreen
 import com.example.searchplacement.presentation.user.category.CategoryScreen
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreen
 import com.example.searchplacement.presentation.user.home.MainScreen
 import com.example.searchplacement.presentation.user.login.CheckPassword
 import com.example.searchplacement.presentation.user.login.FindPasswordScreen
-import com.example.searchplacement.presentation.user.login.LoginScreen
-import com.example.searchplacement.presentation.user.login.RegisterScreen
 import com.example.searchplacement.presentation.user.login.UpdatePassword
+import com.example.searchplacement.presentation.user.main.MainViewModel
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreen
@@ -25,8 +27,6 @@ import com.example.searchplacement.presentation.user.setting.InformationScreen
 import com.example.searchplacement.presentation.user.setting.SettingScreen
 import com.example.searchplacement.presentation.user.store.StoreMapScreen
 import com.example.searchplacement.presentation.user.store.StoreScreen
-import com.example.searchplacement.presentation.user.login.LoginViewModel
-import com.example.searchplacement.presentation.user.main.MainViewModel
 
 @Composable
 fun AppNavigation(
@@ -41,7 +41,25 @@ fun AppNavigation(
         modifier = modifier
     ) {
         composable("login") {
-            LoginScreen(navController)
+            LoginScreenRoot(
+                onNavigateToRegister = {
+                    navController.navigate("register")
+                },
+                onNavigateToFindPassword = {
+                    navController.navigate("find_password")
+                },
+                onNavigateToHome = { userType ->
+                    if (userType == "OWNER") {
+                        navController.navigate("owner_main") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                }
+            )
         }
         composable("register") {
             RegisterScreen(navController)

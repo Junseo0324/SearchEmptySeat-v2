@@ -1,4 +1,4 @@
-package com.example.searchplacement.data.member
+package com.example.searchplacement.data.dto.login
 
 data class LoginRequest(
     val email: String,

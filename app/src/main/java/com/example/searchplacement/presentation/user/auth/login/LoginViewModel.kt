@@ -1,0 +1,180 @@
+package com.example.searchplacement.presentation.user.auth.login
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.searchplacement.core.util.Result
+import com.example.searchplacement.data.dto.login.LoginResponse
+import com.example.searchplacement.data.member.ApiResponse
+import com.example.searchplacement.data.member.FindPasswordRequest
+import com.example.searchplacement.data.member.SignUpRequest
+import com.example.searchplacement.domain.repository.AuthRepository
+import com.example.searchplacement.domain.repository.UserRepository
+import com.example.searchplacement.domain.usecase.LoginUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import javax.inject.Inject
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
+    private val loginUseCase: LoginUseCase
+) : ViewModel() {
+
+    private val _loginResult = MutableStateFlow<ApiResponse<LoginResponse>?>(null)
+    val loginResult = _loginResult.asStateFlow()
+
+
+    private val _findPasswordResult =
+        MutableSharedFlow<ApiResponse<Map<String, String>>>(replay = 0)
+    val findPasswordResult = _findPasswordResult.asSharedFlow()
+
+    private val _state = MutableStateFlow(LoginState())
+    val state = _state.asStateFlow()
+
+    private val _event = MutableSharedFlow<LoginEvent>()
+    val event = _event.asSharedFlow()
+
+
+    fun onAction(action: LoginAction) {
+        when (action) {
+            is LoginAction.OnEmailChanged -> {
+                _state.update { it.copy(email = action.email) }
+            }
+
+            is LoginAction.OnPasswordChanged -> {
+                _state.update { it.copy(password = action.password) }
+            }
+
+            LoginAction.OnLoginClick -> login()
+
+            LoginAction.OnRegisterClick,
+            LoginAction.OnFindPasswordClick -> Unit
+        }
+    }
+
+
+    private fun login() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = loginUseCase.execute(_state.value.email, _state.value.password)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            loginUser = result.data,
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                    _event.emit(
+                        LoginEvent.ShowSnackbar(result.error)
+                    )
+                }
+            }
+        }
+//        viewModelScope.launch {
+//            try {
+//                val response = authRepository.login(LoginRequest(email, password))
+//                Log.d("TAG", "login: ${response}")
+//                if (response.status == "success" && response != null) {
+//                    val loginResponse = response!!.data
+//
+//                    val userEntity = loginResponse?.let {
+//                        UserEntity(
+//                            userId = it.userId,
+//                            name = it.name,
+//                            email = it.email,
+//                            phone = it.phone,
+//                            userType = it.userType,
+//                            token = it.token,
+//                            location = it.location,
+//                            image = it.image.firstOrNull() ?: ""
+//                        )
+//                    }
+//
+//                    if (userEntity != null) {
+//                        userRepository.saveUser(userEntity)
+//                        TokenManager.setToken(userEntity.token)
+//                    }
+//
+//                    _loginResult.value = response
+//                } else {
+//                    _loginResult.value = ApiResponse(
+//                        status = "fail",
+//                        message = "로그인 실패",
+//                        data = null
+//                    )
+//                }
+//            } catch (e: Exception) {
+//                _loginResult.value = ApiResponse(
+//                    status = "error",
+//                    message = e.localizedMessage ?: "네트워크 연결 오류입니다.",
+//                    data = null
+//                )
+//            }
+//        }
+    }
+
+
+    fun register(
+        email: String,
+        password: String,
+        name: String,
+        phone: String,
+        location: String,
+        userType: String,
+        imageFile: MultipartBody.Part?
+    ) {
+        viewModelScope.launch {
+            val signUpRequest = SignUpRequest(
+                email = email,
+                password = password,
+                name = name,
+                phone = phone,
+                location = location,
+                userType = userType
+            )
+
+            authRepository.register(signUpRequest, imageFile)
+
+        }
+    }
+
+    fun findPassword(email: String) {
+        viewModelScope.launch {
+            try {
+                val response = authRepository.forgotPassword(FindPasswordRequest(email))
+                if (response.status == "success" && response != null) {
+                    _findPasswordResult.emit(response!!)
+                } else {
+                    _findPasswordResult.emit(
+                        ApiResponse(
+                            status = "error",
+                            message = "비밀번호 찾기 실패",
+                            data = mapOf("code" to "ERROR-0003")
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _findPasswordResult.emit(
+                    ApiResponse(
+                        status = "error",
+                        message = e.localizedMessage ?: "네트워크 오류",
+                        data = mapOf("code" to "ERROR-0003")
+                    )
+                )
+            }
+        }
+    }
+
+
+}

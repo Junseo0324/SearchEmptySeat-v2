@@ -32,7 +32,7 @@ import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.Gray
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.login.LoginViewModel
+import com.example.searchplacement.presentation.user.auth.login.LoginViewModel
 import kotlinx.coroutines.launch
 
 

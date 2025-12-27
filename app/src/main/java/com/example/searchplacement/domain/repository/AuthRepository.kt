@@ -1,6 +1,11 @@
 package com.example.searchplacement.domain.repository
 
-import com.example.searchplacement.data.member.*
+import com.example.searchplacement.data.dto.login.LoginRequest
+import com.example.searchplacement.data.dto.login.LoginResponse
+import com.example.searchplacement.data.member.ApiResponse
+import com.example.searchplacement.data.member.FindPasswordRequest
+import com.example.searchplacement.data.member.MyInfoUpdateRequest
+import com.example.searchplacement.data.member.SignUpRequest
 import okhttp3.MultipartBody
 
 interface AuthRepository {

@@ -1,9 +1,9 @@
 package com.example.searchplacement.data.api
 
+import com.example.searchplacement.data.dto.login.LoginRequest
+import com.example.searchplacement.data.dto.login.LoginResponse
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.member.FindPasswordRequest
-import com.example.searchplacement.data.member.LoginRequest
-import com.example.searchplacement.data.member.LoginResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
