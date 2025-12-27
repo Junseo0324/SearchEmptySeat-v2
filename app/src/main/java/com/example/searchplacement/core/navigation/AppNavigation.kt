@@ -19,7 +19,7 @@ import com.example.searchplacement.presentation.user.login.UpdatePassword
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreen
-import com.example.searchplacement.presentation.user.setting.InformationScreenRoot
+import com.example.searchplacement.presentation.user.information.InformationScreenRoot
 import com.example.searchplacement.presentation.user.setting.SettingScreenRoot
 import com.example.searchplacement.presentation.user.store.StoreMapScreen
 import com.example.searchplacement.presentation.user.store.StoreScreen

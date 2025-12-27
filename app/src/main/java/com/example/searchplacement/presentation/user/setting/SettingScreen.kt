@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,15 +26,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -62,13 +56,6 @@ fun SettingScreen(
     onNavigateToInformation: () -> Unit,
     onNavigateToCheckPassword: () -> Unit
 ) {
-    val user = state.user
-    val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
-    val imageLoader = rememberImageLoaderWithToken()
-
-    var showLogoutDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
     Column {
         Row(
             modifier = Modifier
@@ -117,13 +104,13 @@ fun SettingScreen(
                         horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (user?.image != null) {
+                        if (state.image != null) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(IMAGE_URL + user.image)
+                                    .data("${AppModule.BASE_URL}/api/files/" + state.image)
                                     .crossfade(true)
                                     .build(),
-                                imageLoader = imageLoader,
+                                imageLoader = rememberImageLoaderWithToken(),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -152,11 +139,11 @@ fun SettingScreen(
                             verticalArrangement = Arrangement.spacedBy(Dimens.Tiny)
                         ) {
                             Text(
-                                text = user?.name ?: "",
+                                text = state.name ?: "",
                                 style = AppTextStyle.BodyText
                             )
                             Text(
-                                text = user?.email ?: "",
+                                text = state.email ?: "",
                                 style = AppTextStyle.BodyGray.copy(fontWeight = FontWeight.Normal)
                             )
                         }
@@ -212,7 +199,7 @@ fun SettingScreen(
                 verticalArrangement = Arrangement.spacedBy(Dimens.Small)
             ) {
                 OutlinedButton(
-                    onClick = { showLogoutDialog = true },
+                    onClick = { onAction(SettingAction.OpenLogoutDialog) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp),
@@ -228,7 +215,7 @@ fun SettingScreen(
                 }
 
                 TextButton(
-                    onClick = { showDeleteDialog = true },
+                    onClick = { onAction(SettingAction.OpenDeleteDialog) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
@@ -240,77 +227,5 @@ fun SettingScreen(
                 }
             }
         }
-    }
-
-    if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            containerColor = White,
-            title = {
-                Text(
-                    text = "로그아웃",
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            text = {
-                Text("정말 로그아웃 하시겠습니까?")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showLogoutDialog = false
-                        onAction(SettingAction.Logout)
-                    }
-                ) {
-                    Text("로그아웃", color = Red)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showLogoutDialog = false }
-                ) {
-                    Text("취소", color = Gray)
-                }
-            }
-        )
-    }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            containerColor = White,
-            title = {
-                Text(
-                    text = "회원탈퇴",
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("정말 회원탈퇴 하시겠습니까?")
-                    Text(
-                        text = "모든 데이터가 삭제되며 복구할 수 없습니다.",
-                        style = AppTextStyle.BodySmall
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                        onAction(SettingAction.DeleteAccount)
-                    }
-                ) {
-                    Text("탈퇴", color = Red)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
-                ) {
-                    Text("취소", color = Gray)
-                }
-            }
-        )
     }
 }
