@@ -1,6 +1,5 @@
-package com.example.searchplacement.presentation.user.login
+package com.example.searchplacement.presentation.user.password
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,24 +22,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.searchplacement.presentation.theme.AppButtonStyle
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
@@ -48,34 +37,21 @@ import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.Gray
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.home.HomeViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckPassword(navController: NavHostController) {
-    val mainViewModel: HomeViewModel = hiltViewModel()
-    val showPassword = remember { mutableStateOf(false) }
-    val passwordState = remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
-    val user by mainViewModel.user.collectAsState()
-    val context = LocalContext.current
-
-    val passwordFocusRequester = remember { FocusRequester() }
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        passwordFocusRequester.requestFocus()
-        keyboardController?.show()
-    }
-
+fun CheckPassword(
+    state: CheckPasswordState,
+    passwordFocusRequester: FocusRequester,
+    onAction: (CheckPasswordAction) -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = {Text("현재 비밀번호")},
+                title = { Text("현재 비밀번호") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기"
@@ -91,29 +67,34 @@ fun CheckPassword(navController: NavHostController) {
                 .padding(padding)
                 .padding(Dimens.Small)
         ) {
-            Text(text = "현재 비밀번호를 입력하세요.", style = AppTextStyle.Body, modifier = Modifier.padding(horizontal = 8.dp))
+            Text(
+                text = "현재 비밀번호를 입력하세요.",
+                style = AppTextStyle.Body,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
 
             OutlinedTextField(
-                value = passwordState.value,
-                onValueChange = { passwordState.value = it },
+                value = state.password,
+                onValueChange = { onAction(CheckPasswordAction.OnPasswordChanged(it)) },
                 label = { Text("Password") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = if (showPassword.value) KeyboardType.Text else KeyboardType.Password,
+                    keyboardType = if (state.showPassword) KeyboardType.Text else KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = {
-                        passwordFocusRequester.requestFocus()
+                    onDone = {
+                        onAction(CheckPasswordAction.OnConfirmClick)
                     }
-                ),                visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+                ),
+                visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     Box(
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        TextButton(onClick = { showPassword.value = !showPassword.value }) {
+                        TextButton(onClick = { onAction(CheckPasswordAction.OnTogglePasswordVisibility) }) {
                             Text(
-                                if (showPassword.value) "Hide" else "Show",
+                                if (state.showPassword) "Hide" else "Show",
                                 color = Black
                             )
                         }
@@ -132,25 +113,8 @@ fun CheckPassword(navController: NavHostController) {
             )
 
             Button(
-                onClick = {
-                    coroutineScope.launch {
-
-                        mainViewModel.authPassword(user?.email ?: "email", passwordState.value)
-
-                        mainViewModel.loginResult.collect { response ->
-                            if (response != null) {
-                                if (response.status == "success") {
-                                    navController.navigate("updatePassword")
-                                } else {
-                                    Toast.makeText(context, "비밀번호를 확인해주세요.", Toast.LENGTH_SHORT)
-                                        .show()
-                                }
-                            } else {
-//                                Toast.makeText(context, "비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                },
+                onClick = { onAction(CheckPasswordAction.OnConfirmClick) },
+                enabled = !state.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
@@ -161,10 +125,8 @@ fun CheckPassword(navController: NavHostController) {
                     disabledContainerColor = Gray, disabledContentColor = Black
                 )
             ) {
-                Text("확인", color = White)
+                Text(if (state.isLoading) "확인 중..." else "확인", color = White)
             }
-
         }
     }
-
 }

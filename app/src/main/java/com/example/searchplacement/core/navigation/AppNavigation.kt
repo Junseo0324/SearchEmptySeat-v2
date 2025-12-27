@@ -14,8 +14,8 @@ import com.example.searchplacement.presentation.user.auth.register.RegisterScree
 import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreenRoot
 import com.example.searchplacement.presentation.user.home.HomeScreenRoot
-import com.example.searchplacement.presentation.user.login.CheckPassword
-import com.example.searchplacement.presentation.user.login.UpdatePassword
+import com.example.searchplacement.presentation.user.password.CheckPasswordScreenRoot
+import com.example.searchplacement.presentation.user.password.UpdatePasswordScreenRoot
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreenRoot
@@ -153,13 +153,26 @@ fun AppNavigation(
             ReservationFlowScreen(navController, storeId)
         }
         composable("checkPassword") {
-            CheckPassword(
-                navController = navController
+            CheckPasswordScreenRoot(
+                onNavigateToUpdatePassword = {
+                    navController.navigate("updatePassword")
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
         composable("updatePassword") {
-            UpdatePassword(
-                navController = navController
+            UpdatePasswordScreenRoot(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onSuccessUpdate = {
+                    navController.popBackStack(
+                        route = MainBottomNavItem.Setting.screenRoute,
+                        inclusive = false
+                    )
+                }
             )
         }
         composable("owner_main") {
