@@ -36,12 +36,11 @@ import com.example.searchplacement.presentation.utils.AddressWebViewDialog
 @Composable
 fun LocationInput(
     location: String,
-    onLocationChanged: (String) -> Unit,
-    showWebView: Boolean,
-    onShowWebViewChanged: (Boolean) -> Unit
+    onLocationChanged: (String) -> Unit
 ) {
-    var localAddressMain by remember { mutableStateOf(if (location.isNotBlank()) location else "") }
+    var localAddressMain by remember { mutableStateOf(location.ifBlank { "" }) }
     var localAddressDetail by remember { mutableStateOf("") }
+    var showWebView by remember { mutableStateOf(false) }
     
     fun updateLocation() {
         onLocationChanged("${localAddressMain.trim()} ${localAddressDetail.trim()}".trim())
@@ -68,7 +67,7 @@ fun LocationInput(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onShowWebViewChanged(true) },
+                .clickable { showWebView = true },
             enabled = false,
             shape = RoundedCornerShape(Dimens.Default),
             leadingIcon = {
@@ -111,7 +110,7 @@ fun LocationInput(
 
         AddressWebViewDialog(
             showDialog = showWebView,
-            onDismiss = { onShowWebViewChanged(false) },
+            onDismiss = { showWebView = false },
             onAddressSelected = { selected ->
                 localAddressMain = selected
                 updateLocation()

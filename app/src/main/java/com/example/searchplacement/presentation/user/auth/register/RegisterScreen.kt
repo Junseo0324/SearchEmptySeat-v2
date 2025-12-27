@@ -28,8 +28,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,13 +57,13 @@ import com.example.searchplacement.presentation.utils.getImageFilePart
 @Composable
 fun RegisterScreen(
     state: RegisterState,
-    onAction: (RegisterAction) -> Unit = {}
+    onAction: (RegisterAction) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val showWebView = remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(CardBorderTransparentColor)
     ) {
@@ -193,9 +191,7 @@ fun RegisterScreen(
                     if (state.phone.isNotBlank()) {
                         LocationInput(
                             location = state.location,
-                            onLocationChanged = { onAction(RegisterAction.OnLocationChanged(it)) },
-                            showWebView = showWebView.value,
-                            onShowWebViewChanged = { showWebView.value = it }
+                            onLocationChanged = { onAction(RegisterAction.OnLocationChanged(it)) }
                         )
                     }
                     if (state.location.isNotBlank()) {
@@ -211,7 +207,7 @@ fun RegisterScreen(
                         Button(
                             onClick = {
                                 val imageFilePart =
-                                    state.imageUri?.let { getImageFilePart(context, it) }
+                                    getImageFilePart(context, state.imageUri)
                                 onAction(RegisterAction.OnRegisterClick(imageFilePart))
                             },
                             modifier = Modifier
