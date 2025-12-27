@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.setting
+package com.example.searchplacement.presentation.user.information
 
 import android.content.Context
 import android.net.Uri
@@ -32,48 +32,33 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.core.di.AppModule
+import com.example.searchplacement.domain.model.User
 import com.example.searchplacement.presentation.theme.AppButtonStyle
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.utils.AddressWebViewDialog
-import com.example.searchplacement.presentation.user.home.HomeViewModel
 import okhttp3.OkHttpClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewModel) {
-    val user by mainViewModel.user.collectAsState()
-    val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
-    val scrollState = rememberScrollState()
-    val context = LocalContext.current
-    val nameState = remember { mutableStateOf("")}
-    val locationState = remember { mutableStateOf("") }
-    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
-    val showWebViewDialog = remember { mutableStateOf(false) }
-
-    LaunchedEffect(user) {
-        nameState.value = user?.name ?: ""
-        locationState.value = user?.location ?: ""
-    }
+fun InformationScreen(
+    state: InformationState,
+    onAction: (InformationAction) -> Unit,
+    onNavigateBack: () -> Unit
+) {
 
     Scaffold(
         topBar = {
@@ -82,7 +67,7 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
                     Text("내 정보 변경",style = AppTextStyle.Section)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기"
@@ -91,24 +76,23 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
                 },
             )
         },
-
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(scrollState)
+                .verticalScroll(rememberScrollState())
         ) {
 
             SelectableProfileImage(
-                imageUrl = IMAGE_URL + (user?.image ?: ""),
-                token = user?.token ?: "",
+                imageUrl = if (state.selectedImageUri != null) state.selectedImageUri.toString() else "${AppModule.BASE_URL}/api/files/" + (state.user?.image ?: ""),
+                token = state.user?.token ?: "",
                 onImageSelected = { uri ->
-                    selectedImageUri.value = uri
+                    onAction(InformationAction.OnImageSelected(uri))
                 },
-                context = LocalContext.current
+                context = LocalContext.current,
+                isUri = state.selectedImageUri != null
             )
-
 
             Text(
                 text = "이메일",
@@ -117,7 +101,7 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
             )
 
             OutlinedTextField(
-                value = user?.email ?: "",
+                value = state.user?.email ?: "",
                 onValueChange = { },
                 enabled = false,
                 readOnly = true,
@@ -139,8 +123,8 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
             )
 
             OutlinedTextField(
-                value = nameState.value,
-                onValueChange = { nameState.value = it },
+                value = state.editedName,
+                onValueChange = { onAction(InformationAction.OnNameChange(it)) },
                 placeholder = { Text("이름") },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Black,
@@ -166,7 +150,7 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
 
                 Button(
                     onClick = {
-                        showWebViewDialog.value = true
+                        onAction(InformationAction.OpenAddressDialog)
                     },
                     modifier = Modifier.padding(Dimens.Small).size(120.dp, 40.dp),
                     shape = AppButtonStyle.RoundedShape,
@@ -174,12 +158,10 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
                 ) {
                     Text("주소 찾기", style = AppTextStyle.Button.copy(color = White))
                 }
-
             }
 
-
             OutlinedTextField(
-                value = locationState.value,
+                value = state.editedLocation,
                 onValueChange = {},
                 placeholder = { Text("주소 찾기를 통해 주소를 설정해주세요.") },
                 readOnly = true,
@@ -201,7 +183,7 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
             )
 
             OutlinedTextField(
-                value = user?.phone ?: "",
+                value = state.user?.phone ?: "",
                 onValueChange = { },
                 readOnly = true,
                 modifier = Modifier
@@ -219,18 +201,23 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
 
             Button(
                 onClick = {
-                    val imagePart = selectedImageUri.value?.let { uri ->
-                        mainViewModel.getImageFilePart(context, uri)
+                    val user = state.user
+                    if (user != null) {
+                        onAction(
+                            InformationAction.UpdateUserInfo(
+                                user = User(
+                                    userId = user.userId,
+                                    name = state.editedName,
+                                    email = user.email,
+                                    phone = user.phone,
+                                    location = state.editedLocation,
+                                    image = user.image,
+                                    token = user.token
+                                ),
+                                imageUri = state.selectedImageUri
+                            )
+                        )
                     }
-                    mainViewModel.updateUserInfo(
-                        userId = user?.userId?.toLong() ?: 0L,
-                        editedEmail = user?.email,
-                        editedName = nameState.value,
-                        editedPassword = null,
-                        editedLocation = locationState.value,
-                        imageFile = imagePart
-                    )
-                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth().padding(Dimens.Small),
@@ -242,18 +229,6 @@ fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewMo
             ) {
                 Text("저장", style = AppTextStyle.Button.copy(color = White))
             }
-
-            AddressWebViewDialog(
-                showDialog = showWebViewDialog.value,
-                onDismiss = { showWebViewDialog.value = false },
-                onAddressSelected = { selectedAddress ->
-                    locationState.value = selectedAddress
-                    showWebViewDialog.value = false
-                },
-                AppModule.BASE_URL
-            )
-
-
         }
     }
 }
@@ -263,7 +238,8 @@ fun SelectableProfileImage(
     imageUrl: String,
     token: String,
     onImageSelected: (Uri) -> Unit,
-    context: Context
+    context: Context,
+    isUri: Boolean = false
 ) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -272,17 +248,21 @@ fun SelectableProfileImage(
         }
     )
 
-    val imageLoader = ImageLoader.Builder(context)
-        .okHttpClient(
-            OkHttpClient.Builder()
-                .addInterceptor { chain ->
-                    val newRequest = chain.request().newBuilder()
-                        .addHeader("Authorization", "Bearer $token")
-                        .build()
-                    chain.proceed(newRequest)
-                }.build()
-        )
-        .build()
+    val imageLoader = if (isUri) {
+        ImageLoader(context)
+    } else {
+        ImageLoader.Builder(context)
+            .okHttpClient(
+                OkHttpClient.Builder()
+                    .addInterceptor { chain ->
+                        val newRequest = chain.request().newBuilder()
+                            .addHeader("Authorization", "Bearer $token")
+                            .build()
+                        chain.proceed(newRequest)
+                    }.build()
+            )
+            .build()
+    }
 
     Box(
         modifier = Modifier
@@ -297,6 +277,7 @@ fun SelectableProfileImage(
                 .build(),
             contentDescription = null,
             imageLoader = imageLoader,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
