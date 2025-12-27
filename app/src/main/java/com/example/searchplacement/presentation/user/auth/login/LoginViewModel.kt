@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.core.util.Result
 import com.example.searchplacement.data.dto.login.LoginResponse
 import com.example.searchplacement.data.member.ApiResponse
-import com.example.searchplacement.domain.repository.AuthRepository
-import com.example.searchplacement.domain.repository.UserRepository
 import com.example.searchplacement.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,8 +17,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val userRepository: UserRepository,
     private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
