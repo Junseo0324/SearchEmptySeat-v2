@@ -48,9 +48,9 @@ import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.loginLogoColor
-import com.example.searchplacement.presentation.user.component.RegisterPasswordField
 import com.example.searchplacement.presentation.user.component.ImageInput
 import com.example.searchplacement.presentation.user.component.LocationInput
+import com.example.searchplacement.presentation.user.component.RegisterPasswordField
 import com.example.searchplacement.presentation.user.component.RegisterTextField
 import com.example.searchplacement.presentation.user.component.UserTypeInput
 import com.example.searchplacement.presentation.utils.getImageFilePart
@@ -127,11 +127,11 @@ fun RegisterScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     UserTypeInput(
-                        userType = state.userType,
+                        userType = state.userType.toString(),
                         onUserTypeChanged = { onAction(RegisterAction.OnUserTypeChanged(it)) }
                     )
 
-                    if (state.userType.isNotBlank()) {
+                    if (state.userType?.isNotBlank() ?: false) {
                         RegisterTextField(
                             value = state.email,
                             onValueChange = { onAction(RegisterAction.OnEmailChanged(it)) },

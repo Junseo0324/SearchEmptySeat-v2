@@ -51,7 +51,7 @@ class RegisterViewModel @Inject constructor(
                 name = _state.value.name,
                 phone = _state.value.phone,
                 location = _state.value.location,
-                userType = _state.value.userType
+                userType = _state.value.userType ?: "USER"
             )
 
             when (val result = registerUseCase.execute(signUpRequest, imageFile)) {

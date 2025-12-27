@@ -9,7 +9,7 @@ data class RegisterState(
     val name: String = "",
     val phone: String = "",
     val location: String = "",
-    val userType: String = "",
+    val userType: String? = null,
     val imageUri: Uri? = null,
     val isLoading: Boolean = false
 )
