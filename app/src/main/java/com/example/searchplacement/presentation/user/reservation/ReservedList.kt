@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
-import com.example.searchplacement.data.reserve.ReservationResponse
-import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.domain.model.ReservationModel
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
@@ -62,9 +62,9 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 @Composable
 fun ReservedList(
     onNavigateToStoreDetail: (Long) -> Unit,
-    reservation: ReservationResponse,
-    store: StoreResponse?,
-    onReviewClick: (ReservationResponse, StoreResponse?) -> Unit,
+    reservation: ReservationModel,
+    store: StoreModel?,
+    onReviewClick: (ReservationModel, StoreModel?) -> Unit,
     onCancelClick: (Long) -> Unit
 ) {
 

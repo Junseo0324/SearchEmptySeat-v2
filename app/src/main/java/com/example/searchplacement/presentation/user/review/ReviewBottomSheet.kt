@@ -61,8 +61,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
-import com.example.searchplacement.data.reserve.ReservationResponse
-import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.domain.model.ReservationModel
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
@@ -81,8 +81,8 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewBottomSheet(
-    reservation: ReservationResponse,
-    store: StoreResponse?,
+    reservation: ReservationModel,
+    store: StoreModel?,
     onDismiss: () -> Unit,
     onSubmit: (rating: Int, review: String, images: List<Uri>) -> Unit
 ) {

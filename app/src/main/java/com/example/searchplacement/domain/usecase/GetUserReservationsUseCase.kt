@@ -1,7 +1,9 @@
 package com.example.searchplacement.domain.usecase
 
 import com.example.searchplacement.core.util.Result
-import com.example.searchplacement.data.reserve.ReservationWithStore
+import com.example.searchplacement.data.mapper.ReservationMapper
+import com.example.searchplacement.data.mapper.toModel
+import com.example.searchplacement.domain.model.ReservationWithStoreModel
 import com.example.searchplacement.domain.repository.ReservationRepository
 import com.example.searchplacement.domain.repository.StoreRepository
 import javax.inject.Inject
@@ -10,7 +12,7 @@ class GetUserReservationsUseCase @Inject constructor(
     private val reservationRepository: ReservationRepository,
     private val storeRepository: StoreRepository
 ) {
-    suspend fun execute(): Result<List<ReservationWithStore>, String> {
+    suspend fun execute(): Result<List<ReservationWithStoreModel>, String> {
         return try {
             val res = reservationRepository.getUserReservations()
             if (res.status == "success") {
@@ -22,7 +24,9 @@ class GetUserReservationsUseCase @Inject constructor(
                     } catch (e: Exception) {
                         null
                     }
-                    ReservationWithStore(reservation, storeData)
+                    val reservationModel = ReservationMapper.toDomain(reservation)
+                    val storeModel = storeData?.toModel()
+                    ReservationWithStoreModel(reservationModel, storeModel)
                 }
                 Result.Success(combinedList)
             } else {
