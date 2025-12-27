@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,89 +23,30 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.StoreTabBackgroundColor
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.category.CategoryViewModel
-
+import com.example.searchplacement.presentation.user.component.CategoryFilterRow
+import com.example.searchplacement.presentation.user.component.CategoryList
 
 @Composable
 fun CategoryScreen(
-    navController: NavHostController
+    state: CategoryState,
+    onAction: (CategoryAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val categoryViewModel: CategoryViewModel = hiltViewModel()
-    var showSortBottomSheet by remember { mutableStateOf(false) }
-
-    val sortList = remember {
-        listOf(
-            "기본순" to "default",
-            "거리순" to "distance",
-            "예약순" to "reservation",
-            "찜순" to "favorite",
-            "리뷰순" to "review"
-        )
-    }
-
-
-
-    val categoryList = remember {
-        listOf(
-            "전체" to "ALL",
-            "치킨" to "CHICKEN",
-            "카페" to "CAFE",
-            "피자" to "PIZZA",
-            "패스트푸드" to "FASTFOOD",
-            "중식" to "CHINESEFOOD",
-            "한식" to "KOREANFOOD",
-            "분식" to "SNACK",
-            "일식" to "JAPANESEFOOD",
-            "양식" to "WESTERNFOOD",
-            "아시안" to "ASIANFOOD",
-            "고기" to "MEAT"
-        )
-    }
-
-    var sortCategory by remember { mutableStateOf(sortList[0].second) }
-    var selectedCategory by remember { mutableStateOf(categoryList[0].first) }
-    var selectedSortName by remember { mutableStateOf(sortList[0].first) }
-
-
-    val storeResponse = if (selectedCategory.contains("전체")) {
-        categoryViewModel.allStores.collectAsState()
-    } else {
-        categoryViewModel.categoryStores.collectAsState()
-    }
-
-
-
-    LaunchedEffect(selectedCategory, sortCategory) {
-        if (selectedCategory.contains("전체")) {
-            categoryViewModel.getAllStores(sortCategory)
-        } else {
-            val categoryToEnum = categoryList.find { it.first == selectedCategory }?.second ?: "ALL"
-            categoryViewModel.getStoresByCategory(categoryToEnum, sortCategory)
-        }
-    }
-
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(StoreTabBackgroundColor)
     ) {
@@ -141,17 +81,12 @@ fun CategoryScreen(
                 Column(
                     modifier = Modifier.padding(Dimens.Medium)
                 ) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(Dimens.Small)
-                    ) {
-                        items(categoryList) { (display, _) ->
-                            CategoryChip(
-                                text = display,
-                                isSelected = selectedCategory == display,
-                                onClick = { selectedCategory = display }
-                            )
+                    CategoryFilterRow(
+                        selectedCategory = state.selectedCategory,
+                        onCategorySelected = { category ->
+                            onAction(CategoryAction.OnCategorySelected(category))
                         }
-                    }
+                    )
                 }
             }
         }
@@ -164,14 +99,14 @@ fun CategoryScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "총 ${storeResponse.value?.size ?: 0}개 매장",
+                text = "총 ${state.stores?.size ?: 0}개 매장",
                 style = AppTextStyle.Body.copy(fontSize = 14.sp)
             )
 
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Dimens.Small))
-                    .clickable { showSortBottomSheet = true }
+                    .clickable { onAction(CategoryAction.OnSortButtonClick) }
                     .padding(horizontal = Dimens.Default, vertical = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.Tiny),
                 verticalAlignment = Alignment.CenterVertically
@@ -183,7 +118,7 @@ fun CategoryScreen(
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
-                    text = selectedSortName,
+                    text = state.selectedSortName,
                     style = AppTextStyle.Body.copy(fontSize = 14.sp)
                 )
                 Icon(
@@ -199,17 +134,8 @@ fun CategoryScreen(
             contentPadding = PaddingValues(horizontal = Dimens.Medium, vertical = Dimens.Small),
             verticalArrangement = Arrangement.spacedBy(Dimens.Medium)
         ) {
-            storeResponse.value?.let { storeList ->
-                items(storeList) { store ->
-                    CategoryList(
-                        store = store,
-                        onClick = {
-                            navController.navigate("store/${store.storePK}")
-                        }
-                    )
-                }
-            } ?: run {
-                item {
+            if (state.isLoading) {
+                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,21 +145,38 @@ fun CategoryScreen(
                         CircularProgressIndicator()
                     }
                 }
+            } else {
+                state.stores?.let { storeList ->
+                    items(storeList) { store ->
+                        CategoryList(
+                            store = store,
+                            onClick = {
+                                onAction(CategoryAction.OnStoreClick(store.storePK))
+                            }
+                        )
+                    }
+                } ?: run {
+                     item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(Dimens.XLarge),
+                                contentAlignment = Alignment.Center
+                        ) {
+                            Text("매장이 없습니다.")
+                        }
+                    }
+                }
             }
         }
     }
-
-    if (showSortBottomSheet) {
-        SortBottomSheet(
-            currentSort = sortCategory,
-            sortList = sortList,
-            onDismiss = { showSortBottomSheet = false },
-            onSelectSort = { displayName, value ->
-                sortCategory = value
-                selectedSortName = displayName
-                showSortBottomSheet = false
-            }
-        )
-    }
 }
 
+@Preview
+@Composable
+private fun CategoryScreenPreview() {
+    CategoryScreen(
+        state = CategoryState(),
+        onAction = {}
+    )
+}

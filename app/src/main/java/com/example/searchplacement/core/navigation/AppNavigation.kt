@@ -8,12 +8,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.presentation.owner.main.OwnerMainView
 import com.example.searchplacement.presentation.user.auth.findpassword.FindPasswordScreenRoot
 import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
 import com.example.searchplacement.presentation.user.auth.register.RegisterScreenRoot
-import com.example.searchplacement.presentation.user.category.CategoryScreen
+import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreen
 import com.example.searchplacement.presentation.user.home.MainScreen
 import com.example.searchplacement.presentation.user.login.CheckPassword
@@ -80,7 +79,13 @@ fun AppNavigation(
         }
 
         composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
-        composable(MainBottomNavItem.Category.screenRoute) { CategoryScreen(navController) }
+        composable(MainBottomNavItem.Category.screenRoute) { 
+            CategoryScreenRoot(
+                onNavigateToStoreDetail = { storeId ->
+                    navController.navigate("store/$storeId")
+                }
+            ) 
+        }
         composable(MainBottomNavItem.Reserve.screenRoute) { ReserveScreen(navController) }
         composable(MainBottomNavItem.Favorite.screenRoute) { FavoriteScreen(navController) }
         composable(MainBottomNavItem.Setting.screenRoute) { SettingScreen(navController, sharedMainViewModel) }
@@ -95,12 +100,12 @@ fun AppNavigation(
             StoreScreen(navController, storeId)
         }
 
-        composable("map_with_store") {
-            val store = navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<StoreResponse>("store") ?: return@composable
-
-            StoreMapScreen(navController, store)
+        composable(
+            route = "map_with_store/{storeId}",
+            arguments = listOf(navArgument("storeId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val storeId = backStackEntry.arguments?.getLong("storeId") ?: 0L
+            StoreMapScreen(navController, storeId)
         }
         composable(
             route = "reservation_store/{storeId}",

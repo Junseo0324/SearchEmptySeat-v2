@@ -1,10 +1,8 @@
 package com.example.searchplacement.data.store
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
 
-@Parcelize
+
 data class StoreResponse(
     val storePK: Long,
     val storeName: String,
@@ -22,4 +20,4 @@ data class StoreResponse(
     val favoriteCount: Int,
     val regularHolidays: Map<String, Int>?,
     val temporaryHolidays: List<String>?,
-) : Parcelable
+)

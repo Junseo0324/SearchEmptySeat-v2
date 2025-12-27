@@ -242,8 +242,7 @@ fun StoreInfoSection(store: StoreResponse,navController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable {
-                navController.currentBackStackEntry?.savedStateHandle?.set("store", store)
-                navController.navigate("map_with_store")
+                navController.navigate("map_with_store/${store.storePK}")
             }
         ) {
             Icon(

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.category
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.core.di.AppModule
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
@@ -61,7 +61,7 @@ import java.util.Locale
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun CategoryList(
-    store: StoreResponse,
+    store: StoreModel,
     onClick: () -> Unit
 ) {
     val imageLoader = rememberImageLoaderWithToken()

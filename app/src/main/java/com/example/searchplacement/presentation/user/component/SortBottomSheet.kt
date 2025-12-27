@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.category
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

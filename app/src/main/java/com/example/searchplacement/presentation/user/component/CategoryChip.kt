@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.category
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,3 +48,4 @@ fun CategoryChip(
         )
     }
 }
+

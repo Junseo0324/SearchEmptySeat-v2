@@ -34,8 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.searchplacement.data.store.StoreResponse
+import androidx.compose.runtime.collectAsState
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
@@ -49,10 +50,20 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
+fun StoreMapScreen(
+    navController: NavHostController,
+    storeId: Long,
+    viewModel: StoreMapViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
+    }
+
+    val store by viewModel.store.collectAsState()
+
+    LaunchedEffect(storeId) {
+        viewModel.fetchStore(storeId)
     }
 
     val mapView = remember { MapView(context) }
@@ -66,9 +77,6 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
 
     var showStoreInfo by remember { mutableStateOf(false) }
 
-    val today = LocalDate.now()
-    val todayKorean = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)
-    val todayHours = store.businessHours[todayKorean] ?: "휴무일"
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -84,16 +92,18 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
     }
 
     // 매장 주소 → 위경도
-    LaunchedEffect(store.location) {
-        try {
-            val geocoder = Geocoder(context, Locale.KOREAN)
-            val result = geocoder.getFromLocationName(store.location, 1)
-            if (!result.isNullOrEmpty()) {
-                val loc = result[0]
-                storeLatLng = LatLng(loc.latitude, loc.longitude)
+    LaunchedEffect(store?.location) {
+        store?.location?.let { location ->
+            try {
+                val geocoder = Geocoder(context, Locale.KOREAN)
+                val result = geocoder.getFromLocationName(location, 1)
+                if (!result.isNullOrEmpty()) {
+                    val loc = result[0]
+                    storeLatLng = LatLng(loc.latitude, loc.longitude)
+                }
+            } catch (e: Exception) {
+                Log.e("StoreMapScreen", "Geocoding 실패: ${e.message}")
             }
-        } catch (e: Exception) {
-            Log.e("StoreMapScreen", "Geocoding 실패: ${e.message}")
         }
     }
 
@@ -123,7 +133,7 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
             storeLatLng?.let {
                 storeMarker = Marker().apply {
                     position = it
-                    captionText = store.storeName
+                    captionText = store?.storeName ?: ""
                     map = nMap
                     setOnClickListener {
                         showStoreInfo = true
@@ -144,29 +154,11 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
                 }
             }
 
-//            // 카메라 이동: 두 위치가 모두 있는 경우 → 자동 줌 아웃
-//            if (storeLatLng != null && userLatLng != null) {
-//                val bounds = LatLngBounds.Builder()
-//                    .include(storeLatLng)
-//                    .include(userLatLng)
-//                    .build()
-//
-//                val cameraUpdate = CameraUpdate.fitBounds(bounds, 100)
-//                    .animate(CameraAnimation.Fly, 1000)
-//
-//                nMap.moveCamera(cameraUpdate)
-//            } else if (storeLatLng != null) {
-//                // 매장만 있을 경우
-//                nMap.moveCamera(
-//                    CameraUpdate.scrollTo(storeLatLng!!).animate(CameraAnimation.Fly, 1000)
-//                )
-//
-//
-//            }
-
-            nMap.moveCamera(
-                CameraUpdate.scrollTo(storeLatLng!!).animate(CameraAnimation.Fly, 1000)
-            )
+            if (storeLatLng != null) {
+                nMap.moveCamera(
+                    CameraUpdate.scrollTo(storeLatLng!!).animate(CameraAnimation.Fly, 1000)
+                )
+            }
         }
     }
 
@@ -193,7 +185,12 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
             }
 
-            if (showStoreInfo) {
+            if (showStoreInfo && store != null) {
+                val currentStore = store!!
+                val today = LocalDate.now()
+                val todayKorean = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)
+                val todayHours = currentStore.businessHours[todayKorean] ?: "휴무일"
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -204,14 +201,14 @@ fun StoreMapScreen(navController: NavHostController, store: StoreResponse) {
                 ) {
                     //todo 이미지 추가 예정
 
-                    Text(text = store.storeName, style = AppTextStyle.BodyLarge)
-                    Text(text = store.location, style = AppTextStyle.Body)
+                    Text(text = currentStore.storeName, style = AppTextStyle.BodyLarge)
+                    Text(text = currentStore.location, style = AppTextStyle.Body)
 //                    Text(text = "별점: ${String.format("%.1f", store.averageRating)}", style = AppTextStyle.redPoint)
                     Text(text = todayHours, style = AppTextStyle.Caption.copy(fontSize = 14.sp))
                     Button(
                         onClick = {
                             navController.popBackStack()
-                            navController.navigate("store/${store.storePK}")
+                            navController.navigate("store/${currentStore.storePK}")
                         },
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
