@@ -24,6 +24,7 @@ import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.RedPoint
+import com.example.searchplacement.presentation.user.component.FavoriteList
 
 @Composable
 fun FavoriteScreen(

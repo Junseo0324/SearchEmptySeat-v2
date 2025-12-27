@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.favorite
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,12 +34,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
 
 import com.example.searchplacement.core.di.AppModule
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.CategoryBgColor
 import com.example.searchplacement.presentation.theme.CategoryTextColor
@@ -51,7 +51,7 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 
 @Composable
 fun FavoriteList(
-    store: com.example.searchplacement.domain.model.StoreModel,
+    store: StoreModel,
     onStoreClick: () -> Unit,
     onRemoveFavorite: () -> Unit
 ) {
