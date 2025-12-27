@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.update
 
 data class UpdatePasswordState(
     val newPassword: String = "",

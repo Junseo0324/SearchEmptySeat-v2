@@ -14,8 +14,8 @@ import com.example.searchplacement.presentation.user.auth.register.RegisterScree
 import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreenRoot
 import com.example.searchplacement.presentation.user.home.HomeScreenRoot
-import com.example.searchplacement.presentation.user.password.CheckPasswordScreenRoot
-import com.example.searchplacement.presentation.user.password.UpdatePasswordScreenRoot
+import com.example.searchplacement.presentation.user.password.check.CheckPasswordScreenRoot
+import com.example.searchplacement.presentation.user.password.update.UpdatePasswordScreenRoot
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreenRoot

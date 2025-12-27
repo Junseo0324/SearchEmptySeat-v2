@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.update
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

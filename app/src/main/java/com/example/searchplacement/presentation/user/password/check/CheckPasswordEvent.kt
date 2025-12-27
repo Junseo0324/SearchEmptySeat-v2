@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.check
 
 sealed interface CheckPasswordEvent {
     data object PasswordCorrect : CheckPasswordEvent

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.update
 
 sealed interface UpdatePasswordAction {
     data class OnNewPasswordChanged(val password: String) : UpdatePasswordAction

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.check
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.password
+package com.example.searchplacement.presentation.user.password.update
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -13,14 +13,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CheckPasswordScreenRoot(
-    onNavigateToUpdatePassword: () -> Unit,
+fun UpdatePasswordScreenRoot(
     onNavigateBack: () -> Unit,
-    viewModel: CheckPasswordViewModel = hiltViewModel()
+    onSuccessUpdate: () -> Unit,
+    viewModel: UpdatePasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val passwordFocusRequester = remember { FocusRequester() }
+    val checkFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
@@ -31,17 +32,21 @@ fun CheckPasswordScreenRoot(
     LaunchedEffect(true) {
         viewModel.event.collectLatest { event ->
             when (event) {
-                CheckPasswordEvent.PasswordCorrect -> onNavigateToUpdatePassword()
-                is CheckPasswordEvent.ShowError -> {
+                UpdatePasswordEvent.PasswordUpdated -> {
+                    Toast.makeText(context, "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    onSuccessUpdate()
+                }
+                is UpdatePasswordEvent.ShowError -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    CheckPassword(
+    UpdatePassword(
         state = state,
         passwordFocusRequester = passwordFocusRequester,
+        checkFocusRequester = checkFocusRequester,
         onAction = viewModel::onAction,
         onNavigateBack = onNavigateBack
     )
