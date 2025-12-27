@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reservation.store
+package com.example.searchplacement.presentation.user.reservationstore
 
 import com.example.searchplacement.data.reserve.ReservationData
 

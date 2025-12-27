@@ -44,8 +44,8 @@ import com.example.searchplacement.presentation.theme.Gray
 import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.RedPoint
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.reservation.my.InfoItem
-import com.example.searchplacement.presentation.user.reservation.my.InfoRow
+import com.example.searchplacement.presentation.user.reservation.InfoItem
+import com.example.searchplacement.presentation.user.reservation.InfoRow
 import com.example.searchplacement.presentation.utils.parseReservationDateTime
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reservation.my
+package com.example.searchplacement.presentation.user.reservation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

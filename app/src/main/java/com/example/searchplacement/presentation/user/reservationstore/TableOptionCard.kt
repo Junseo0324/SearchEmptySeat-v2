@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reservation.store
+package com.example.searchplacement.presentation.user.reservationstore
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

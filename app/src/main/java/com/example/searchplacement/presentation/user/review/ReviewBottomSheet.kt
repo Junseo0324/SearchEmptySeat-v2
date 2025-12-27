@@ -74,7 +74,7 @@ import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.RatingColor
 import com.example.searchplacement.presentation.theme.RedPoint
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.reservation.my.InfoRow
+import com.example.searchplacement.presentation.user.reservation.InfoRow
 import com.example.searchplacement.presentation.utils.parseReservationDateTime
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
 
