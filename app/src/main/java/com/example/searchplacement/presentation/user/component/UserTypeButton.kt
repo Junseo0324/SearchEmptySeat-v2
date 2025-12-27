@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.register
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

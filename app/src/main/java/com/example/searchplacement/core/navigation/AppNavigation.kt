@@ -10,14 +10,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.searchplacement.data.store.StoreResponse
 import com.example.searchplacement.presentation.owner.main.OwnerMainView
+import com.example.searchplacement.presentation.user.auth.findpassword.FindPasswordScreenRoot
 import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
-import com.example.searchplacement.presentation.user.auth.login.LoginViewModel
-import com.example.searchplacement.presentation.user.auth.register.RegisterScreen
+import com.example.searchplacement.presentation.user.auth.register.RegisterScreenRoot
 import com.example.searchplacement.presentation.user.category.CategoryScreen
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreen
 import com.example.searchplacement.presentation.user.home.MainScreen
 import com.example.searchplacement.presentation.user.login.CheckPassword
-import com.example.searchplacement.presentation.user.login.FindPasswordScreen
 import com.example.searchplacement.presentation.user.login.UpdatePassword
 import com.example.searchplacement.presentation.user.main.MainViewModel
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
@@ -33,7 +32,6 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val loginViewModel: LoginViewModel = hiltViewModel()
     val sharedMainViewModel: MainViewModel = hiltViewModel()
     NavHost(
         navController = navController,
@@ -62,10 +60,23 @@ fun AppNavigation(
             )
         }
         composable("register") {
-            RegisterScreen(navController)
+            RegisterScreenRoot(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable("find_password") {
-            FindPasswordScreen(navController, loginViewModel)
+            FindPasswordScreenRoot(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }

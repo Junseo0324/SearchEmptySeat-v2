@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.register
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,25 +11,17 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.example.searchplacement.data.member.SignUpRequest
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
 
-
 @Composable
-fun UserTypeInput(signUpData: MutableState<SignUpRequest>) {
-    var userType by remember { mutableStateOf(signUpData.value.userType.ifBlank { "USER" }) }
-    LaunchedEffect(userType) {
-        signUpData.value = signUpData.value.copy(userType = userType)
-    }
+fun UserTypeInput(
+    userType: String,
+    onUserTypeChanged: (String) -> Unit
+) {
+    val effectiveUserType = userType.ifBlank { "USER" }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -44,18 +36,18 @@ fun UserTypeInput(signUpData: MutableState<SignUpRequest>) {
             UserTypeButton(
                 text = "일반 사용자",
                 icon = Icons.Default.Person,
-                isSelected = userType == "USER",
+                isSelected = effectiveUserType == "USER",
                 modifier = Modifier.weight(1f)
             ) {
-                userType = "USER"
+                onUserTypeChanged("USER")
             }
             UserTypeButton(
                 text = "점주",
                 icon = Icons.Default.Store,
-                isSelected = userType == "OWNER",
+                isSelected = effectiveUserType == "OWNER",
                 modifier = Modifier.weight(1f)
             ) {
-                userType = "OWNER"
+                onUserTypeChanged("OWNER")
             }
         }
         Spacer(modifier = Modifier.height(Dimens.Large))

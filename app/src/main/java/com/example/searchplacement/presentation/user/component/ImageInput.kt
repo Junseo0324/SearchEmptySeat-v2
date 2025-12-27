@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.register
+package com.example.searchplacement.presentation.user.component
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,13 +44,15 @@ import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.White
 
-
 @Composable
-fun ImageInput(imageUri: MutableState<Uri?>) {
+fun ImageInput(
+    imageUri: Uri?,
+    onImageSelected: (Uri?) -> Unit
+) {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (uri != null) imageUri.value = uri
+        if (uri != null) onImageSelected(uri)
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -108,16 +109,16 @@ fun ImageInput(imageUri: MutableState<Uri?>) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (imageUri.value != null) {
+                    if (imageUri != null) {
                         Image(
-                            painter = rememberAsyncImagePainter(imageUri.value),
+                            painter = rememberAsyncImagePainter(imageUri),
                             contentDescription = "선택된 이미지",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
                         IconButton(
-                            onClick = { imageUri.value = null },
+                            onClick = { onImageSelected(null) },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(Dimens.Nano)

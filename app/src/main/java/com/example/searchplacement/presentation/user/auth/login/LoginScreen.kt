@@ -45,8 +45,8 @@ import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.loginLogoColor
 import com.example.searchplacement.presentation.theme.reservationCountColor
-import com.example.searchplacement.presentation.user.component.LoginPasswordField
-import com.example.searchplacement.presentation.user.component.LoginTextField
+import com.example.searchplacement.presentation.user.component.AuthPasswordField
+import com.example.searchplacement.presentation.user.component.AuthTextField
 
 @Composable
 fun LoginScreen(
@@ -118,7 +118,7 @@ fun LoginScreen(
                 style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
             )
 
-            LoginTextField(
+            AuthTextField(
                 value = state.email,
                 onValueChange = { onAction(LoginAction.OnEmailChanged(it)) },
                 placeholder = "example@email.com",
@@ -140,7 +140,7 @@ fun LoginScreen(
                 text = "비밀번호",
                 style = AppTextStyle.Body.copy(fontSize = 14.sp, color = IconTextColor)
             )
-            LoginPasswordField(
+            AuthPasswordField(
                 value = state.password,
                 onValueChange = {
                     onAction(LoginAction.OnPasswordChanged(it))
@@ -231,4 +231,3 @@ private fun LoginScreenPreview() {
         state = LoginState()
     )
 }
-

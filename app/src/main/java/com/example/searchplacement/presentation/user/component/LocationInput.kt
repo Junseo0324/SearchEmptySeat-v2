@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.register
+package com.example.searchplacement.presentation.user.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.searchplacement.data.member.SignUpRequest
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
@@ -36,16 +33,18 @@ import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.registerColor
 import com.example.searchplacement.presentation.utils.AddressWebViewDialog
 
-
 @Composable
-fun LocationInput(signUpData: MutableState<SignUpRequest>, showWebView: MutableState<Boolean>) {
-    var addressMain by remember { mutableStateOf(signUpData.value.location) }
-    var addressDetail by remember { mutableStateOf("") }
-
-    LaunchedEffect(addressMain, addressDetail) {
-        if (addressMain.isNotBlank()) {
-            signUpData.value = signUpData.value.copy(location = "$addressMain $addressDetail")
-        }
+fun LocationInput(
+    location: String,
+    onLocationChanged: (String) -> Unit,
+    showWebView: Boolean,
+    onShowWebViewChanged: (Boolean) -> Unit
+) {
+    var localAddressMain by remember { mutableStateOf(if (location.isNotBlank()) location else "") }
+    var localAddressDetail by remember { mutableStateOf("") }
+    
+    fun updateLocation() {
+        onLocationChanged("${localAddressMain.trim()} ${localAddressDetail.trim()}".trim())
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -59,7 +58,7 @@ fun LocationInput(signUpData: MutableState<SignUpRequest>, showWebView: MutableS
         Spacer(modifier = Modifier.height(Dimens.Small))
 
         OutlinedTextField(
-            value = if (addressMain.isNotBlank()) "$addressMain\n상세주소: $addressDetail" else "",
+            value = if (localAddressMain.isNotBlank()) "$localAddressMain\n상세주소: $localAddressDetail" else "",
             onValueChange = {},
             placeholder = {
                 Column {
@@ -69,7 +68,7 @@ fun LocationInput(signUpData: MutableState<SignUpRequest>, showWebView: MutableS
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { showWebView.value = true },
+                .clickable { onShowWebViewChanged(true) },
             enabled = false,
             shape = RoundedCornerShape(Dimens.Default),
             leadingIcon = {
@@ -87,13 +86,13 @@ fun LocationInput(signUpData: MutableState<SignUpRequest>, showWebView: MutableS
             minLines = 2
         )
 
-        if (addressMain.isNotBlank()) {
+        if (localAddressMain.isNotBlank()) {
             Spacer(modifier = Modifier.height(Dimens.Default))
             OutlinedTextField(
-                value = addressDetail,
+                value = localAddressDetail,
                 onValueChange = {
-                    addressDetail = it
-                    signUpData.value = signUpData.value.copy(location = "$addressMain $addressDetail")
+                    localAddressDetail = it
+                    updateLocation()
                 },
                 placeholder = { Text("상세주소: 1층 101호", color = IconColor) },
                 modifier = Modifier.fillMaxWidth(),
@@ -111,10 +110,11 @@ fun LocationInput(signUpData: MutableState<SignUpRequest>, showWebView: MutableS
         Spacer(modifier = Modifier.height(Dimens.Large))
 
         AddressWebViewDialog(
-            showDialog = showWebView.value,
-            onDismiss = { showWebView.value = false },
+            showDialog = showWebView,
+            onDismiss = { onShowWebViewChanged(false) },
             onAddressSelected = { selected ->
-                addressMain = selected
+                localAddressMain = selected
+                updateLocation()
             },
             url = AppModule.BASE_URL
         )

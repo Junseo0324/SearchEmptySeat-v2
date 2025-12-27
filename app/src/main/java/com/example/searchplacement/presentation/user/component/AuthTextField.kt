@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,7 @@ import com.example.searchplacement.presentation.theme.ViewCountColor
 import com.example.searchplacement.presentation.theme.loginLogoColor
 
 @Composable
-fun LoginTextField(
+fun AuthTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -32,6 +33,13 @@ fun LoginTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = loginLogoColor,
+        unfocusedBorderColor = ChipBorderColor,
+        focusedContainerColor = Color(0xFFFAFAFA),
+        unfocusedContainerColor = Color(0xFFFAFAFA),
+        cursorColor = loginLogoColor
+    )
 ) {
     OutlinedTextField(
         value = value,
@@ -56,13 +64,7 @@ fun LoginTextField(
         singleLine = true,
         visualTransformation = visualTransformation,
         shape = RoundedCornerShape(Dimens.Default),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = loginLogoColor,
-            unfocusedBorderColor = ChipBorderColor,
-            focusedContainerColor = Color(0xFFFAFAFA),
-            unfocusedContainerColor = Color(0xFFFAFAFA),
-            cursorColor = loginLogoColor
-        ),
+        colors = colors,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions
     )
