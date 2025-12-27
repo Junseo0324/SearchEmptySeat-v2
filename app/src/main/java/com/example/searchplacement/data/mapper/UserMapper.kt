@@ -3,7 +3,7 @@ package com.example.searchplacement.data.mapper
 import com.example.searchplacement.data.local.UserEntity
 import com.example.searchplacement.domain.model.User
 
-fun UserEntity.toDomain(): User {
+fun UserEntity.toModel(): User {
     return User(
         userId = this.userId,
         name = this.name,

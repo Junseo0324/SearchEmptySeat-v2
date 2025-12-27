@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.example.searchplacement.core.util.Result
 import com.example.searchplacement.data.local.UserEntity
-import com.example.searchplacement.data.mapper.toDomain
+import com.example.searchplacement.data.mapper.toModel
 import com.example.searchplacement.data.member.MyInfoUpdateRequest
 import com.example.searchplacement.domain.model.User
 import com.example.searchplacement.domain.repository.AuthRepository
@@ -50,7 +50,7 @@ class UpdateUserInfoUseCase @Inject constructor(
                     image = apiResponse.data!!["image"] as? String ?: user.image
                 )
                 userRepository.saveUser(updatedEntity)
-                Result.Success(updatedEntity.toDomain())
+                Result.Success(updatedEntity.toModel())
             } else {
                 Result.Error(response.message ?: "정보 수정 실패")
             }
