@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reserve
+package com.example.searchplacement.presentation.user.reservation
 
 import android.util.Log
 import androidx.compose.runtime.State

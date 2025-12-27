@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reserve.store
+package com.example.searchplacement.presentation.user.reservation.store
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -46,7 +46,7 @@ import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.reservationCountColor
-import com.example.searchplacement.presentation.user.reserve.ReservationViewModel
+import com.example.searchplacement.presentation.user.reservation.ReservationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

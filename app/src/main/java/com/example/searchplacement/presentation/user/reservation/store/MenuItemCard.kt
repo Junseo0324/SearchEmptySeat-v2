@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reserve.store
+package com.example.searchplacement.presentation.user.reservation.store
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

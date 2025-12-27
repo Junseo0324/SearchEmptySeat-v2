@@ -1,33 +1,39 @@
-package com.example.searchplacement.presentation.user.reserve.my
+package com.example.searchplacement.presentation.user.reservation.my
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.sp
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
 
+
 @Composable
-fun InfoItem(
-    label: String,
-    value: String
+fun InfoRow(
+    icon: ImageVector,
+    text: String
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label,
-            style = AppTextStyle.BodySmall.copy(fontWeight = FontWeight.Bold, color = IconColor),
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(Dimens.Medium),
+            tint = IconColor
         )
         Text(
-            text = value,
-            style = AppTextStyle.BodySmall.copy(fontWeight = FontWeight.Normal, fontSize = 13.sp, color = Black)
+            text = text,
+            style = AppTextStyle.BodySmall.copy(fontSize = 13.sp, color = Black)
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reserve.my
+package com.example.searchplacement.presentation.user.reservation.my
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Tab

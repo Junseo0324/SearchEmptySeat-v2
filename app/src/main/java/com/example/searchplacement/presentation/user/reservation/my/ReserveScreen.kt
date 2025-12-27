@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.reserve.my
+package com.example.searchplacement.presentation.user.reservation.my
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -49,10 +49,10 @@ import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.Gray
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
+import com.example.searchplacement.presentation.user.reservation.ReservationViewModel
 import com.example.searchplacement.presentation.user.review.ReviewBottomSheet
-import com.example.searchplacement.presentation.utils.isCancellable
-import com.example.searchplacement.presentation.user.reserve.ReservationViewModel
 import com.example.searchplacement.presentation.user.review.ReviewViewModel
+import com.example.searchplacement.presentation.utils.isCancellable
 
 @Composable
 fun ReserveScreen(navController: NavHostController) {
