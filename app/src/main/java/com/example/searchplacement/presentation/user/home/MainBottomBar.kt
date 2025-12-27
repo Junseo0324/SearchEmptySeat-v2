@@ -11,20 +11,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+
 import com.example.searchplacement.core.navigation.MainBottomNavItem
 import com.example.searchplacement.presentation.theme.UserPrimaryColor
+import com.example.searchplacement.presentation.theme.White
 
 
 @Composable
 fun MainBottomBar(
     containerColor: Color,
     contentColor: Color,
-    navController: NavHostController
+    currentRoute: String?,
+    onItemClick: (String) -> Unit
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+
     val items = listOf(
         MainBottomNavItem.Home,
         MainBottomNavItem.Category,
@@ -38,7 +38,7 @@ fun MainBottomBar(
     ) {
         NavigationBar(
             modifier = Modifier,
-            containerColor = containerColor,
+            containerColor = White,
             contentColor = contentColor,
         ) {
             items.forEach { item ->
@@ -61,13 +61,7 @@ fun MainBottomBar(
                         unselectedTextColor = Color.Black
                     ),
                     onClick = {
-                        navController.navigate(item.screenRoute) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(it) { saveState = true }
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        onItemClick(item.screenRoute)
                     }
                 )
             }
