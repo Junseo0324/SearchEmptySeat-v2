@@ -13,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.searchplacement.presentation.theme.Dimens
-import com.example.searchplacement.presentation.user.map.NaverMapScreen
 import com.example.searchplacement.presentation.user.map.MapViewModel
+import com.example.searchplacement.presentation.user.map.NaverMapScreen
 
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController) {
 
     val mapViewModel: MapViewModel = hiltViewModel()
 

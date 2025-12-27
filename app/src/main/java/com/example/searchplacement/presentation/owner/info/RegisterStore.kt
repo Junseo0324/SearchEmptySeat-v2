@@ -37,7 +37,7 @@ import com.example.searchplacement.data.store.StoreRequest
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.ButtonMainColor
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -46,7 +46,7 @@ fun RegisterStore(
     navController: NavHostController,
 ) {
     val ownerStoreViewModel: OwnerStoreViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainViewModel: HomeViewModel = hiltViewModel()
     val context = LocalContext.current
     val user by mainViewModel.user.collectAsState()
 

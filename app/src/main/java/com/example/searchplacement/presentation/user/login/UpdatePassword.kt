@@ -47,13 +47,13 @@ import com.example.searchplacement.core.navigation.MainBottomNavItem
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdatePassword(navController: NavHostController) {
-    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainViewModel: HomeViewModel = hiltViewModel()
     val showPassword = remember { mutableStateOf(false) }
     val checkShowPassword = remember { mutableStateOf(false) }
     val passwordState = remember { mutableStateOf("") }

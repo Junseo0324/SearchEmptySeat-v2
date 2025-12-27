@@ -1,18 +1,18 @@
-package com.example.searchplacement.presentation.user.main
+package com.example.searchplacement.presentation.user.home
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchplacement.data.local.UserEntity
-import com.example.searchplacement.data.member.ApiResponse
+import com.example.searchplacement.core.util.TokenManager
 import com.example.searchplacement.data.dto.login.LoginRequest
 import com.example.searchplacement.data.dto.login.LoginResponse
+import com.example.searchplacement.data.local.UserEntity
+import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.member.MyInfoUpdateRequest
 import com.example.searchplacement.domain.repository.AuthRepository
 import com.example.searchplacement.domain.repository.UserRepository
-import com.example.searchplacement.core.util.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ import java.io.FileNotFoundException
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
     private val _passwordUpdateResult = MutableStateFlow<ApiResponse<String>?>(null)
     val passwordUpdateResult = _passwordUpdateResult.asStateFlow()
 
-    private val _userInfoUpdateResult = MutableStateFlow<ApiResponse<Map<String,Any>>?>(null)
+    private val _userInfoUpdateResult = MutableStateFlow<ApiResponse<Map<String, Any>>?>(null)
     val userInfoUpdateResult = _userInfoUpdateResult.asStateFlow()
 
     private val _logoutEvent = MutableSharedFlow<Unit>()
@@ -135,7 +135,8 @@ class MainViewModel @Inject constructor(
                         userType = _user.value?.userType.orEmpty(),
                         location = editedLocation ?: _user.value?.location.orEmpty(),
                         token = _user.value?.token.orEmpty(),
-                        image = apiResponse.data?.get("image") as? String ?: _user.value?.image.orEmpty()
+                        image = apiResponse.data?.get("image") as? String
+                            ?: _user.value?.image.orEmpty()
                     )
                     userRepository.saveUser(updatedEntity)
 

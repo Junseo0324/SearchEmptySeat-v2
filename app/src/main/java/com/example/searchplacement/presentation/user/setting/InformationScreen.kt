@@ -55,12 +55,12 @@ import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.utils.AddressWebViewDialog
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import okhttp3.OkHttpClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformationScreen(navController: NavHostController,mainViewModel: MainViewModel) {
+fun InformationScreen(navController: NavHostController,mainViewModel: HomeViewModel) {
     val user by mainViewModel.user.collectAsState()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val scrollState = rememberScrollState()

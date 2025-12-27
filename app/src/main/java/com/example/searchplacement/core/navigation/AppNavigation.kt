@@ -14,10 +14,10 @@ import com.example.searchplacement.presentation.user.auth.login.LoginScreenRoot
 import com.example.searchplacement.presentation.user.auth.register.RegisterScreenRoot
 import com.example.searchplacement.presentation.user.category.CategoryScreenRoot
 import com.example.searchplacement.presentation.user.favorite.FavoriteScreenRoot
-import com.example.searchplacement.presentation.user.home.MainScreen
+import com.example.searchplacement.presentation.user.home.HomeScreen
 import com.example.searchplacement.presentation.user.login.CheckPassword
 import com.example.searchplacement.presentation.user.login.UpdatePassword
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
 import com.example.searchplacement.presentation.user.search.SearchScreen
@@ -31,7 +31,7 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val sharedMainViewModel: MainViewModel = hiltViewModel()
+    val sharedMainViewModel: HomeViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = "login",
@@ -78,7 +78,7 @@ fun AppNavigation(
             )
         }
 
-        composable(MainBottomNavItem.Home.screenRoute) { MainScreen(navController) }
+        composable(MainBottomNavItem.Home.screenRoute) { HomeScreen(navController) }
         composable(MainBottomNavItem.Category.screenRoute) { 
             CategoryScreenRoot(
                 onNavigateToStoreDetail = { storeId ->

@@ -57,10 +57,10 @@ import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.reservationCountColor
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 
 @Composable
-fun SettingScreen(navController: NavHostController,mainViewModel: MainViewModel) {
+fun SettingScreen(navController: NavHostController,mainViewModel: HomeViewModel) {
     val user by mainViewModel.user.collectAsState()
     val IMAGE_URL = "${AppModule.BASE_URL}/api/files/"
     val imageLoader = rememberImageLoaderWithToken()

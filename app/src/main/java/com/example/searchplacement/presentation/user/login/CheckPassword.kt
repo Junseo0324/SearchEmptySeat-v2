@@ -48,13 +48,13 @@ import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.Gray
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckPassword(navController: NavHostController) {
-    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainViewModel: HomeViewModel = hiltViewModel()
     val showPassword = remember { mutableStateOf(false) }
     val passwordState = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()

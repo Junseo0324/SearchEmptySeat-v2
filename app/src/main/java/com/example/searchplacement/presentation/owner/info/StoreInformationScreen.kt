@@ -59,13 +59,13 @@ import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.core.navigation.OwnerBottomNavItem
 import com.example.searchplacement.presentation.theme.ButtonMainColor
 import com.example.searchplacement.presentation.utils.rememberImageLoaderWithToken
-import com.example.searchplacement.presentation.user.main.MainViewModel
+import com.example.searchplacement.presentation.user.home.HomeViewModel
 import com.example.searchplacement.presentation.user.home.StoreListViewModel
 
 @Composable
 fun StoreInformationScreen(navController: NavHostController) {
     val storeListViewModel: StoreListViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainViewModel: HomeViewModel = hiltViewModel()
     val store by storeListViewModel.selectedStore.collectAsState()
     val user by mainViewModel.user.collectAsState()
     var isEdit by remember { mutableStateOf(false) }
