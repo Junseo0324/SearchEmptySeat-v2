@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.IconColor
@@ -31,7 +31,7 @@ import com.example.searchplacement.presentation.theme.ViewCountColor
 @Composable
 fun SearchResultContent(
     searchQuery: String,
-    searchResults: List<StoreResponse>?,
+    searchResults: List<StoreModel>?,
     onStoreClick: (Long) -> Unit
 ) {
     Column(

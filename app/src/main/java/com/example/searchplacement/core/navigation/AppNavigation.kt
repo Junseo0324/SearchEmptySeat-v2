@@ -18,7 +18,7 @@ import com.example.searchplacement.presentation.user.login.CheckPassword
 import com.example.searchplacement.presentation.user.login.UpdatePassword
 import com.example.searchplacement.presentation.user.reserve.my.ReserveScreen
 import com.example.searchplacement.presentation.user.reserve.store.ReservationFlowScreen
-import com.example.searchplacement.presentation.user.search.SearchScreen
+import com.example.searchplacement.presentation.user.search.SearchScreenRoot
 import com.example.searchplacement.presentation.user.information.InformationScreenRoot
 import com.example.searchplacement.presentation.user.setting.SettingScreenRoot
 import com.example.searchplacement.presentation.user.store.StoreMapScreen
@@ -122,7 +122,13 @@ fun AppNavigation(
                 }
             )
         }
-        composable("search") { SearchScreen(navController) }
+        composable("search") {
+            SearchScreenRoot(
+                onNavigateToStore = { storeId ->
+                    navController.navigate("store/$storeId")
+                }
+            )
+        }
 
         composable(
             route = "store/{storeId}",

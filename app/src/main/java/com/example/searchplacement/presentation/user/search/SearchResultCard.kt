@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.searchplacement.data.store.StoreResponse
+import com.example.searchplacement.domain.model.StoreModel
 import com.example.searchplacement.core.di.AppModule
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Dimens
@@ -44,7 +44,7 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 
 @Composable
 fun SearchResultCard(
-    store: StoreResponse,
+    store: StoreModel,
     onClick: () -> Unit
 ) {
 

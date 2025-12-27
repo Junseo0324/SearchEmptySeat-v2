@@ -20,20 +20,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.ChipBorderColor
 import com.example.searchplacement.presentation.theme.Dimens
@@ -41,22 +33,12 @@ import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.UserPrimaryColor
 import com.example.searchplacement.presentation.theme.ViewCountColor
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.search.SearchViewModel
-import kotlinx.coroutines.delay
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
-    val searchViewModel: SearchViewModel = hiltViewModel()
-    var searchQuery by remember { mutableStateOf("") }
-    val searchResults by searchViewModel.searchResults.collectAsState()
-
-    LaunchedEffect(searchQuery) {
-        if (searchQuery.isNotEmpty()) {
-            delay(300)
-            searchViewModel.searchStoresByName(searchQuery)
-        }
-    }
-
+fun SearchScreen(
+    state: SearchState,
+    onAction: (SearchAction) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,8 +60,8 @@ fun SearchScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(Dimens.Default))
 
                 OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    value = state.query,
+                    onValueChange = { onAction(SearchAction.OnQueryChanged(it)) },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
                         Text(
@@ -95,10 +77,10 @@ fun SearchScreen(navController: NavHostController) {
                         )
                     },
                     trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
+                        if (state.query.isNotEmpty()) {
                             IconButton(
                                 onClick = {
-                                    searchQuery = ""
+                                    onAction(SearchAction.OnClearQuery)
                                 }
                             ) {
                                 Icon(
@@ -119,7 +101,7 @@ fun SearchScreen(navController: NavHostController) {
             }
         }
 
-        if (searchQuery.isEmpty()) {
+        if (state.query.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,10 +128,10 @@ fun SearchScreen(navController: NavHostController) {
             }
         } else {
             SearchResultContent(
-                searchQuery = searchQuery,
-                searchResults = searchResults,
+                searchQuery = state.query,
+                searchResults = state.searchResults,
                 onStoreClick = { storePK ->
-                    navController.navigate("store/$storePK")
+                    onAction(SearchAction.OnStoreClick(storePK))
                 }
             )
         }
