@@ -56,7 +56,7 @@ class RegisterViewModel @Inject constructor(
 
             when (val result = registerUseCase.execute(signUpRequest, imageFile)) {
                 is Result.Success -> _event.emit(RegisterEvent.RegisterSuccess)
-                is Result.Error -> _event.emit(RegisterEvent.ShowSnackbar("회원가입에 실패했습니다."))
+                is Result.Error -> _event.emit(RegisterEvent.ShowSnackbar(result.error))
             }
 
             _state.update { it.copy(isLoading = false) }
