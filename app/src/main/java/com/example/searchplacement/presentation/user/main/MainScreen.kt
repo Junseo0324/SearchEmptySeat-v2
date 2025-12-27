@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
-import com.example.searchplacement.presentation.user.home.MainBottomBar
+import com.example.searchplacement.presentation.user.component.MainBottomBar
 
 @Composable
 fun MainScreen(

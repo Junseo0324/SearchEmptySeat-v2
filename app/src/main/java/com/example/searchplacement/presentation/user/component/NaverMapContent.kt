@@ -1,4 +1,4 @@
-package com.example.searchplacement.presentation.user.map
+package com.example.searchplacement.presentation.user.component
 
 import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize

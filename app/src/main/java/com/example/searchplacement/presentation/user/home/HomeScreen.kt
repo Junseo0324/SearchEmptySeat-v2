@@ -25,7 +25,8 @@ import com.example.searchplacement.presentation.theme.AppTextStyle
 import com.example.searchplacement.presentation.theme.Black
 import com.example.searchplacement.presentation.theme.Dimens
 import com.example.searchplacement.presentation.theme.White
-import com.example.searchplacement.presentation.user.map.NaverMapContent
+import com.example.searchplacement.presentation.user.component.SearchBar
+import com.example.searchplacement.presentation.user.component.NaverMapContent
 
 @Composable
 fun HomeScreen(
