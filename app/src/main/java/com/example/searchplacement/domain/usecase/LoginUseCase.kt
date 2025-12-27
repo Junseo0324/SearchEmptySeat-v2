@@ -24,7 +24,7 @@ class LoginUseCase @Inject constructor(
 
         if (response.status != "success" || response.data == null) {
             return Result.Error(
-                response.message ?: "로그인 실패"
+                response.message
             )
         }
 

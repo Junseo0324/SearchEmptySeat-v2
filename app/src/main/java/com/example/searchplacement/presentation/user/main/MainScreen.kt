@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 import com.example.searchplacement.presentation.user.home.MainBottomBar
 
@@ -16,8 +17,8 @@ fun MainScreen(
     Scaffold(
         bottomBar = {
             MainBottomBar(
-                containerColor = androidx.compose.ui.graphics.Color.White,
-                contentColor = androidx.compose.ui.graphics.Color.Black,
+                containerColor = Color.White,
+                contentColor = Color.Black,
                 currentRoute = selectedRoute,
                 onItemClick = onBottomNavSelected
             )

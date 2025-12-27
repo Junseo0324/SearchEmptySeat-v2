@@ -2,7 +2,7 @@ package com.example.searchplacement.domain.model
 
 data class FavoriteModel(
     val favoritePK: Long,
-    val userId: Long,
+    val userId: String,
     val store: StoreModel,
-    val createdDate: String
+    val createdDate: String?
 )

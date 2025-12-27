@@ -3,8 +3,6 @@ package com.example.searchplacement.presentation.user.auth.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.core.util.Result
-import com.example.searchplacement.data.dto.login.LoginResponse
-import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,9 +17,6 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase
 ) : ViewModel() {
-
-    private val _loginResult = MutableStateFlow<ApiResponse<LoginResponse>?>(null)
-    val loginResult = _loginResult.asStateFlow()
 
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
