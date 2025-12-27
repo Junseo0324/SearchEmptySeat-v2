@@ -8,6 +8,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.serialization)
 
 }
 
@@ -117,6 +118,7 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.kotlinx.serialization.json)
 
 
 

@@ -41,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.searchplacement.R
@@ -62,7 +61,7 @@ import com.example.searchplacement.presentation.utils.rememberImageLoaderWithTok
 
 @Composable
 fun ReservedList(
-    navController: NavHostController,
+    onNavigateToStoreDetail: (Long) -> Unit,
     reservation: ReservationResponse,
     store: StoreResponse?,
     onReviewClick: (ReservationResponse, StoreResponse?) -> Unit,
@@ -267,7 +266,7 @@ fun ReservedList(
                     }
                     Button(
                         onClick = {
-                            navController.navigate("store/${store?.storePK}")
+                            onNavigateToStoreDetail(store?.storePK ?: 0L)
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),

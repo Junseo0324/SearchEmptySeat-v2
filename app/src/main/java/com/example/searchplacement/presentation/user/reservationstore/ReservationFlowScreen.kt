@@ -46,7 +46,7 @@ import com.example.searchplacement.presentation.theme.IconColor
 import com.example.searchplacement.presentation.theme.IconTextColor
 import com.example.searchplacement.presentation.theme.White
 import com.example.searchplacement.presentation.theme.reservationCountColor
-import com.example.searchplacement.presentation.user.reservation.ReservationViewModel
+import com.example.searchplacement.presentation.user.reservationstore.BookingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,24 +54,24 @@ fun ReservationFlowScreen(
     navController: NavHostController,
     storeId: Long,
 ) {
-    val reservationViewModel: ReservationViewModel = hiltViewModel()
-    val menus by reservationViewModel.menus.collectAsState()
-    val sections by reservationViewModel.sections.collectAsState()
-    val placement by reservationViewModel.placement.collectAsState()
+    val bookingViewModel: BookingViewModel = hiltViewModel()
+    val menus by bookingViewModel.menus.collectAsState()
+    val sections by bookingViewModel.sections.collectAsState()
+    val placement by bookingViewModel.placement.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        reservationViewModel.getStoreData(storeId)
-        reservationViewModel.fetchMenusAndSections(storeId)
-        reservationViewModel.getPlacementByStore(storeId)
+        bookingViewModel.getStoreData(storeId)
+        bookingViewModel.fetchMenusAndSections(storeId)
+        bookingViewModel.getPlacementByStore(storeId)
     }
 
-    val store = reservationViewModel.storeData.collectAsState().value
+    val store = bookingViewModel.storeData.collectAsState().value
 
     val storeName = store?.storeName ?: ""
     val businessHours = store?.businessHours ?: emptyMap()
     var currentStep by remember { mutableStateOf(ReservationStep.PEOPLE_COUNT) }
-    val reservationData by reservationViewModel.reservationData
+    val reservationData by bookingViewModel.reservationData
 
 
     val stepProgress = when (currentStep) {
@@ -143,7 +143,7 @@ fun ReservationFlowScreen(
                     ReservationStep.PEOPLE_COUNT -> PeopleCountStep(
                         reservationData = reservationData,
                         onChangePeople = { newCount ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(numberOfPeople = newCount)
                             }
                         }
@@ -152,7 +152,7 @@ fun ReservationFlowScreen(
                         reservationData = reservationData,
                         businessHours = businessHours,
                         onSelectedDate = { date ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(selectedDate = date)
                             }
                         }
@@ -161,7 +161,7 @@ fun ReservationFlowScreen(
                         reservationData = reservationData,
                         businessHours = businessHours,
                         onSelectedTime = { time ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(selectedTime = time)
                             }
                         }
@@ -170,7 +170,7 @@ fun ReservationFlowScreen(
                         reservationData = reservationData,
                         placement = placement,
                         onSelectTable = { tableId ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(selectedTable = tableId)
                             }
                         }
@@ -180,7 +180,7 @@ fun ReservationFlowScreen(
                         menus = menus,
                         sections = sections,
                         onUpdateMenus = { updatedMenus ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(
                                     selectedMenus = updatedMenus,
                                     totalPrice = updatedMenus.values.sumOf { item -> item.price * item.quantity }
@@ -192,7 +192,7 @@ fun ReservationFlowScreen(
                         reservationData,
                         storeName,
                         onPaymentSelected = { payment ->
-                            reservationViewModel.updateReservation {
+                            bookingViewModel.updateReservation {
                                 it.copy(
                                     paymentMethod = payment
                                 )
@@ -219,7 +219,7 @@ fun ReservationFlowScreen(
                             )
                         }
                         val request = ReservationRequest(
-                            userId = reservationViewModel.userId.value?.toLong() ?: 0L,
+                            userId = bookingViewModel.userId.value?.toLong() ?: 0L,
                             storePK = storeId,
                             reservationTime = "${reservationData.selectedDate}T${reservationData.selectedTime}",
                             tableNumber = reservationData.selectedTable?.toIntOrNull() ?: 0,
@@ -228,7 +228,7 @@ fun ReservationFlowScreen(
                             paymentMethod = reservationData.paymentMethod,
                             status = "pending"
                         )
-                        reservationViewModel.createReservation(request) { success ->
+                        bookingViewModel.createReservation(request) { success ->
                             if (success) {
                                 Toast.makeText(context, "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show()
                                 navController.popBackStack("store/$storeId", false)
