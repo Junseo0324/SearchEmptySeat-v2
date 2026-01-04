@@ -3,14 +3,25 @@ package com.example.searchplacement.core.util
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor: Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val requestBuilder = chain.request().newBuilder()
+        val request = chain.request()
+        val path = request.url.encodedPath
 
-        TokenManager.getToken()?.let { token ->
-            requestBuilder.addHeader("Authorization", "Bearer $token")
+        if (path.startsWith("/api/auth")) {
+            return chain.proceed(request)
         }
 
-        return chain.proceed(requestBuilder.build())
+        val token = TokenManager.getToken()
+
+        val newRequest = if (token != null) {
+            request.newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+        } else {
+            request
+        }
+
+        return chain.proceed(newRequest)
     }
 }
