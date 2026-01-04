@@ -1,21 +1,15 @@
 package com.example.searchplacement.presentation.user.review
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchplacement.data.review.ReviewResponse
+import com.example.searchplacement.domain.model.ReviewRequest
 import com.example.searchplacement.domain.repository.ReviewRepository
-import com.example.searchplacement.presentation.utils.toMultipartPart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +30,6 @@ class ReviewViewModel @Inject constructor(
     val reviewsError: StateFlow<String?> get() = _reviewsError
 
     fun submitReview(
-        context: Context,
         storePK: Long,
         rating: Float,
         content: String,
@@ -46,13 +39,15 @@ class ReviewViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val requestJson = createReviewRequestBody(storePK, rating, content)
+                val request = ReviewRequest(
+                    storePK = storePK,
+                    rating = rating,
+                    content = content
+                )
 
-                var imageParts : MutableList<MultipartBody.Part> = emptyList<MultipartBody.Part>().toMutableList()
-                imageUris.forEach { it ->
-                    imageParts.add(toMultipartPart(context,it))
-                }
-                val response = reviewRepository.registerReview(requestJson, imageParts)
+                val imageStrings = imageUris.map { it.toString() }
+                
+                val response = reviewRepository.registerReview(request, imageStrings)
 
                 if (response.status == "success") {
                     onSuccess()
@@ -87,17 +82,5 @@ class ReviewViewModel @Inject constructor(
         _reviewSubmitError.value = null
     }
 
-    fun createReviewRequestBody(
-        storePK: Long,
-        rating: Float,
-        content: String
-    ): RequestBody {
-        val json = JSONObject().apply {
-            put("storePK", storePK)
-            put("rating", rating)
-            put("content", content)
-        }
-        return json.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-    }
 
 }

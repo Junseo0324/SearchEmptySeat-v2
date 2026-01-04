@@ -137,7 +137,9 @@ class MyReservationViewModel @Inject constructor(
             try {
                 _state.update { it.copy(isLoading = true) }
 
-                when (val result = registerReviewUseCase.execute(storePK, rating, content, imageUris)) {
+                val uriStrings = imageUris.map { it.toString() }
+
+                when (val result = registerReviewUseCase.execute(storePK, rating, content, uriStrings)) {
                     is Result.Success -> {
                         _state.update {
                             it.copy(

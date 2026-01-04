@@ -4,20 +4,37 @@ import com.example.searchplacement.data.api.ReviewApiService
 import com.example.searchplacement.data.member.ApiResponse
 import com.example.searchplacement.data.review.ReviewResponse
 import com.example.searchplacement.domain.repository.ReviewRepository
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import android.content.Context
+import android.net.Uri
+import com.example.searchplacement.domain.model.ReviewRequest
+import com.example.searchplacement.presentation.utils.toMultipartPart
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody.Part
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class ReviewRepositoryImpl @Inject constructor(
-    private val apiService: ReviewApiService
+    private val apiService: ReviewApiService,
+    @ApplicationContext private val context: Context
 ) : ReviewRepository {
 
     override suspend fun registerReview(
-        requestJson: RequestBody,
-        imageFiles: List<MultipartBody.Part>?
+        request: ReviewRequest,
+        imageUris: List<String>
     ): ApiResponse<Map<String, Any>> {
         return try {
-             val response = apiService.addReview(requestJson, imageFiles)
+             val jsonString = Json.encodeToString(request)
+             val requestBody = jsonString.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+             val imageParts = imageUris.map { uriString ->
+                 val uri = Uri.parse(uriString)
+                 toMultipartPart(context, uri)
+             }
+
+             val response = apiService.addReview(requestBody, imageParts)
              if (response.isSuccessful && response.body() != null) {
                  response.body()!!
              } else {
